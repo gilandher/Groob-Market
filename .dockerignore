@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Entornos virtuales
+.venv
+venv
+env/
+__pycache__/
+*.pyc
+
+# Node Modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Next.js
+.next
+out/
+build/
+
+# Bases de datos y archivos locales
+db.sqlite3
+*.log
+.env.local
+.DS_Store

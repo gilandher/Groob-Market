@@ -1,0 +1,14 @@
+Django==6.0.3
+djangorestframework==3.16.1
+django-cors-headers==4.9.0
+djangorestframework-simplejwt==5.5.1
+psycopg==3.3.3
+psycopg-binary==3.3.3
+dj-database-url==3.1.2
+python-dotenv==1.2.2
+Pillow==12.1.1
+pyjwt==2.11.0
+sqlparse==0.5.5
+tzdata==2025.3
+asgiref==3.11.1
+gunicorn==21.2.0

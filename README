@@ -1,0 +1,42 @@
+## BACKEND
+## Correr el ps1
+
+.\.venv\Scripts\Activate.ps1
+
+## Correr el servidor
+
+python manage.py runserver
+
+## Ip para comprobar la conexion del servidor con Django
+
+http://127.0.0.1:8000/
+
+
+## Comando para crear un super usuarios (ADMIN), piede Pon usuario, correo (opcional) y contraseña (Importante: Recuerda detener el Server (CTRL+C) apenas creasel usuario lo poenes acorrer nuevamente).
+
+python manage.py createsuperuser
+
+## Ip para verificar la conexion exitosa de BD con el usuario y contraseña creado.
+
+http://127.0.0.1:8000/admin
+
+
+
+# La ruleta se modfica aqui backend/promotions/services.py
+# Cupones esta en backend/promotions/serializers.py
+
+
+
+# Crear APP del mudulo o una nueca carpeta
+python manage.py startapp "Nombre de la carpeta" 
+
+# FRONTEND
+# Patra levantar el front
+npm run dev
+http://localhost:3000/
+
+# Desbuguear cuando no quiera subir el front
+$env:DEBUG="next:*"; npx next dev -p 3000
+
+# Iniciarte el NEXT
+npx next dev -p 3000

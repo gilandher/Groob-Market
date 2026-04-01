@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # Base de Datos (PostgreSQL)
+  # Como hemos visto que tienes psycopg instalado, lo habilitamos por defecto
+  # Si prefieres SQLite, esto puede removerse, igual el backend usará tu DB configurada en settings
+  db:
+    image: postgres:15-alpine
+    container_name: groob-market-db
+    restart: always
+    environment:
+      POSTGRES_DB: groob_market
+      POSTGRES_USER: groob_user
+      POSTGRES_PASSWORD: groob_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Backend (Django)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: groob-market-backend
+    restart: always
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+    ports:
+      - "8000:8000"
+    environment:
+      # Las variables de entorno para que Django se conecte a Postgres
+      # DATABASE_URL: postgres://groob_user:groob_password@db:5432/groob_market
+      - DEBUG=1  # Puedes pasarlo a 0 en produccion
+    # Si quisieras desarrollo (Hot reload), descomenta el volume inferior:
+    # volumes:
+    #   - ./backend:/app
+    depends_on:
+      - db
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: groob-market-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # URLs para conexion y autenticacion si fueran necesarias
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    # Si quisieras desarrollo (Hot reload), comentar el build de arriba y descomentar volumes/comando
+    # command: npm run dev
+    # volumes:
+    #   - ./frontend:/app
+    #   - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

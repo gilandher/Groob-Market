@@ -1,0 +1,2 @@
+## Ejecutar el comando para realizar la importacion
+python manage.py import_products_csv data/productos.csv

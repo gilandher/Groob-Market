@@ -1,0 +1,6 @@
+category_slug,name,sku,description,wholesale_cost,sale_price,stock_qty,is_discountable,min_margin_percent,is_active
+tecnologia,Cargador iPhone,CARG-IP-01,,3700,30000,10,true,25,true
+tecnologia,Forro iPhone 17 Pro Max,FOR-IP17PM-01,,5000,35000,10,true,25,true
+tecnologia,Cable cargador Tipo C,CAB-TC-01,,3000,20000,10,true,25,true
+tecnologia,Vidrio blindado Xiaomi,VID-XIA-01,,1500,15000,10,false,25,true
+tecnologia,Audífonos inalámbricos,AUD-BT-01,,25000,80000,10,true,25,true
