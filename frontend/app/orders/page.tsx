@@ -10,8 +10,8 @@ interface OrderItem {
 interface Order {
   id: number; order_number: string;
   status: string; status_display: string; status_emoji: string;
-  full_name: string; email: string;
-  city: string; department: string;
+  full_name: string; email: string; phone?: string;
+  city: string; department: string; address: string;
   subtotal: number; discount_total: number; shipping_cost: number; total: number;
   coupon_code: string; coupon_discount: number;
   logistics_company: string; tracking_number: string;
@@ -21,11 +21,10 @@ interface Order {
 }
 
 const STATUS_STEPS = [
-  { key: "NEW",        emoji: "🆕", label: "Pedido\nRecibido",    color: "#6c4dff" },
+  { key: "NEW",        emoji: "🆕", label: "Pedido\nRealizado",    color: "#6c4dff" },
   { key: "CONFIRMED",  emoji: "✅", label: "Confirmado",           color: "#059669" },
   { key: "PACKING",    emoji: "📦", label: "Empacando\ncon amor", color: "#d97706" },
   { key: "ON_THE_WAY", emoji: "🛵", label: "En Camino",            color: "#2563eb" },
-  { key: "LOGISTICS",  emoji: "🚚", label: "Empresa\nLogística",   color: "#7c3aed" },
   { key: "DELIVERED",  emoji: "🎉", label: "Entregado\ncon éxito", color: "#059669" },
 ];
 
@@ -34,7 +33,7 @@ function formatCOP(v: number) {
 }
 
 function StatusTimeline({ status }: { status: string }) {
-  const steps = STATUS_STEPS.filter(s => s.key !== "LOGISTICS");
+  const steps = STATUS_STEPS;
   const currentIdx = steps.findIndex(s => s.key === status);
 
   return (
@@ -45,7 +44,6 @@ function StatusTimeline({ status }: { status: string }) {
           const current = i === currentIdx;
           return (
             <div key={step.key} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-              {/* Connector line */}
               {i < steps.length - 1 && (
                 <div style={{
                   position: "absolute", top: 18, left: "50%", width: "100%",
@@ -54,7 +52,6 @@ function StatusTimeline({ status }: { status: string }) {
                   zIndex: 0,
                 }} />
               )}
-              {/* Circle */}
               <div style={{
                 width: 36, height: 36, borderRadius: "50%", zIndex: 1,
                 background: current ? step.color : done ? "#22c55e" : "#f1f5f9",
@@ -65,7 +62,6 @@ function StatusTimeline({ status }: { status: string }) {
               }}>
                 {done ? step.emoji : <span style={{ color: "#94a3b8", fontSize: 12 }}>○</span>}
               </div>
-              {/* Label */}
               <p style={{
                 fontSize: 9, marginTop: 6, textAlign: "center", lineHeight: 1.3,
                 color: current ? step.color : done ? "#22c55e" : "#94a3b8",
@@ -82,6 +78,70 @@ function StatusTimeline({ status }: { status: string }) {
   );
 }
 
+function PDFButton({ order, type }: { order: Order; type: "prefactura" | "factura" }) {
+  const [loading, setLoading] = useState(false);
+
+  function downloadPDF() {
+    setLoading(true);
+    try {
+      const { generateOrderPDF } = require("../../lib/generatePDF");
+      generateOrderPDF(
+        {
+          id: order.id,
+          order_number: order.order_number,
+          status: order.status,
+          full_name: order.full_name,
+          email: order.email,
+          phone: order.phone,
+          city: order.city,
+          department: order.department,
+          address: order.address,
+          created_at: order.created_at,
+          items: order.items.map((it: OrderItem) => ({
+            product_name: it.product_name,
+            qty: it.qty,
+            unit_price: it.unit_price,
+            line_subtotal: it.line_subtotal,
+          })),
+          subtotal: order.subtotal,
+          discount_total: order.discount_total,
+          shipping_cost: order.shipping_cost,
+          total: order.total,
+          coupon_code: order.coupon_code,
+          coupon_discount: order.coupon_discount,
+        },
+        type
+      );
+    } catch (e) {
+      alert("Error generando el documento. Inténtalo de nuevo.");
+      console.error(e);
+    } finally {
+      setTimeout(() => setLoading(false), 800);
+    }
+  }
+
+  const isPrefactura = type === "prefactura";
+  return (
+    <button
+      onClick={downloadPDF}
+      disabled={loading}
+      style={{
+        display: "flex", alignItems: "center", gap: 6,
+        padding: "7px 14px", borderRadius: 8,
+        background: isPrefactura ? "#f5f3ff" : "linear-gradient(135deg, #6c4dff, #9b8cff)",
+        color: isPrefactura ? "#6c4dff" : "#fff",
+        fontWeight: 700, fontSize: 12, cursor: loading ? "not-allowed" : "pointer",
+        fontFamily: "'Inter', sans-serif",
+        opacity: loading ? 0.7 : 1,
+        transition: "all 0.2s",
+        border: isPrefactura ? "1px solid #ddd6fe" : "none",
+      } as React.CSSProperties}
+    >
+      {loading ? "⏳" : "📄"} {loading ? "Generando..." : isPrefactura ? "Pre-factura" : "Factura PDF"}
+    </button>
+  );
+}
+
 function OrderCard({ order }: { order: Order }) {
   const [expanded, setExpanded] = useState(false);
   const date = new Date(order.created_at).toLocaleDateString("es-CO", {
@@ -89,6 +149,7 @@ function OrderCard({ order }: { order: Order }) {
     timeZone: "America/Bogota",
   });
   const isCanceled = order.status === "CANCELED";
+  const isDelivered = order.status === "DELIVERED";
 
   return (
     <div style={{
@@ -129,21 +190,26 @@ function OrderCard({ order }: { order: Order }) {
         </div>
       )}
 
-      {/* Summary */}
+      {/* Summary row */}
       <div style={{ padding: "14px 20px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10 }}>
           <p style={{ fontSize: 13, color: "#64748b" }}>
             📦 {order.items.length} producto{order.items.length !== 1 ? "s" : ""} ·
             📍 {order.city}, {order.department}
             {order.same_day && <span style={{ color: "#22c55e", fontWeight: 700 }}> · 🛵 Mismo día</span>}
           </p>
-          <button onClick={() => setExpanded(!expanded)}
-            style={{ background: "none", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#6c4dff" }}>
-            {expanded ? "▲ Ocultar" : "▼ Ver detalle"}
-          </button>
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {/* PDF buttons */}
+            <PDFButton order={order} type="prefactura" />
+            {isDelivered && <PDFButton order={order} type="factura" />}
+            <button onClick={() => setExpanded(!expanded)}
+              style={{ background: "none", border: "1.5px solid #e2e8f0", borderRadius: 8, padding: "5px 12px", cursor: "pointer", fontSize: 12, fontWeight: 600, color: "#6c4dff" }}>
+              {expanded ? "▲ Ocultar" : "▼ Ver detalle"}
+            </button>
+          </div>
         </div>
 
-        {/* Tracking number */}
+        {/* Tracking */}
         {order.tracking_number && (
           <div style={{ marginTop: 10, background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 10, padding: "8px 12px" }}>
             <p style={{ fontSize: 12, fontWeight: 700, color: "#166534" }}>🔍 Guía: {order.tracking_number}</p>
@@ -162,13 +228,12 @@ function OrderCard({ order }: { order: Order }) {
               <span style={{ fontWeight: 700 }}>{formatCOP(it.line_subtotal)}</span>
             </div>
           ))}
-
           <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 5 }}>
-            {(([
+            {([
               ["Subtotal", formatCOP(order.subtotal)],
               order.discount_total > 0 ? [`🎁 Descuento (${order.coupon_code})`, `-${formatCOP(order.discount_total)}`] : null,
               ["Envío", order.shipping_cost === 0 ? "✅ Gratis" : formatCOP(order.shipping_cost)],
-            ].filter(Boolean)) as [string, string][]).map(([l, v]) => (
+            ].filter(Boolean) as [string, string][]).map(([l, v]) => (
               <div key={l} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "#64748b" }}>{l}</span>
                 <span style={{ fontWeight: 600 }}>{v}</span>
@@ -193,23 +258,21 @@ function OrderCard({ order }: { order: Order }) {
 
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 export default function MyOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [orders, setOrders]   = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail]     = useState("");
   const [searchEmail, setSearchEmail] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError]     = useState("");
 
   const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
 
-  async function fetchOrders(emailQuery: string) {
-    if (!emailQuery) return;
+  async function fetchOrders(emailQuery: string, token?: string) {
+    if (!emailQuery && !token) return;
     setLoading(true); setError("");
     try {
-      const token = localStorage.getItem("groob_token");
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      // Try authenticated first, then by-email
       const endpoint = token
         ? `${API}/orders/my/`
         : `${API}/orders/by-email/?email=${encodeURIComponent(emailQuery)}`;
@@ -218,7 +281,7 @@ export default function MyOrdersPage() {
       if (!res.ok) throw new Error("No se encontraron pedidos.");
       const data = await res.json();
       setOrders(data.results ?? data);
-    } catch (e) {
+    } catch {
       setError("No encontramos pedidos. Verifica el correo o inicia sesión.");
       setOrders([]);
     } finally { setLoading(false); }
@@ -226,11 +289,12 @@ export default function MyOrdersPage() {
 
   useEffect(() => {
     try {
-      const user = JSON.parse(localStorage.getItem("groob_user") || "{}");
+      const user  = JSON.parse(localStorage.getItem("groob_user") || "{}");
+      const token = localStorage.getItem("groob_token");
       if (user.email) {
         setEmail(user.email);
         setSearchEmail(user.email);
-        fetchOrders(user.email);
+        fetchOrders(user.email, token || undefined);
       } else { setLoading(false); }
     } catch { setLoading(false); }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,8 +315,21 @@ export default function MyOrdersPage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "10px 0 24px", flexWrap: "wrap", gap: 12 }}>
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 900 }}>📋 Mis Pedidos</h1>
-            <p style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>Rastrea el estado de todos tus pedidos</p>
+            <p style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>Rastrea el estado y descarga tus facturas</p>
           </div>
+          <Link href="/profile" style={{
+            fontSize: 13, fontWeight: 700, color: "#6c4dff",
+            textDecoration: "none", padding: "6px 14px", borderRadius: 8, background: "#f5f3ff",
+          }}>👤 Mi perfil</Link>
+        </div>
+
+        {/* ── Nota sobre PDFs */}
+        <div style={{
+          background: "linear-gradient(135deg, #f0fdf4, #dcfce7)",
+          border: "1px solid #86efac", borderRadius: 12, padding: "10px 16px",
+          marginBottom: 20, fontSize: 12, color: "#166534", fontWeight: 600,
+        }}>
+          📄 <strong>Pre-factura:</strong> disponible inmediatamente · <strong>Factura:</strong> disponible cuando el pedido sea marcado como entregado
         </div>
 
         {/* Email search */}

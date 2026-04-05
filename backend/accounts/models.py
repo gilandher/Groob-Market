@@ -1,8 +1,10 @@
 """
-Accounts Models — OTP Verification
+Accounts Models — OTP Verification + UserProfile
 """
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import random
 import string
 from datetime import timedelta
@@ -36,3 +38,32 @@ class EmailOTP(models.Model):
 
     def is_valid(self) -> bool:
         return not self.is_verified and timezone.now() < self.expires_at
+
+
+class UserProfile(models.Model):
+    """
+    Perfil extendido del usuario: datos de contacto y direcciones de entrega.
+    Se crea automáticamente cuando se crea un User (via signal post_save).
+    """
+    user       = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    phone      = models.CharField("Teléfono / WhatsApp", max_length=20, blank=True)
+    address    = models.CharField("Dirección principal", max_length=255, blank=True)
+    address2   = models.CharField("Segunda dirección", max_length=255, blank=True)
+    city       = models.CharField("Ciudad", max_length=64, blank=True)
+    department = models.CharField("Departamento", max_length=64, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Perfil de usuario"
+        verbose_name_plural = "Perfiles de usuario"
+
+    def __str__(self):
+        return f"Perfil de {self.user.email or self.user.username}"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Crea automáticamente el perfil cuando se crea un User."""
+    if created:
+        UserProfile.objects.get_or_create(user=instance)

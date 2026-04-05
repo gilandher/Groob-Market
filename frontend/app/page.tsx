@@ -3,7 +3,6 @@ import Link from "next/link";
 import { apiGet } from "@/lib/api";
 import type { Product } from "@/types/product";
 import HomeClient from "./HomeClient";
-import HeroCarousel from "./components/HeroCarousel";
 
 function formatCOP(value: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -34,12 +33,7 @@ export default async function HomePage() {
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>
-
-      {/* ── HERO CAROUSEL ─────────────────────────────── */}
-      <HeroCarousel />
-
-
-      {/* ── CONTENT ─────────────────────────────────── */}
+      {/* ── CONTENT (HeroCarousel is inside HomeClient, hidden on search) ── */}
       <Suspense fallback={
         <div style={{ padding: 40, textAlign: "center", color: "#64748b" }}>
           Cargando productos...

@@ -1,14 +1,14 @@
 """
-GROOB MARKET — Envios: Serializers
+GROOB MARKET — Shipping Serializers
 """
 from rest_framework import serializers
 from .models import TarifaEnvio
 
 
 class TarifaEnvioSerializer(serializers.ModelSerializer):
-    """Serializa una tarifa de envio para devolver al frontend."""
-    tipo_label = serializers.CharField(source="get_tipo_display", read_only=True)
+    zona_label = serializers.CharField(source="get_zona_display", read_only=True)
+    precio_fmt = serializers.CharField(read_only=True)
 
     class Meta:
         model  = TarifaEnvio
-        fields = ["municipio", "tipo", "tipo_label", "costo", "dias_habil"]
+        fields = ["municipio", "zona", "zona_label", "precio", "precio_fmt", "tiempo"]

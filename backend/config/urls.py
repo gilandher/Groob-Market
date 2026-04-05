@@ -33,3 +33,10 @@ urlpatterns = [
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# -----------------------------
+# PERSONALIZACIÓN DE TEXTOS ADMIN
+# -----------------------------
+admin.site.site_header = "Panel ADM de Groob Market"
+admin.site.site_title = "Admin Groob Market"
+admin.site.index_title = "Bienvenido al Panel de Control de Ventas e Inventario"

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getCart } from "../../lib/cart";
+import { getWishlist } from "../../lib/wishlist";
 import GroobLogo from "./GroobLogo";
 import AuthModal from "./AuthModal";
 
@@ -12,6 +13,7 @@ type User = { name: string; email: string } | null;
 export default function Navbar() {
   const router = useRouter();
   const [cartCount, setCartCount] = useState(0);
+  const [wishCount, setWishCount] = useState(0);
   const [searchQ, setSearchQ] = useState("");
   const [user, setUser] = useState<User>(null);
   const [showAuth, setShowAuth] = useState(false);
@@ -35,6 +37,18 @@ export default function Navbar() {
     };
   }, []);
 
+  // Wishlist sync
+  useEffect(() => {
+    function syncWish() { setWishCount(getWishlist().length); }
+    syncWish();
+    window.addEventListener("groob_wishlist_update", syncWish);
+    window.addEventListener("storage", syncWish);
+    return () => {
+      window.removeEventListener("groob_wishlist_update", syncWish);
+      window.removeEventListener("storage", syncWish);
+    };
+  }, []);
+
   // Auth sync
   useEffect(() => {
     function syncUser() {
@@ -46,6 +60,13 @@ export default function Navbar() {
     syncUser();
     window.addEventListener("groob_auth_update", syncUser);
     return () => window.removeEventListener("groob_auth_update", syncUser);
+  }, []);
+
+  // Open Auth Modal via internal Event
+  useEffect(() => {
+    const triggerAuth = () => setShowAuth(true);
+    window.addEventListener("groob_open_auth", triggerAuth);
+    return () => window.removeEventListener("groob_open_auth", triggerAuth);
   }, []);
 
   // Navbar scroll shadow
@@ -293,6 +314,43 @@ export default function Navbar() {
                   </div>
                 )}
               </div>
+
+              {/* Wishlist button */}
+              <Link
+                href="/wishlist"
+                id="btn-wishlist"
+                title="Lista de deseos"
+                style={{
+                  position: "relative", width: 40, height: 40, borderRadius: 10,
+                  background: wishCount > 0 ? "#fef2f2" : "#f8fafc",
+                  border: `1.5px solid ${wishCount > 0 ? "#fecaca" : "#e2e8f0"}`,
+                  color: wishCount > 0 ? "#ef4444" : "#374151", cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  textDecoration: "none", transition: "all 0.2s", fontSize: 18,
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.background = "#fef2f2";
+                  (e.currentTarget as HTMLElement).style.borderColor = "#fca5a5";
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.background = wishCount > 0 ? "#fef2f2" : "#f8fafc";
+                  (e.currentTarget as HTMLElement).style.borderColor = wishCount > 0 ? "#fecaca" : "#e2e8f0";
+                }}
+              >
+                {wishCount > 0 ? "❤️" : "🤍"}
+                {wishCount > 0 && (
+                  <span style={{
+                    position: "absolute", top: -6, right: -6,
+                    background: "#ef4444", color: "#fff",
+                    fontSize: 10, fontWeight: 800,
+                    width: 18, height: 18, borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    border: "2px solid #fff",
+                  }}>
+                    {wishCount > 9 ? "9+" : wishCount}
+                  </span>
+                )}
+              </Link>
 
               {/* Cart button */}
               <Link

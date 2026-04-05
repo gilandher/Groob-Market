@@ -31,9 +31,9 @@ services:
       # Las variables de entorno para que Django se conecte a Postgres
       # DATABASE_URL: postgres://groob_user:groob_password@db:5432/groob_market
       - DEBUG=1  # Puedes pasarlo a 0 en produccion
-    # Si quisieras desarrollo (Hot reload), descomenta el volume inferior:
-    # volumes:
-    #   - ./backend:/app
+    # Montamos la base de datos local para que veas tus productos inmediatamente
+    volumes:
+      - ./backend/db.sqlite3:/app/db.sqlite3
     depends_on:
       - db
 

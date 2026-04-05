@@ -7,7 +7,7 @@ from catalog.models import Product
 
 class Order(models.Model):
     class Status(models.TextChoices):
-        NEW          = "NEW",          "🆕 Recibido"
+        NEW          = "NEW",          "🆕 Pedido Realizado"
         CONFIRMED    = "CONFIRMED",    "✅ Confirmado"
         PACKING      = "PACKING",      "📦 Empacando con amor"
         ON_THE_WAY   = "ON_THE_WAY",   "🛵 En camino a ti"

@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 STATUS_META = {
     "order_created": {
         "emoji": "🛍️", "color": "#6c4dff",
-        "title": "¡Tu pedido fue recibido!",
+        "title": "¡Tu pedido fue realizado!",
         "subtitle": "Lo estamos procesando ahora mismo.",
-        "body": "Hemos recibido tu pedido y nuestro equipo lo está revisando. Te notificaremos en cada etapa.",
-        "badge_bg": "#f5f3ff", "badge_color": "#6c4dff", "badge_text": "PEDIDO RECIBIDO",
+        "body": "Hemos realizado tu pedido correctamente y nuestro equipo lo está revisando. Te notificaremos en cada etapa.",
+        "badge_bg": "#f5f3ff", "badge_color": "#6c4dff", "badge_text": "PEDIDO REALIZADO",
     },
     "order_confirmed": {
         "emoji": "✅", "color": "#059669",
@@ -84,7 +84,7 @@ def _build_invoice_rows(order) -> str:
 
 def _build_status_timeline(current_status: str) -> str:
     steps = [
-        ("NEW",        "🆕", "Recibido"),
+        ("NEW",        "🆕", "Pedido Realizado"),
         ("CONFIRMED",  "✅", "Confirmado"),
         ("PACKING",    "📦", "Empacando"),
         ("ON_THE_WAY", "🛵", "En camino"),

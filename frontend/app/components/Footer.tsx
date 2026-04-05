@@ -120,10 +120,20 @@ export default function Footer() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           flexWrap: "wrap", gap: 12,
         }}>
-          <p style={{ fontSize: 12 }}>© 2025 Groob Market. Todos los derechos reservados.</p>
+          <p style={{ fontSize: 12 }}>© 2026 Groob Market. Todos los derechos reservados.</p>
           <div style={{ display: "flex", gap: 16, fontSize: 12 }}>
-            <a href="#" style={{ color: "#64748b", textDecoration: "none" }}>Términos</a>
-            <a href="#" style={{ color: "#64748b", textDecoration: "none" }}>Privacidad</a>
+            <a href="/terms" target="_blank" rel="noreferrer" style={{ color: "#64748b", textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#9b8cff")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
+            >Términos</a>
+            <a href="/terms#datos" target="_blank" rel="noreferrer" style={{ color: "#64748b", textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#9b8cff")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
+            >Privacidad</a>
+            <a href="/terms#garantias" target="_blank" rel="noreferrer" style={{ color: "#64748b", textDecoration: "none" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#9b8cff")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
+            >Garantía</a>
             <span>Hecho con ❤️ por <span style={{ color: "#9b8cff" }}>Groob Code Technology</span></span>
           </div>
         </div>

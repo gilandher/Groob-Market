@@ -44,7 +44,7 @@ const SLIDES = [
     badge: "🚚 ENVÍOS A TODA COLOMBIA",
     title: "Comprá desde",
     highlight: "Cualquier Ciudad",
-    desc: "Valle de Aburrá recibe hoy. El resto del país en 1-3 días con Coordinadora, Envía y Servientrega.",
+    desc: "Valle de Aburrá recibe hoy. El resto del país en 2-5 días con Coordinadora, Envía y Servientrega.",
     cta: { label: "📦 Ver Catálogo", href: "#catalogo", style: "white" },
     cta2: { label: "📍 Ver ciudades", href: "/orders" },
     image: "/slide_shipping.png",

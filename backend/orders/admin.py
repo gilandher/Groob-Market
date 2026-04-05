@@ -38,6 +38,7 @@ class AdminPedido(admin.ModelAdmin):
         "estado_pago",
         "total_cop",
         "fecha_pedido",
+        "ver_detalle_btn",
     )
     list_filter = ("status", "payment_method", "payment_status", "created_at")
     search_fields = ("full_name", "phone", "address", "city")
@@ -116,3 +117,13 @@ class AdminPedido(admin.ModelAdmin):
     @admin.display(description="Fecha pedido")
     def fecha_pedido(self, obj):
         return obj.created_at.strftime("%d/%m/%Y %H:%M")
+
+    @admin.display(description="Acciones")
+    def ver_detalle_btn(self, obj):
+        """Botón UX para inspeccionar rápidamente la compra tipo factura"""
+        return format_html(
+            '<a class="btn btn-sm" href="{}/change/" '
+            'style="background-color: #6c4dff; color: white; border-radius: 5px; font-weight: bold;">'
+            '<i class="fas fa-eye"></i> Inspeccionar</a>',
+            obj.id
+        )

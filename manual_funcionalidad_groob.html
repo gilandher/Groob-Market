@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Manual de Funcionalidad - Groob Market</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #1e293b; margin: 0; padding: 0; }
+    .page { max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { background: linear-gradient(135deg, #0f172a, #334155); color: #fff; padding: 40px; border-radius: 16px; margin-bottom: 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 32px; font-weight: 900; }
+    .header p { margin: 10px 0 0; opacity: 0.8; font-size: 14px; }
+    h2 { color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-top: 30px; font-weight: 800; }
+    .module { border-left: 4px solid #6c4dff; padding-left: 20px; margin-bottom: 24px; }
+    .module h3 { margin-top: 0; margin-bottom: 8px; color: #6c4dff; font-weight: 800; font-size: 18px; }
+    .module p { margin: 0 0 10px; font-size: 13px; line-height: 1.6; color: #475569; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { padding: 0; margin: 0; width: 100%; max-width: 100%; }
+      .header { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>📘 Manual de Funcionalidad</h1>
+      <p>Guía Operativa del E-Commerce — Groob Market</p>
+    </div>
+
+    <p style="font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 30px;">
+      Groob Market es una plataforma de e-commerce completa, diseñada para maximizar la conversión en ventas a través de una interfaz de usuario atractiva y un panel administrativo robusto. A continuación, se explican sus funciones principales.
+    </p>
+
+    <h2>1. Funcionalidad para el Cliente (Experiencia de Usuario)</h2>
+    
+    <div class="module">
+      <h3>🔍 Exploración y Compra</h3>
+      <p>El cliente navega por un catálogo categorizado. Puede buscar productos utilizando una barra predictiva que ignora tildes (ej: "Audifonos" = "Audífonos"). Cada producto cuenta con insignias dinámicas, precios tachados si hay descuento e indicador de "Bajo Stock".</p>
+    </div>
+
+    <div class="module">
+      <h3>🎁 Fidelización: Wishlist y Ruleta</h3>
+      <p><strong>Favoritos (Wishlist):</strong> Los clientes pueden marcar productos con el ícono de ❤️. Esta lista persiste y es accesible en cualquier momento desde el menú superior.</p>
+      <p><strong>Ruleta de Premios:</strong> Al ingresar, el usuario ve una ruleta "Gira y Gana". Solo se permite un tiro por sesión/usuario. Si gana un descuento (ej: 10%), el código se genera automáticamente. Si el usuario no está registrado, el código se enmascara parcialmente (GROOB-****) invitándolo a crear una cuenta para reclamarlo.</p>
+    </div>
+
+    <div class="module">
+      <h3>🚚 Checkout y Cotizador de Envíos en Tiempo Real</h3>
+      <p>En el carrito de compras, el cliente ingresa su municipio. El sistema consulta instantáneamente la base de datos de <strong>Zonas de Cobertura</strong> para confirmar si llega y cuánto cuesta. Si la ciudad ingresada no está registrada, el sistema sugiere automáticamente "Cotizar por WhatsApp", abriendo el chat oficial con un mensaje pre-armado con todos los detalles del pedido.</p>
+    </div>
+
+    <div class="module">
+      <h3>📄 Gestión de Pedidos y Descarga PDF</h3>
+      <p>Los usuarios registrados acceden al portal <code>/orders</code> para seguir su producto en tiempo real mediante una <strong>Barra de Progreso Logístico</strong> (Nuevo -> Confirmado -> Empacando -> En Camino -> Entregado).</p>
+      <p>Tienen la capacidad de descargar en formato PDF:
+        <br>• <strong>Pre-factura:</strong> Para cuando el pedido apenas fue realizado.
+        <br>• <strong>Factura Comercial:</strong> Para cuando el pedido se encuentra completado, la cual viene acompañada del marco legal de garantía para compras online (Ley 1480 de 2011).
+      </p>
+    </div>
+
+
+    <h2>2. Funcionalidad para el Administrador (Operador del Negocio)</h2>
+
+    <div class="module">
+      <h3>🎮 Panel de Control Automático (Jazzmin Admin)</h3>
+      <p>El administrador accede al backend (<code>/admin</code>) desde un portal altamente visual y fácil de usar, sin necesidad de saber programar. Desde allí puede administrar todo el inventario de la tienda.</p>
+    </div>
+
+    <div class="module">
+      <h3>📦 Gestión de Tarifas de Envío sin Código</h3>
+      <p>El administrador puede ir a la sección "Tarifas de Envío" y administrar hacia dónde se envía. Puede agrupar por ejemplo "Envigado" y "Sabaneta" en la <strong>ZONA 3</strong> y asignarles un precio estricto de envío ($8.500 COP). El calculador de la web en el frontend asimilará estos cambios de forma instantánea al guardarse desde este administrador, logrando total independencia técnica.</p>
+    </div>
+
+    <div class="module">
+      <h3>📋 Procesamiento Seguro de Pedidos</h3>
+      <p>El área administrativa almacena la información vital (cuántos productos se vendieron, costo de envío, método de pago, información del usuario, etc). Una vez en el sistema, el administrador simplemente cambia el estado a (Confirmado, Despachado, etc.) y toda la plataforma (frontend) se actualiza de manera automática.</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 50px; font-size: 11px; color: #94a3b8;">
+      © 2026 Groob Market · Generado Automáticamente · Sistema Central
+    </div>
+  </div>
+
+  <script>
+    // Iniciar impresión automáticamente al abrir para guardar como PDF
+    window.onload = () => setTimeout(() => window.print(), 800);
+  </script>
+</body>
+</html>

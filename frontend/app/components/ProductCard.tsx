@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { addToCart } from "@/lib/cart";
+import { toggleWishlist, isInWishlist } from "@/lib/wishlist";
 import type { Product, Pricing } from "@/types/product";
 
 function formatCOP(n: number) {
@@ -81,9 +82,17 @@ function DiscountBadge({ pricing }: { pricing: Pricing }) {
 export function ProductCard({ product }: { product: Product }) {
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
+  const [wished, setWished] = useState(false);
   const pricing = product.pricing;
   const displayPrice = pricing?.has_discount ? pricing.final_price : product.sale_price;
   const originalPrice = pricing?.has_discount ? pricing.original_price : null;
+
+  useEffect(() => {
+    setWished(isInWishlist(product.id));
+    const sync = () => setWished(isInWishlist(product.id));
+    window.addEventListener("groob_wishlist_update", sync);
+    return () => window.removeEventListener("groob_wishlist_update", sync);
+  }, [product.id]);
 
   function handleAdd(e: React.MouseEvent) {
     e.preventDefault();
@@ -102,6 +111,19 @@ export function ProductCard({ product }: { product: Product }) {
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
     }, 600);
+  }
+
+  function handleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    const nowWished = toggleWishlist({
+      product_id: product.id,
+      name: product.name,
+      sale_price: displayPrice,
+      image_url: product.image_url ?? null,
+      category: product.category?.name,
+    });
+    setWished(nowWished);
   }
 
   return (
@@ -133,6 +155,25 @@ export function ProductCard({ product }: { product: Product }) {
         }}>
           {product.category?.name || "Tech"}
         </span>
+
+        {/* ❤️ Wishlist button — esquina inferior derecha para no tapar el descuento */}
+        <button
+          onClick={handleWishlist}
+          title={wished ? "Quitar de favoritos" : "Guardar en favoritos"}
+          style={{
+            position: "absolute", bottom: 8, right: 8, zIndex: 3,
+            width: 30, height: 30, borderRadius: "50%",
+            background: wished ? "rgba(254,242,242,0.95)" : "rgba(255,255,255,0.9)",
+            backdropFilter: "blur(4px)",
+            border: `1.5px solid ${wished ? "#fecaca" : "rgba(0,0,0,0.08)"}`,
+            cursor: "pointer", fontSize: 14,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            transition: "all 0.2s",
+            boxShadow: "0 1px 6px rgba(0,0,0,0.12)",
+          }}
+        >
+          {wished ? "❤️" : "🤍"}
+        </button>
 
         {/* Discount badge */}
         {pricing && <DiscountBadge pricing={pricing} />}

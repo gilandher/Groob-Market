@@ -7,6 +7,7 @@ import type { Product } from "@/types/product";
 import { ProductCard, ProductListItem } from "@/app/components/ProductCard";
 import SpinWheel from "@/app/components/SpinWheel";
 import { PromoBanners, PartnerBrands } from "@/app/components/PromoBanners";
+import HeroCarousel from "@/app/components/HeroCarousel";
 
 type Category = { slug: string; label: string; icon: string };
 
@@ -23,6 +24,17 @@ const SORT_OPTIONS = [
   { value: "price-desc", label: "Mayor precio" },
   { value: "name-asc", label: "A - Z" },
 ];
+
+// Normalize text: removes diacritics/tildes so 'celular' matches 'Celular', 'Télefono' matches 'telefono'
+function normalize(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // strip diacritics
+    .replace(/[áàä]/g, "a").replace(/[éèë]/g, "e")
+    .replace(/[íìï]/g, "i").replace(/[óòö]/g, "o")
+    .replace(/[úùü]/g, "u").replace(/[ñ]/g, "n");
+}
 
 export default function HomeClient({ featured, newProducts, allProducts, categories }: Props) {
   const [showSpin, setShowSpin] = useState(false);
@@ -51,10 +63,14 @@ export default function HomeClient({ featured, newProducts, allProducts, categor
     return () => window.removeEventListener("open_spin_wheel", handleOpenSpin);
   }, []);
 
-  // Filter + sort products
+  // Filter + sort products — with accent-insensitive search
+  const normalizedQ = normalize(searchQ);
   const filtered = allProducts.filter(p => {
     const matchCat = !cat || cat === "all" || p.category?.slug === cat;
-    const matchQ = !searchQ || p.name.toLowerCase().includes(searchQ.toLowerCase());
+    const matchQ = !normalizedQ ||
+      normalize(p.name).includes(normalizedQ) ||
+      normalize(p.description || "").includes(normalizedQ) ||
+      normalize(p.category?.name || "").includes(normalizedQ);
     return matchCat && matchQ;
   });
 
@@ -71,6 +87,9 @@ export default function HomeClient({ featured, newProducts, allProducts, categor
   return (
     <>
       {showSpin && <SpinWheel onClose={() => setShowSpin(false)} />}
+
+      {/* ── HERO CAROUSEL — hidden during search ── */}
+      {!searchQ && <HeroCarousel />}
 
       <div style={{ maxWidth: 1280, margin: "0 auto", padding: "28px 20px" }}>
 

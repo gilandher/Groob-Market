@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Cambios - Groob Market</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+    body { font-family: 'Inter', sans-serif; background: #fff; color: #1e293b; margin: 0; padding: 0; }
+    .page { max-width: 800px; margin: 0 auto; padding: 40px; }
+    .header { background: linear-gradient(135deg, #6c4dff, #3b28cc); color: #fff; padding: 40px; border-radius: 16px; margin-bottom: 30px; text-align: center; }
+    .header h1 { margin: 0; font-size: 32px; font-weight: 900; }
+    .header p { margin: 10px 0 0; opacity: 0.8; font-size: 14px; }
+    h2 { color: #6c4dff; border-bottom: 2px solid #e1e7ef; padding-bottom: 8px; margin-top: 30px; font-weight: 800; }
+    .module { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .module h3 { margin-top: 0; color: #0f172a; display: flex; align-items: center; gap: 8px; }
+    ul { padding-left: 20px; line-height: 1.6; color: #334155; }
+    li { margin-bottom: 8px; }
+    .tag { background: #dbeafe; color: #1d4ed8; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-left: 8px;}
+    .tag.front { background: #fdf4ff; color: #c026d3; }
+    .tag.back { background: #ecfdf5; color: #047857; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .page { padding: 0; margin: 0; width: 100%; max-width: 100%; box-shadow: none; }
+      .header { border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <h1>🚀 Registro de Cambios y Mejoras</h1>
+      <p>Reporte Técnico Oficial de Optimización — Groob Market</p>
+    </div>
+
+    <p>Este documento detalla todas las actualizaciones arquitectónicas, visuales y funcionales realizadas en la plataforma Groob Market (Frontend y Backend) para alcanzar un nivel premium y altamente escalable.</p>
+
+    <h2>1. Interfaz de Usuario y Experiencia (Frontend) <span class="tag front">Next.js + React</span></h2>
+    <div class="module">
+      <h3>🎨 Sistema de Diseño Premium</h3>
+      <ul>
+        <li>Implementación de un diseño moderno y cohesivo basado en tonos púrpura (`#6c4dff`).</li>
+        <li>Integración de tipografía <strong>Inter</strong> y efectos <em>Glassmorphism</em> (fondos translúcidos con desenfoque).</li>
+        <li>Micro-interacciones en botones y tarjetas (hover states) para una sensación de dinamismo.</li>
+        <li>Hero Carousel dinámico en el inicio con promesas de valor ("Valle de Aburrá recibe hoy").</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <h3>🛒 Experiencia de Compra</h3>
+      <ul>
+        <li><strong>Ruleta Promocional (SpinWheel):</strong> Integración de una ruleta de descuentos con protección anti-abuso (1 giro por sesión/usuario). Los códigos de descuento se enmascaran si el usuario no tiene sesión iniciada.</li>
+        <li><strong>Favoritos (Wishlist):</strong> Nuevo sistema de lista de deseos persistente, accesible desde el navbar.</li>
+        <li><strong>Checkout Inteligente:</strong> Formulario de pago rediseñado. Integración directa con el cotizador de envíos que calcula costos automáticamente al cambiar de ciudad.</li>
+        <li><strong>Facturación PDF Nativa:</strong> Generación de Prefacturas (clientes) y Facturas (compras confirmadas) directamente desde el navegador, sin dependencias inestables, incluyendo textos legales (Garantía, Habeas Data).</li>
+      </ul>
+    </div>
+
+    <h2>2. Arquitectura de Servidor (Backend) <span class="tag back">Django REST</span></h2>
+    <div class="module">
+      <h3>🚚 Módulo de Envíos Dinámicos</h3>
+      <ul>
+        <li>Migración completa de modelo de tarifas estáticas a <strong>tarifas por zonas métricas</strong>.</li>
+        <li>Creación de 6 zonas geográficas (Bello, Medellín, Valle de Aburrá, Antioquia, Nacional).</li>
+        <li>Algoritmo de búsqueda de cobertura insensible a mayúsculas y tildes.</li>
+        <li>Sistema de <em>Fallback a WhatsApp</em> si el usuario ingresa una ciudad fuera de la base de datos de cobertura automática.</li>
+      </ul>
+    </div>
+
+    <div class="module">
+      <h3>⚙️ Panel Administrativo (Admin Panel)</h3>
+      <ul>
+        <li>Rediseño total del panel admin integrado con <strong>Jazzmin</strong>.</li>
+        <li>Sobrescritura global mediante <code>admin_sidebar.css</code> usando <em>Glassmorphism</em>, columnas tipo tarjeta, sombras suaves y botones redondeados.</li>
+        <li>Tableros descriptivos en colores (badges) para estados de pedido y zonas de envío.</li>
+        <li>Corrección de configuraciones obsoletas y actualización de dependencias de Django.</li>
+      </ul>
+    </div>
+
+    <h2>3. Estabilidad y Funcionalidad</h2>
+    <div class="module">
+      <ul>
+        <li><strong>Corrección del SSR en Next.js:</strong> Resolución de problemas de hidratación modular (`canvg`) configurando correctamente el compilador Turbopack de Next.js 16.</li>
+        <li><strong>Correcciones de Serializadores:</strong> Alineación del API REST para aceptar y guardar el costo de envío directamente en la creación de facturas.</li>
+        <li><strong>Barra de Progreso (Tracking):</strong> Representación visual para el cliente con el estado exacto de su pedido ("Empacando con amor", "En camino", "Entregado").</li>
+      </ul>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; font-size: 11px; color: #94a3b8;">
+      © 2026 Groob Market · Generado Automáticamente · Sistema Central
+    </div>
+  </div>
+
+  <script>
+    // Iniciar impresión automáticamente al abrir para guardar como PDF
+    window.onload = () => setTimeout(() => window.print(), 800);
+  </script>
+</body>
+</html>

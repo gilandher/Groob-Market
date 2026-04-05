@@ -1,5 +1,5 @@
 """
-Accounts Views — Registro, OTP, Login social
+Accounts Views — Registro, OTP, Login social, Perfil, Cambio de Contraseña
 """
 import logging
 from django.contrib.auth.models import User
@@ -10,8 +10,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import EmailOTP
-from .serializers import RegisterSerializer, MeSerializer
+from .models import EmailOTP, UserProfile
+from .serializers import (
+    RegisterSerializer, MeSerializer,
+    UpdateProfileSerializer, ChangePasswordSerializer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +59,7 @@ Si no solicitaste este código, ignora este mensaje.
         <p style="color:#64748b;font-size:13px;">Válido por <strong>15 minutos</strong>. No lo compartas con nadie.</p>
       </div>
       <p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:20px;">
-        © 2025 Groob Market · Medellín, Colombia
+        © 2026 Groob Market · Medellín, Colombia
       </p>
     </div>
     """
@@ -98,20 +101,14 @@ class SendOTPView(APIView):
         if not email:
             return Response({"detail": "El correo es requerido."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if email is already verified (user exists and is_active)
-        if User.objects.filter(email=email, is_active=True).exists():
-            # Check if this user has already claimed a spin coupon or made orders
-            pass  # Allow login flow to continue
-
         otp = EmailOTP.generate(email)
         sent = send_otp_email(email, otp.code)
 
         if not sent:
-            # En desarrollo, retornamos el código directamente (para pruebas)
             if settings.DEBUG:
                 return Response({
                     "detail": "OTP generado (modo DEBUG — email no enviado).",
-                    "debug_code": otp.code,  # Solo en DEBUG
+                    "debug_code": otp.code,
                     "email": email,
                 }, status=status.HTTP_200_OK)
             return Response(
@@ -135,9 +132,9 @@ class VerifyOTPView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        email = (request.data.get("email") or "").strip().lower()
-        code = (request.data.get("code") or "").strip()
-        name = (request.data.get("name") or "").strip()
+        email    = (request.data.get("email") or "").strip().lower()
+        code     = (request.data.get("code") or "").strip()
+        name     = (request.data.get("name") or "").strip()
         password = (request.data.get("password") or "").strip()
 
         if not email or not code:
@@ -146,7 +143,6 @@ class VerifyOTPView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Find the most recent OTP for this email
         otp = EmailOTP.objects.filter(email=email, is_verified=False).order_by("-created_at").first()
 
         if not otp:
@@ -167,31 +163,37 @@ class VerifyOTPView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Mark as verified
         otp.is_verified = True
         otp.save()
 
-        # Get or create user
         user, created = User.objects.get_or_create(
             email=email,
             defaults={"username": email},
         )
         if created:
-            # Set name
             parts = name.split(" ", 1) if name else []
             user.first_name = parts[0] if parts else ""
-            user.last_name = parts[1] if len(parts) > 1 else ""
+            user.last_name  = parts[1] if len(parts) > 1 else ""
             if password:
                 user.set_password(password)
             user.is_active = True
             user.save()
+            # Ensure profile exists
+            UserProfile.objects.get_or_create(user=user)
+
+        profile = getattr(user, "profile", None)
 
         return Response({
             "detail": "¡Email verificado con éxito!",
             "user": {
-                "id": user.id,
-                "email": user.email,
-                "name": f"{user.first_name} {user.last_name}".strip() or user.username,
+                "id":         user.id,
+                "email":      user.email,
+                "name":       f"{user.first_name} {user.last_name}".strip() or user.username,
+                "phone":      profile.phone if profile else "",
+                "address":    profile.address if profile else "",
+                "address2":   profile.address2 if profile else "",
+                "city":       profile.city if profile else "",
+                "department": profile.department if profile else "",
             },
             **get_tokens_for_user(user),
         }, status=status.HTTP_200_OK)
@@ -204,3 +206,59 @@ class MeAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UpdateProfileAPIView(APIView):
+    """
+    PATCH /api/v1/auth/profile/ — Actualiza datos del perfil del usuario logueado.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        serializer = UpdateProfileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user = request.user
+
+        # Update User fields
+        if "name" in data and data["name"]:
+            parts = data["name"].split(" ", 1)
+            user.first_name = parts[0]
+            user.last_name  = parts[1] if len(parts) > 1 else ""
+            user.save(update_fields=["first_name", "last_name"])
+
+        # Update or create UserProfile
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        for field in ["phone", "address", "address2", "city", "department"]:
+            if field in data:
+                setattr(profile, field, data[field])
+        profile.save()
+
+        return Response({
+            "detail": "Perfil actualizado correctamente.",
+            "user": MeSerializer(user).data,
+        })
+
+
+class ChangePasswordAPIView(APIView):
+    """
+    POST /api/v1/auth/change-password/ — Cambia la contraseña del usuario.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        user = request.user
+
+        if not user.check_password(data["current_password"]):
+            return Response(
+                {"detail": "La contraseña actual es incorrecta."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.set_password(data["new_password"])
+        user.save()
+
+        return Response({"detail": "Contraseña actualizada correctamente."})

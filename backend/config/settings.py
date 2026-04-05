@@ -25,6 +25,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 # APPS
 # -----------------------------
 INSTALLED_APPS = [
+    "jazzmin", # Tema Dashboard moderno (debe ser el 1ro de la lista)
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -70,7 +71,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -122,6 +123,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -176,4 +178,80 @@ WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "573011963515")
 SITE_URL = os.getenv("SITE_URL", "http://localhost:3000")
 GROOB_FLASH_SALE_ACTIVE = os.getenv("GROOB_FLASH_SALE_ACTIVE", "False") == "True"
 GROOB_FLASH_SALE_PCT = int(os.getenv("GROOB_FLASH_SALE_PCT", "15"))
-
+
+# ─── CONFIGURACION DE UI JAZZMIN (DASHBOARD) ──────────────────────────────────
+JAZZMIN_SETTINGS = {
+    # Títulos
+    "site_title": "Admin Groob Market",
+    "site_header": "Groob Market",
+    "site_brand": "Groob Market ADM",
+    "welcome_sign": "Bienvenido al Panel de Groob Market",
+    
+    # Textos bajo perfil (Opcional, busca marca de copyright)
+    "copyright": "Groob Market Inc",
+
+    # Búsqueda global (Por usuarios o lo que requiera cada app)
+    "search_model": ["auth.User", "catalog.Producto", "orders.Order"],
+
+    # Ordenar los menús del más importante (Pedidos) al menos (Auth)
+    "order_with_respect_to": ["orders", "catalog", "promotions", "inventory", "shipping", "reviews", "auth"],
+
+    # Habilitar hoja de estilos personalizada (Glassmorphism & Brand Theme)
+    "custom_css": "css/admin_sidebar.css",
+
+    # Iconos totales para todas las carpetas y subelementos usando FontAwesome
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        
+        "catalog": "fas fa-store",
+        "catalog.Producto": "fas fa-box-open",
+        "catalog.Categoria": "fas fa-tags",
+        
+        "orders": "fas fa-shopping-cart",
+        "orders.Order": "fas fa-shopping-bag",
+        
+        "inventory": "fas fa-boxes",
+        "inventory.MovimientoInventario": "fas fa-pallet",
+        
+        "promotions": "fas fa-bullseye",
+        "promotions.Coupon": "fas fa-ticket-alt",
+        "promotions.SpinWheelItem": "fas fa-dharmachakra",
+        
+        "reviews": "fas fa-star-half-alt",
+        "reviews.Review": "fas fa-comments",
+        
+        "shipping": "fas fa-shipping-fast",
+        "shipping.TarifaEnvio": "fas fa-route",
+    },
+    # Ocultar apps o modelos (ej: hide_models)
+    "hide_apps": [],
+
+    # Tweaks al diseño (Oscuro por defecto para verse más pro)
+    "show_ui_builder": False, # Si es True puedes jugar con colores en la interfaz tú mismo
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "darkly",      # 'darkly' es un tema oscuro súper elegante que combina con NextJS
+    "dark_mode_theme": "darkly",
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-dark",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+}

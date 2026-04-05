@@ -57,7 +57,6 @@ class Product(models.Model):
         return f"{self.name} ({self.sku})"
     
 
-
     def clean(self):
         """
         Validaciones de negocio para evitar datos malos en el admin:

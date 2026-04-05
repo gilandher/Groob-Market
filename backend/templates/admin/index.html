@@ -1,0 +1,380 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin dashboard_tags %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %} {% trans 'Business Intelligence' %} {% endblock %}
+
+{% block breadcrumbs %}
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+        <li class="breadcrumb-item">{% trans 'Dashboard Gerencial' %}</li>
+    </ol>
+{% endblock %}
+
+{% block content %}
+    <!-- CDN de Librerías -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% get_dashboard_stats as stats %}
+    <style>
+        .groob-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+        .groob-metric-card {
+            border-radius: 12px;
+            padding: 22px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .groob-metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.25);
+        }
+        /* Icono de fondo en marca de agua */
+        .groob-metric-card i.watermark {
+            position: absolute;
+            right: -10px;
+            bottom: -15px;
+            font-size: 90px;
+            opacity: 0.15;
+            z-index: 0;
+            transform: rotate(-10deg);
+        }
+        .groob-metric-card h3 {
+            margin: 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            font-weight: 800;
+            position: relative;
+            z-index: 1;
+        }
+        .groob-metric-card h2 {
+            margin: 8px 0 0 0;
+            font-size: 28px;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Paleta Premium (Efecto Glass/Gradients) */
+        .card-purple { background: linear-gradient(135deg, rgba(108, 77, 255, 0.9), rgba(155, 140, 255, 0.9)); }
+        .card-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(52, 211, 153, 0.9)); }
+        .card-orange { background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(251, 191, 36, 0.9)); }
+        .card-red { background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(248, 113, 113, 0.9)); }
+        .card-gray { background: linear-gradient(135deg, rgba(71, 85, 105, 0.9), rgba(100, 116, 139, 0.9)); }
+        
+        /* Paneles Secundarios (Darkly Integración) */
+        .groob-panel {
+            background: #252830;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin-bottom: 25px;
+            height: 100%;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+        }
+        .groob-panel h4 {
+            color: #e0e7ff !important;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+        .table td, .table th {
+            color: #cfd8dc;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* Ajuste para tema oscuro si Jazzmin está en Darkly */
+        body.dark-mode .groob-panel {
+            background: #252830;
+            color: #fff;
+            border: 1px solid #454d55;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+    </style>
+
+    <!-- FILA 1: TARJETAS DE MÉTRICAS -->
+    <div class="groob-metrics-grid">
+        <div class="groob-metric-card card-purple">
+            <i class="fas fa-coins watermark"></i>
+            <h3>Ventas Trimestrales</h3>
+            <h2>{{ stats.total_sales }}</h2>
+        </div>
+        <div class="groob-metric-card card-green">
+            <i class="fas fa-chart-line watermark"></i>
+            <h3>Ganancia Bruta</h3>
+            <h2>{{ stats.profit }}</h2>
+        </div>
+        <div class="groob-metric-card {% if stats.active_count > 10 %}card-orange{% else %}card-green{% endif %}">
+            <i class="fas fa-shipping-fast watermark"></i>
+            <h3>Pedidos en Proceso</h3>
+            <h2>{{ stats.active_count }}</h2>
+        </div>
+        <div class="groob-metric-card {% if stats.out_of_stock_count > 0 %}card-red{% else %}card-green{% endif %}">
+            <i class="fas fa-exclamation-triangle watermark"></i>
+            <h3>Riesgo Stock (Agotados)</h3>
+            <h2>{{ stats.out_of_stock_count }}</h2>
+        </div>
+    </div>
+
+    <!-- FILA 2: GRÁFICO Y TOP PRODUCTOS -->
+    <div class="row">
+        <!-- Gráfico de Tendencia -->
+        <div class="col-lg-7 col-12 mb-4">
+            <div class="groob-panel">
+                <h4 style="font-weight: 800; font-size:16px; margin-bottom: 15px;">
+                    <i class="fas fa-chart-area mr-2"></i> Tendencia de Ventas Brutas (Últimos 7 días)
+                </h4>
+                <div style="position: relative; height:280px; width:100%;">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top 5 Productos -->
+        <div class="col-lg-5 col-12 mb-4">
+            <div class="groob-panel">
+                <h4 style="font-weight: 800; font-size:16px; margin-bottom: 15px;">
+                    <i class="fas fa-trophy mr-2" style="color:#fbbf24;"></i> Top 5 Productos Estrella
+                </h4>
+                {% if stats.top_products %}
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Producto</th>
+                                <th class="text-center">Cant.</th>
+                                <th class="text-right">Ingresos</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tp in stats.top_products %}
+                            <tr>
+                                <td style="font-weight:bold; color:var(--info);">{{ forloop.counter }}</td>
+                                <td>
+                                    <strong>{{ tp.name }}</strong><br>
+                                    <small class="text-muted">SKU: {{ tp.sku }}</small>
+                                </td>
+                                <td class="text-center">{{ tp.qty }}</td>
+                                <td class="text-right font-weight-bold">{{ tp.revenue_fmt }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="alert alert-info text-center mt-4">
+                    Sin ventas registradas para generar un ranking aún. ¡Vamos a vender!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- INYECCIÓN SEGURA DE DATOS JSON PARA CHART.JS -->
+    {{ stats.chart_labels|json_script:"chartLabelsData" }}
+    {{ stats.chart_data|json_script:"chartDataVals" }}
+
+    <!-- SCRIPT DEL GRÁFICO (CHART.JS) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Recibir la data leyendo el DOM (Evita errores del linter de VS Code)
+            var chartLabels = JSON.parse(document.getElementById('chartLabelsData').textContent);
+            var chartData = JSON.parse(document.getElementById('chartDataVals').textContent);
+            
+            // Detección base si Jazzmin está en modo oscuro para los textos:
+            var isDarkMode = document.body.classList.contains('dark-mode');
+            var textColor = isDarkMode ? '#cfd8dc' : '#475569';
+            var gridColor = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+
+            // Gradiente morado brillante para la línea
+            var gradient = ctx.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(108, 77, 255, 0.4)');
+            gradient.addColorStop(1, 'rgba(108, 77, 255, 0)');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartLabels,
+                    datasets: [{
+                        label: 'Ventas Diarias (COP)',
+                        data: chartData,
+                        borderColor: '#6c4dff',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6c4dff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4 // Hace la curva suave
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: {family: 'Inter', weight: 600} }
+                        },
+                        y: {
+                            border: { display: false },
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: textColor,
+                                font: {family: 'Inter'},
+                                callback: function(value) {
+                                    if(value === 0) return "$0";
+                                    return "$" + (value/1000).toLocaleString() + "K";
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+
+    <!-- ============================================================== -->
+    <!-- CONTENIDO ORIGINAL DE JAZZMIN (App list y Acciones Recientes)  -->
+    <!-- ============================================================== -->
+    {% get_side_menu using="app_list" as dashboard_list %}
+    {% if dashboard_list %}
+        {% widthratio dashboard_list|length 2 1 as middle %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-9 col-12">
+            <div class="row">
+                <div class="col-md-6 col-sm-12">
+                    {% for app in dashboard_list %}
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="m-0">{{ app.name }}</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-sm">
+                                    <tbody>
+                                    {% for model in app.models %}
+                                        <tr>
+                                            <td>
+                                                {% if model.url %}<a href="{{ model.url }}">{{ model.name }}</a>{% else %}{{ model.name }}{% endif %}
+                                            </td>
+                                            <td>
+                                                <div class="btn-group float-end">
+                                                    {% if model.add_url %}
+                                                        <a href="{{ model.add_url }}" class="btn btn-sm {{ jazzmin_ui.button_classes.success }} addlink">{% trans 'Add' %}</a>
+                                                    {% endif %}
+                                                    {% if model.url %}
+                                                        {% if model.view_only %}
+                                                            <a href="{{ model.url }}" class="btn btn-sm {{ jazzmin_ui.button_classes.info }} viewlink">{% trans 'View' %}</a>
+                                                        {% else %}
+                                                            <a href="{{ model.url }}" class="btn btn-sm {{ jazzmin_ui.button_classes.info }} changelink">{% if model.custom %}{% trans 'Go' %}{% else %}{% trans 'Change' %}{% endif %}</a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {% if forloop.counter == middle|add:"0" %}
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                        {% endif %}
+
+                    {% endfor %}
+                    </div>
+            </div>
+
+        </div>
+        <div class="col-lg-3 col-12">
+            <div id="content-related">
+                <div class="module" id="recent-actions-module">
+                    <h4 class="mb-3">{% trans 'Recent actions' %}</h4>
+                    {% load log %}
+                    {% get_admin_log 6 as admin_log for_user user %}
+                    {% if not admin_log %}
+                        <p>{% trans 'None available' %}</p>
+                    {% else %}
+                        <div class="timeline">
+                            {% for entry in admin_log %}
+                                <div>
+                                    {% if entry.is_change %}
+                                        <i class="fas fa-edit bg-gray text-xs"></i>
+                                    {% elif entry.is_deletion %}
+                                        <i class="fas fa-trash bg-danger text-xs"></i>
+                                    {% elif entry.is_addition %}
+                                        <i class="fas fa-plus-circle bg-success text-xs"></i>
+                                    {% endif %}
+
+                                    <div class="timeline-item">
+                                        <span class="time"><i class="fas fa-clock"></i> {% blocktrans with timesince=entry.action_time|timesince %}{{ timesince }} ago{% endblocktrans %}</span>
+                                        <h3 class="timeline-header no-border">
+                                            {% if entry.is_deletion or not entry.get_admin_url %}
+                                                {{ entry.object_repr }}
+                                            {% else %}
+                                                <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                            {% endif %}
+
+                                            {% if entry.model %}
+                                                <span class="mini quiet">
+                                                    {% filter capfirst %}
+                                                        {{ entry.model }}
+                                                    {% endfilter %}
+                                                </span>
+                                            {% endif %}
+                                        </h3>
+                                        {% if not entry.is_deletion %}
+                                            <div class="timeline-body">
+                                                {% if entry.is_addition %}
+                                                    {{ entry }}
+                                                {% else %}
+                                                    <ul style="list-style: none; padding: 0;">
+                                                        {% action_message_to_list entry as action_message_list %}
+                                                        {% for action_message in action_message_list %}
+                                                            <li>{{ action_message.msg|style_bold_first_word }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div>
+                                <i class="fa fa-clock bg-gray"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
