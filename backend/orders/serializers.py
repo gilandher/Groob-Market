@@ -48,81 +48,28 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+        from .services import create_customer_order
+
         items_data = validated_data.pop("items")
-        coupon_discount = validated_data.get("coupon_discount", 0)
+        coupon_code = validated_data.pop("coupon_code", None)
+        validated_data.pop("coupon_discount", None)
 
-        order = Order.objects.create(
-            **validated_data,
-            subtotal=0, shipping_cost=0, discount_total=0, total=0,
+        # En Django REST Framework, si llamas `serializer.save(user=request.user)`, 
+        # `user` se inyecta mágicamente dentro de validated_data
+        user = validated_data.pop("user", None)
+        
+        # En caso de que no venga por kwargs pero esté en el context de la request
+        if not user and self.context.get("request"):
+            req_user = self.context["request"].user
+            if req_user.is_authenticated:
+                user = req_user
+
+        return create_customer_order(
+            user=user,
+            order_data=validated_data,
+            items_data=items_data,
+            coupon_code=coupon_code
         )
-
-        subtotal = 0
-
-        for item_data in items_data:
-            try:
-                product = Product.objects.get(id=item_data["product_id"])
-            except Product.DoesNotExist:
-                raise serializers.ValidationError(f"Producto #{item_data['product_id']} no encontrado.")
-
-            if not product.is_active:
-                raise serializers.ValidationError(f"Producto '{product.name}' no disponible.")
-
-            if product.stock_qty < item_data["qty"]:
-                raise serializers.ValidationError(
-                    f"Stock insuficiente para {product.name}. Disponible: {product.stock_qty}"
-                )
-
-            qty          = item_data["qty"]
-            unit_price   = product.sale_price
-            line_subtotal = unit_price * qty
-
-            OrderItem.objects.create(
-                order=order,
-                product=product,
-                qty=qty,
-                unit_price=unit_price,
-                unit_cost=product.wholesale_cost,
-                line_subtotal=line_subtotal,
-                product_name=product.name,
-                product_sku=product.sku,
-            )
-
-            # Descontar stock
-            product.stock_qty -= qty
-            product.save(update_fields=["stock_qty"])
-
-            # Historial de inventario
-            InventoryMovement.objects.create(
-                product=product,
-                movement_type=InventoryMovement.Type.OUT,
-                qty=qty,
-                unit_cost=product.wholesale_cost,
-                note=f"Venta — Pedido #{order.order_number}",
-            )
-
-            subtotal += line_subtotal
-
-        # ── Calcular totales ──────────────────────────────────────────────────
-        discount_amount = round(subtotal * coupon_discount / 100) if coupon_discount else 0
-
-        # Determinar costo de envío según ciudad
-        if order.is_same_day_delivery():
-            shipping = 0
-            order.logistics_company = Order.LogisticsCompany.OWN
-        else:
-            # Nacional: costo base — se coordinará con la empresa logística
-            shipping = 0  # Se confirma por WhatsApp
-            order.logistics_company = Order.LogisticsCompany.COORDINADORA
-
-        order.subtotal       = subtotal
-        order.discount_total = discount_amount
-        order.shipping_cost  = shipping
-        order.total          = subtotal - discount_amount + shipping
-        order.save(update_fields=[
-            "subtotal", "discount_total", "shipping_cost", "total", "logistics_company"
-        ])
-
-        return order
 
 
 # ─── Detail serializers ───────────────────────────────────────────────────────

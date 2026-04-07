@@ -1,0 +1,1790 @@
+[
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$JOc3ikDDTTprl4rlZUtNh4$lHgFVZ3x+xDjGV9EaSzHEvFUN1SpbH96ForGGhnyxqE=",
+        "last_login": "2026-03-20T16:45:25.466Z",
+        "is_superuser": true,
+        "username": "admingroob",
+        "first_name": "",
+        "last_name": "",
+        "email": "groob-market@gmail.com",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2026-03-04T20:15:45.676Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$8Yu0Jasv1HWk4yyd8tXsPz$CxFiRRMG+uRgV0U1rMKQV0HC4vVyNrM9OmJu6w/frKo=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "cliente1",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-18T16:04:41.734Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$SlnlZldJKBY6K4ENpfJZjf$JkID+hMfazQbo4IQ4Tlhmx7Dg4XZTcagAPho6M4Ret4=",
+        "last_login": "2026-03-24T00:46:21Z",
+        "is_superuser": false,
+        "username": "clienteP",
+        "first_name": "Gilberto Andres",
+        "last_name": "Hernandez Inciarte",
+        "email": "giland.developer@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-23T23:23:09Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$4LkkCVNUHLbzwo55ottgUG$sKz8KF02fxzBRSe/o6vCsPlxJcWWzZK0qx19LtKIepk=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "giland.developer@gmail.com",
+        "first_name": "",
+        "last_name": "",
+        "email": "",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-26T14:26:09.655Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "auth.user",
+    "fields": {
+        "password": "pbkdf2_sha256$1200000$SvuhYdpsczlkugHVGVzkkE$iIs2D4bVUQGMN6ONl2vPaXzEKzs46ZrfXFHWiWKXODg=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "andersonblandon8@gmail.com",
+        "first_name": "Anderson",
+        "last_name": "",
+        "email": "andersonblandon8@gmail.com",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2026-03-31T23:26:45.017Z",
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "dbjwl8lnsd6kno329d7fmrxsrx8x5ar7",
+    "fields": {
+        "session_data": ".eJxVjDkOwjAQAP-yNbJs42tT0ucN0a69xgGUSDkqxN9RpBTQzozmDQPtWxv2VZZhLNCBgcsvY8pPmQ5RHjTdZ5XnaVtGVkeiTruqfi7yup3t36DR2qCDGKoJnpMk9NrrXFmqQ-fQONIlWubAmJGq1oJ8dTlr8pYcpWiTlACfL-AwOAg:1w4pZt:P8CGta264LH7rmye36y6bRmjG49p2Jaq1S61rHRTlPQ",
+        "expire_date": "2026-04-07T00:25:01.726Z"
+    }
+},
+{
+    "model": "sessions.session",
+    "pk": "e9dld4xdwjaxj671hz6qjwiynzm78gqf",
+    "fields": {
+        "session_data": ".eJxVjDkOwjAQAP-yNbJs42tT0ucN0a69xgGUSDkqxN9RpBTQzozmDQPtWxv2VZZhLNCBgcsvY8pPmQ5RHjTdZ5XnaVtGVkeiTruqfi7yup3t36DR2qCDGKoJnpMk9NrrXFmqQ-fQONIlWubAmJGq1oJ8dTlr8pYcpWiTlACfL-AwOAg:1vy0eL:23JCdT1-MeJEAK2awPtpkKHST7leGmglflLJjkhTT1g",
+        "expire_date": "2026-03-19T04:49:25.783Z"
+    }
+},
+{
+    "model": "accounts.emailotp",
+    "pk": 1,
+    "fields": {
+        "email": "test@example.com",
+        "code": "849158",
+        "is_verified": false,
+        "created_at": "2026-03-26T20:13:36.390Z",
+        "expires_at": "2026-03-26T20:28:36.390Z"
+    }
+},
+{
+    "model": "accounts.emailotp",
+    "pk": 3,
+    "fields": {
+        "email": "giland.developer@gmail.com",
+        "code": "222102",
+        "is_verified": true,
+        "created_at": "2026-03-26T23:47:37.834Z",
+        "expires_at": "2026-03-27T00:02:37.832Z"
+    }
+},
+{
+    "model": "accounts.emailotp",
+    "pk": 4,
+    "fields": {
+        "email": "andersonblandon8@gmail.com",
+        "code": "183564",
+        "is_verified": true,
+        "created_at": "2026-03-31T23:26:22.805Z",
+        "expires_at": "2026-03-31T23:41:22.796Z"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+        "name": "Tecnología",
+        "slug": "tecnologia",
+        "is_active": true,
+        "is_visible": true
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+        "name": "Celulares y accesorios",
+        "slug": "celulares",
+        "is_active": true,
+        "is_visible": true
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+        "name": "Hogar",
+        "slug": "hogar",
+        "is_active": true,
+        "is_visible": true
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 4,
+    "fields": {
+        "name": "Moda",
+        "slug": "moda",
+        "is_active": true,
+        "is_visible": true
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 5,
+    "fields": {
+        "name": "Belleza",
+        "slug": "belleza",
+        "is_active": true,
+        "is_visible": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "category": 1,
+        "name": "Cargador iPhone",
+        "sku": "CARG-IP-01",
+        "description": "¡Energía en minutos, no en horas!\r\nOptimiza el tiempo de carga de tu iPhone con nuestro Adaptador de Corriente USB-C de 20W. Diseñado para ofrecer una carga rápida, segura y eficiente, este cargador es el complemento perfecto para tu estilo de vida activo.\r\n\r\nCaracterísticas Principales:\r\n\r\nCarga Rápida de 20W: Carga tu iPhone hasta un 50% de batería en aproximadamente 30 minutos (modelos iPhone 8 en adelante).\r\nConectividad USB-C: Compatible con cables USB-C a Lightning o USB-C a USB-C, permitiendo una transferencia de energía superior.\r\nDiseño Compacto: Ligero y portátil, ideal para llevar en tu bolso, mochila o usar en la oficina.\r\nCalidad Garantizada: Adaptador con certificación de seguridad para proteger tu dispositivo contra sobrecargas y sobrecalentamiento.",
+        "image": "products/prueba-1.jpg",
+        "wholesale_cost": 3700,
+        "sale_price": 30000,
+        "stock_qty": 5,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 2,
+    "fields": {
+        "category": 1,
+        "name": "Forro iPhone 17 Pro Max",
+        "sku": "FOR-IP17PM-01",
+        "description": "",
+        "image": "products/prueba-1_JjgNKFj.jpg",
+        "wholesale_cost": 5000,
+        "sale_price": 35000,
+        "stock_qty": 4,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+        "category": 1,
+        "name": "Cable cargador Tipo C",
+        "sku": "CAB-TC-01",
+        "description": "",
+        "image": "products/prueba-1_XBZCwDg.jpg",
+        "wholesale_cost": 3000,
+        "sale_price": 20000,
+        "stock_qty": 4,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "category": 1,
+        "name": "Vidrio blindado Xiaomi",
+        "sku": "VID-XIA-01",
+        "description": "",
+        "image": "products/prueba-1_aerXZC8.jpg",
+        "wholesale_cost": 1500,
+        "sale_price": 15000,
+        "stock_qty": 7,
+        "is_discountable": false,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 5,
+    "fields": {
+        "category": 1,
+        "name": "Audífonos inalámbricos",
+        "sku": "AUD-BT-01",
+        "description": "",
+        "image": "products/prueba-1_gb82iM9.jpg",
+        "wholesale_cost": 25000,
+        "sale_price": 80000,
+        "stock_qty": 9,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 6,
+    "fields": {
+        "category": 1,
+        "name": "Cargador iPhone 20W USB-C Original",
+        "sku": "CARG-IP-20W",
+        "description": "Cargador rápido compatible con iPhone 12, 13, 14, 15 Pro Max. Carga hasta un 50% en 30 minutos. Cable USB-C incluido.",
+        "image": "products/carg-ip-20w.jpg",
+        "wholesale_cost": 12000,
+        "sale_price": 35000,
+        "stock_qty": 45,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 7,
+    "fields": {
+        "category": 1,
+        "name": "Audífonos Bluetooth TWS Pro Max",
+        "sku": "AUD-BT-TWS01",
+        "description": "Verdaderos audífonos inalámbricos con cancelación activa de ruido, 30 horas de batería, resistencia al agua IPX5. Sonido HiFi y bajos potentes.",
+        "image": "products/aud-bt-tws01.jpg",
+        "wholesale_cost": 25000,
+        "sale_price": 79000,
+        "stock_qty": 30,
+        "is_discountable": true,
+        "min_margin_percent": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 8,
+    "fields": {
+        "category": 1,
+        "name": "Cable de Carga Tipo C (2m Trenzado)",
+        "sku": "CAB-TC-2M",
+        "description": "Cable USB-C a USB-C trenzado de nylon, carga rápida 65W, transferencia de datos 10Gbps. Compatible con Samsung, Huawei, Xiaomi, MacBook.",
+        "image": "products/cab-tc-2m.jpg",
+        "wholesale_cost": 5000,
+        "sale_price": 20000,
+        "stock_qty": 120,
+        "is_discountable": true,
+        "min_margin_percent": 20,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 9,
+    "fields": {
+        "category": 1,
+        "name": "SmartWatch Fitness Pro Serie 8",
+        "sku": "SWT-FIT-S8",
+        "description": "Reloj inteligente con monitor de frecuencia cardíaca, SpO2, GPS, 150+ modos deportivos. Pantalla AMOLED 1.9\" y batería de 7 días. Compatible iOS y Android.",
+        "image": "products/swt-fit-s8.jpg",
+        "wholesale_cost": 45000,
+        "sale_price": 149000,
+        "stock_qty": 18,
+        "is_discountable": true,
+        "min_margin_percent": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 10,
+    "fields": {
+        "category": 1,
+        "name": "Teclado Mecánico Gaming RGB",
+        "sku": "TEC-MECA-RGB",
+        "description": "Teclado mecánico TKL con switches Blue, retroiluminación RGB programable por tecla, anti-ghosting 100% y palm rest magnético incluido.",
+        "image": "products/tec-meca-rgb.jpg",
+        "wholesale_cost": 55000,
+        "sale_price": 159000,
+        "stock_qty": 12,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 11,
+    "fields": {
+        "category": 1,
+        "name": "Mouse Inalámbrico Silencioso Ergonómico",
+        "sku": "MOU-INAL-ERG",
+        "description": "Mouse vertical ergonómico 2.4GHz + Bluetooth, 4000 DPI ajustable, clic silencioso, batería recargable USB-C de larga duración. Reduce la fatiga en la muñeca.",
+        "image": "products/mou-inal-erg.jpg",
+        "wholesale_cost": 18000,
+        "sale_price": 55000,
+        "stock_qty": 25,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 12,
+    "fields": {
+        "category": 1,
+        "name": "Hub USB-C 7 en 1 (HDMI 4K + SD + USB)",
+        "sku": "HUB-UC-7IN1",
+        "description": "Estación de acoplamiento USB-C con salida HDMI 4K@60Hz, 3× USB 3.0, lector SD/MicroSD, USB-C PD 100W, Ethernet Gigabit. Diseño aluminio ultradelgado.",
+        "image": "products/hub-uc-7in1.jpg",
+        "wholesale_cost": 28000,
+        "sale_price": 85000,
+        "stock_qty": 20,
+        "is_discountable": true,
+        "min_margin_percent": 28,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 13,
+    "fields": {
+        "category": 1,
+        "name": "Soporte Laptop Ajustable Aluminio",
+        "sku": "SOP-LAP-ALU",
+        "description": "Soporte ergonómico para portátil, 6 niveles de altura, plegable y portátil, compatible con laptops de 10\"-17\". Mejora la postura y ventilación.",
+        "image": "products/sop-lap-alu.jpg",
+        "wholesale_cost": 15000,
+        "sale_price": 45000,
+        "stock_qty": 35,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 14,
+    "fields": {
+        "category": 2,
+        "name": "Forro iPhone 15 Pro Max MagSafe Militar",
+        "sku": "FOR-IP15PM-MAG",
+        "description": "Funda ultra resistente certificada militar MIL-STD-810G, compatible MagSafe, bordes de parachoques TPU suave, protección cámara elevada.",
+        "image": "products/for-ip15pm-mag.jpg",
+        "wholesale_cost": 8000,
+        "sale_price": 35000,
+        "stock_qty": 60,
+        "is_discountable": true,
+        "min_margin_percent": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 15,
+    "fields": {
+        "category": 2,
+        "name": "Vidrio Templado iPhone 15 Pro (Pack 3)",
+        "sku": "VID-IP15P-3PK",
+        "description": "Protector de pantalla vidrio templado 9H, anti-luz azul, instalación sin burbujas con marco guía incluido. Pack de 3 unidades.",
+        "image": "products/vid-ip15p-3pk.jpg",
+        "wholesale_cost": 4000,
+        "sale_price": 18000,
+        "stock_qty": 80,
+        "is_discountable": true,
+        "min_margin_percent": 20,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 16,
+    "fields": {
+        "category": 2,
+        "name": "Cargador Inalámbrico MagSafe 15W",
+        "sku": "CARG-MAG-15W",
+        "description": "Cargador inalámbrico magnético 15W para iPhone 12/13/14/15, compatible con Apple Watch y AirPods. LED indicador, cable USB-C 1m incluido.",
+        "image": "",
+        "wholesale_cost": 14000,
+        "sale_price": 45000,
+        "stock_qty": 40,
+        "is_discountable": true,
+        "min_margin_percent": 28,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 17,
+    "fields": {
+        "category": 2,
+        "name": "Soporte Celular para Auto Magnético",
+        "sku": "SOP-CEL-MAG",
+        "description": "Soporte vehicular magnético 360° para rejilla de ventilación, compatible con todos los celulares incluyendo iPhone y Samsung. Imán N52 ultrafuerte.",
+        "image": "products/sop-cel-mag.jpg",
+        "wholesale_cost": 7000,
+        "sale_price": 25000,
+        "stock_qty": 55,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 18,
+    "fields": {
+        "category": 2,
+        "name": "Batería Portátil 20000mAh Carga Rápida",
+        "sku": "BAT-PORT-20K",
+        "description": "Power bank 20000mAh con carga rápida 22.5W, 4 salidas (2× USB-A + USB-C + Micro), pantalla LED de nivel de batería, carga inalámbrica 10W.",
+        "image": "",
+        "wholesale_cost": 30000,
+        "sale_price": 89000,
+        "stock_qty": 22,
+        "is_discountable": true,
+        "min_margin_percent": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 19,
+    "fields": {
+        "category": 2,
+        "name": "Audífonos Correa para Cuello Deportivos",
+        "sku": "AUD-NECK-DEP",
+        "description": "Auriculares neckband Bluetooth 5.3, 15 horas de reproducción, resistente al sudor IPX7, micrófono CVC 8.0 para llamadas HD. Ideales para ejercicio.",
+        "image": "products/aud-neck-dep.jpg",
+        "wholesale_cost": 16000,
+        "sale_price": 52000,
+        "stock_qty": 28,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 20,
+    "fields": {
+        "category": 3,
+        "name": "Bombillo LED Inteligente RGB WiFi",
+        "sku": "BOMB-LED-RGB",
+        "description": "Bombillo inteligente 10W, 16 millones de colores, control por voz (Alexa/Google), programable por app. Compatible con E27. Sin hub necesario.",
+        "image": "products/bomb-led-rgb.jpg",
+        "wholesale_cost": 12000,
+        "sale_price": 38000,
+        "stock_qty": 45,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 21,
+    "fields": {
+        "category": 3,
+        "name": "Enchufe Inteligente WiFi con Monitor de Energía",
+        "sku": "ENCH-WIFI-MON",
+        "description": "Smart plug con monitoreo de consumo eléctrico en tiempo real, temporizador, control remoto por app. Compatible con Alexa, Google Home y Apple HomeKit.",
+        "image": "",
+        "wholesale_cost": 15000,
+        "sale_price": 45000,
+        "stock_qty": 30,
+        "is_discountable": true,
+        "min_margin_percent": 25,
+        "is_active": true
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 22,
+    "fields": {
+        "category": 4,
+        "name": "Mochila Antiguas Laptop 15.6\" Impermeable",
+        "sku": "MOC-ANTI-15",
+        "description": "Mochila urbana resistente al agua con puerto USB de carga externo, compartimento acolchado para laptop 15.6\", espacio organizador expandible.",
+        "image": "products/moc-anti-15.jpg",
+        "wholesale_cost": 35000,
+        "sale_price": 99000,
+        "stock_qty": 15,
+        "is_discountable": true,
+        "min_margin_percent": 30,
+        "is_active": true
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 1,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Quitasol, Bello",
+        "address2": "",
+        "notes": "Entregar hoy por favor",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 0,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 0,
+        "created_at": "2026-03-05T00:04:21.862Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 2,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Quitasol, Bello",
+        "address2": "",
+        "notes": "Entregar hoy por favor",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 0,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 0,
+        "created_at": "2026-03-05T00:06:07.771Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 3,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Quitasol, Bello",
+        "address2": "",
+        "notes": "Entregar hoy por favor",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 45000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 45000,
+        "created_at": "2026-03-06T05:32:07.125Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 4,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres Hernandez Inciarte",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cra. 45 26-162",
+        "address2": "",
+        "notes": "Entregar a la puerta",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 35000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 35000,
+        "created_at": "2026-03-25T21:23:55.543Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 5,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "WHATSAPP",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres Hernandez Inciarte",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cra. 45 26-162",
+        "address2": "",
+        "notes": "",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 30000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 30000,
+        "created_at": "2026-03-25T21:26:31.264Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 6,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres Hernandez Inciarte",
+        "email": "",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cra. 45 26-162",
+        "address2": "",
+        "notes": "",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 85000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 85000,
+        "created_at": "2026-03-25T21:52:00.459Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 7,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "gilberto",
+        "email": "",
+        "phone": "3214263516",
+        "department": "Antioquia",
+        "city": "Sabaneta",
+        "address": "Cr5 #20 -43",
+        "address2": "",
+        "notes": "entregar en porteria",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 210000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 210000,
+        "created_at": "2026-03-26T14:08:02.885Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 8,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "gilberto",
+        "email": "",
+        "phone": "3214263516",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cr5 #20 -43",
+        "address2": "",
+        "notes": "yo",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 70000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 70000,
+        "created_at": "2026-03-26T19:37:56.076Z",
+        "updated_at": "2026-03-26T23:26:25.800Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 9,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Gilberto Andres Hernandez Inciarte",
+        "email": "giland.developer@gmail.com",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cr 123 # 45 - 26",
+        "address2": "Apto 36",
+        "notes": "Dejar en porteria",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "GROOB10-3IB3U",
+        "coupon_discount": 10,
+        "subtotal": 0,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 0,
+        "created_at": "2026-03-26T23:44:51.741Z",
+        "updated_at": "2026-03-26T23:44:51.741Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 10,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "giland.developer",
+        "email": "giland.developer@gmail.com",
+        "phone": "3115121218",
+        "department": "Antioquia",
+        "city": "Medellín",
+        "address": "aghjkk",
+        "address2": "4354",
+        "notes": "tjhyjy",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 20000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 20000,
+        "created_at": "2026-03-27T00:02:33.969Z",
+        "updated_at": "2026-03-27T00:02:33.969Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 11,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Tatiana",
+        "email": "tatianaeusse1@gmail.com",
+        "phone": "3115121218",
+        "department": "Antioquia",
+        "city": "Medellín",
+        "address": "Cr 45 # 123 - 28 quitasol",
+        "address2": "Torre D",
+        "notes": "Darle un besito al vigilante y dejar el pedido.",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 55000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 55000,
+        "created_at": "2026-03-27T00:09:24.341Z",
+        "updated_at": "2026-03-27T00:09:24.341Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 12,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "Anderson",
+        "email": "andersonblandon8@gmail.com",
+        "phone": "3053168035",
+        "department": "Antioquia",
+        "city": "Medellín",
+        "address": "Cr 26 # 56 - 98",
+        "address2": "APTO 6",
+        "notes": "",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "",
+        "coupon_discount": 0,
+        "subtotal": 45000,
+        "discount_total": 0,
+        "shipping_cost": 0,
+        "total": 45000,
+        "created_at": "2026-03-31T23:31:16.120Z",
+        "updated_at": "2026-03-31T23:31:16.121Z"
+    }
+},
+{
+    "model": "orders.order",
+    "pk": 13,
+    "fields": {
+        "user": null,
+        "status": "NEW",
+        "payment_method": "COD",
+        "payment_status": "COD_PENDING",
+        "full_name": "giland.developer",
+        "email": "giland.developer@gmail.com",
+        "phone": "3011963515",
+        "department": "Antioquia",
+        "city": "Bello",
+        "address": "Cra. 45 26-162",
+        "address2": "Roca conjunto",
+        "notes": "entregar al portero",
+        "location_lat": null,
+        "location_lng": null,
+        "logistics_company": "OWN",
+        "tracking_number": "",
+        "coupon_code": "GROOB50-HNO7B",
+        "coupon_discount": 50,
+        "subtotal": 55000,
+        "discount_total": 27500,
+        "shipping_cost": 0,
+        "total": 27500,
+        "created_at": "2026-04-04T15:18:17.714Z",
+        "updated_at": "2026-04-04T15:18:17.714Z"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 1,
+    "fields": {
+        "order": 3,
+        "product": 1,
+        "qty": 1,
+        "unit_price": 45000,
+        "unit_cost": 3700,
+        "line_subtotal": 45000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 2,
+    "fields": {
+        "order": 4,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 3,
+    "fields": {
+        "order": 5,
+        "product": 1,
+        "qty": 1,
+        "unit_price": 30000,
+        "unit_cost": 3700,
+        "line_subtotal": 30000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 4,
+    "fields": {
+        "order": 6,
+        "product": 1,
+        "qty": 1,
+        "unit_price": 30000,
+        "unit_cost": 3700,
+        "line_subtotal": 30000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 5,
+    "fields": {
+        "order": 6,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 6,
+    "fields": {
+        "order": 6,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 7,
+    "fields": {
+        "order": 7,
+        "product": 1,
+        "qty": 2,
+        "unit_price": 30000,
+        "unit_cost": 3700,
+        "line_subtotal": 60000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 8,
+    "fields": {
+        "order": 7,
+        "product": 5,
+        "qty": 1,
+        "unit_price": 80000,
+        "unit_cost": 25000,
+        "line_subtotal": 80000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 9,
+    "fields": {
+        "order": 7,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 10,
+    "fields": {
+        "order": 7,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 11,
+    "fields": {
+        "order": 7,
+        "product": 4,
+        "qty": 1,
+        "unit_price": 15000,
+        "unit_cost": 1500,
+        "line_subtotal": 15000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 12,
+    "fields": {
+        "order": 8,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 13,
+    "fields": {
+        "order": 8,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 14,
+    "fields": {
+        "order": 8,
+        "product": 4,
+        "qty": 1,
+        "unit_price": 15000,
+        "unit_cost": 1500,
+        "line_subtotal": 15000,
+        "product_name": "",
+        "product_sku": ""
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 15,
+    "fields": {
+        "order": 10,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "Cable cargador Tipo C",
+        "product_sku": "CAB-TC-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 16,
+    "fields": {
+        "order": 11,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "Forro iPhone 17 Pro Max",
+        "product_sku": "FOR-IP17PM-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 17,
+    "fields": {
+        "order": 11,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "Cable cargador Tipo C",
+        "product_sku": "CAB-TC-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 18,
+    "fields": {
+        "order": 12,
+        "product": 1,
+        "qty": 1,
+        "unit_price": 30000,
+        "unit_cost": 3700,
+        "line_subtotal": 30000,
+        "product_name": "Cargador iPhone",
+        "product_sku": "CARG-IP-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 19,
+    "fields": {
+        "order": 12,
+        "product": 4,
+        "qty": 1,
+        "unit_price": 15000,
+        "unit_cost": 1500,
+        "line_subtotal": 15000,
+        "product_name": "Vidrio blindado Xiaomi",
+        "product_sku": "VID-XIA-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 20,
+    "fields": {
+        "order": 13,
+        "product": 2,
+        "qty": 1,
+        "unit_price": 35000,
+        "unit_cost": 5000,
+        "line_subtotal": 35000,
+        "product_name": "Forro iPhone 17 Pro Max",
+        "product_sku": "FOR-IP17PM-01"
+    }
+},
+{
+    "model": "orders.orderitem",
+    "pk": 21,
+    "fields": {
+        "order": 13,
+        "product": 3,
+        "qty": 1,
+        "unit_price": 20000,
+        "unit_cost": 3000,
+        "line_subtotal": 20000,
+        "product_name": "Cable cargador Tipo C",
+        "product_sku": "CAB-TC-01"
+    }
+},
+{
+    "model": "reviews.review",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "product": 1,
+        "rating": 5,
+        "comment": "Excelente producto y entrega rápida y son lo mejores en Groob Market",
+        "is_verified_purchase": false,
+        "is_visible": true,
+        "created_at": "2026-03-18T17:22:30.755Z"
+    }
+},
+{
+    "model": "reviews.review",
+    "pk": 2,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "product": 1,
+        "rating": 5,
+        "comment": "Me llegó bien, pero falta confirmar entrega",
+        "is_verified_purchase": false,
+        "is_visible": true,
+        "created_at": "2026-03-18T18:36:29.421Z"
+    }
+},
+{
+    "model": "reviews.review",
+    "pk": 3,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "product": 1,
+        "rating": 5,
+        "comment": "Muy Buena atencion Buenos productos d elata calidad",
+        "is_verified_purchase": false,
+        "is_visible": true,
+        "created_at": "2026-03-23T20:43:53.524Z"
+    }
+},
+{
+    "model": "reviews.review",
+    "pk": 4,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "product": 2,
+        "rating": 5,
+        "comment": "Muy Buena atencion Buenos productos d elata calidad",
+        "is_verified_purchase": false,
+        "is_visible": true,
+        "created_at": "2026-03-23T20:46:51.166Z"
+    }
+},
+{
+    "model": "reviews.review",
+    "pk": 5,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "product": 3,
+        "rating": 5,
+        "comment": "Calidad y prepecio me gusta",
+        "is_verified_purchase": false,
+        "is_visible": false,
+        "created_at": "2026-03-23T21:43:16.009Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 1,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3700,
+        "note": "Venta - Order #3",
+        "created_at": "2026-03-06T05:32:07.145Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 2,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3700,
+        "note": "Venta Order #3",
+        "created_at": "2026-03-06T05:32:07.150Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 3,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta - Pedido #4",
+        "created_at": "2026-03-25T21:23:55.570Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 4,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3700,
+        "note": "Venta - Pedido #5",
+        "created_at": "2026-03-25T21:26:31.279Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 5,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3700,
+        "note": "Venta - Pedido #6",
+        "created_at": "2026-03-25T21:52:00.476Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 6,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta - Pedido #6",
+        "created_at": "2026-03-25T21:52:00.491Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 7,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta - Pedido #6",
+        "created_at": "2026-03-25T21:52:00.504Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 8,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 2,
+        "unit_cost": 3700,
+        "note": "Venta - Pedido #7",
+        "created_at": "2026-03-26T14:08:02.906Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 9,
+    "fields": {
+        "product": 5,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 25000,
+        "note": "Venta - Pedido #7",
+        "created_at": "2026-03-26T14:08:02.920Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 10,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta - Pedido #7",
+        "created_at": "2026-03-26T14:08:02.936Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 11,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta - Pedido #7",
+        "created_at": "2026-03-26T14:08:02.948Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 12,
+    "fields": {
+        "product": 4,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 1500,
+        "note": "Venta - Pedido #7",
+        "created_at": "2026-03-26T14:08:02.960Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 13,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta - Pedido #8",
+        "created_at": "2026-03-26T19:37:56.101Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 14,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta - Pedido #8",
+        "created_at": "2026-03-26T19:37:56.119Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 15,
+    "fields": {
+        "product": 4,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 1500,
+        "note": "Venta - Pedido #8",
+        "created_at": "2026-03-26T19:37:56.135Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 16,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta — Pedido #GM-000010",
+        "created_at": "2026-03-27T00:02:35.506Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 17,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta — Pedido #GM-000011",
+        "created_at": "2026-03-27T00:09:26.198Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 18,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta — Pedido #GM-000011",
+        "created_at": "2026-03-27T00:09:26.216Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 19,
+    "fields": {
+        "product": 1,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3700,
+        "note": "Venta — Pedido #GM-000012",
+        "created_at": "2026-03-31T23:31:17.973Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 20,
+    "fields": {
+        "product": 4,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 1500,
+        "note": "Venta — Pedido #GM-000012",
+        "created_at": "2026-03-31T23:31:17.986Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 21,
+    "fields": {
+        "product": 2,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 5000,
+        "note": "Venta — Pedido #GM-000013",
+        "created_at": "2026-04-04T15:18:19.335Z"
+    }
+},
+{
+    "model": "inventory.inventorymovement",
+    "pk": 22,
+    "fields": {
+        "product": 3,
+        "movement_type": "OUT",
+        "qty": 1,
+        "unit_cost": 3000,
+        "note": "Venta — Pedido #GM-000013",
+        "created_at": "2026-04-04T15:18:19.349Z"
+    }
+},
+{
+    "model": "promotions.coupon",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "code": "GRB766F32",
+        "percent": 0,
+        "is_used": false,
+        "first_purchase_only": true,
+        "expires_at": "2026-03-21T14:33:35.309Z",
+        "created_at": "2026-03-20T14:33:35.310Z"
+    }
+},
+{
+    "model": "promotions.spinlog",
+    "pk": 1,
+    "fields": {
+        "user": [
+            "cliente1"
+        ],
+        "spun_at": "2026-03-20T14:33:35.303Z",
+        "percent_awarded": 0
+    }
+},
+{
+    "model": "shipping.tarifaenvio",
+    "pk": 1,
+    "fields": {
+        "municipio": "Bello",
+        "zona": "ZONA_6",
+        "precio": 18000,
+        "tiempo": "3 – 5 días hábiles",
+        "esta_activo": true
+    }
+},
+{
+    "model": "shipping.tarifaenvio",
+    "pk": 2,
+    "fields": {
+        "municipio": "Medellin",
+        "zona": "ZONA_6",
+        "precio": 18000,
+        "tiempo": "3 – 5 días hábiles",
+        "esta_activo": true
+    }
+},
+{
+    "model": "shipping.tarifaenvio",
+    "pk": 3,
+    "fields": {
+        "municipio": "Itagui",
+        "zona": "ZONA_6",
+        "precio": 18000,
+        "tiempo": "3 – 5 días hábiles",
+        "esta_activo": true
+    }
+},
+{
+    "model": "shipping.tarifaenvio",
+    "pk": 4,
+    "fields": {
+        "municipio": "Envigado",
+        "zona": "ZONA_6",
+        "precio": 18000,
+        "tiempo": "3 – 5 días hábiles",
+        "esta_activo": true
+    }
+},
+{
+    "model": "shipping.tarifaenvio",
+    "pk": 5,
+    "fields": {
+        "municipio": "Sabaneta",
+        "zona": "ZONA_6",
+        "precio": 18000,
+        "tiempo": "3 – 5 días hábiles",
+        "esta_activo": true
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 1,
+    "fields": {
+        "action_time": "2026-03-05T02:26:23.632Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "catalog",
+            "category"
+        ],
+        "object_id": "1",
+        "object_repr": "Tecnología",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 2,
+    "fields": {
+        "action_time": "2026-03-05T05:12:38.988Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "catalog",
+            "product"
+        ],
+        "object_id": "1",
+        "object_repr": "Cargador iPhone (CARG-IP-01)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 3,
+    "fields": {
+        "action_time": "2026-03-05T05:19:25.998Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "catalog",
+            "product"
+        ],
+        "object_id": "2",
+        "object_repr": "Forro iPhone 17 Pro Max (FOR-IP17PM-01)",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 4,
+    "fields": {
+        "action_time": "2026-03-23T23:23:10.413Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "clienteP",
+        "action_flag": 1,
+        "change_message": "[{\"added\": {}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 5,
+    "fields": {
+        "action_time": "2026-03-24T00:25:01.696Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "clienteP",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"password\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 6,
+    "fields": {
+        "action_time": "2026-03-24T00:47:19.073Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "auth",
+            "user"
+        ],
+        "object_id": "3",
+        "object_repr": "clienteP",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"First name\", \"Last name\", \"Email address\", \"Last login\"]}}]"
+    }
+},
+{
+    "model": "admin.logentry",
+    "pk": 7,
+    "fields": {
+        "action_time": "2026-03-24T04:22:59.253Z",
+        "user": [
+            "admingroob"
+        ],
+        "content_type": [
+            "catalog",
+            "product"
+        ],
+        "object_id": "1",
+        "object_repr": "Cargador iPhone (CARG-IP-01)",
+        "action_flag": 2,
+        "change_message": "[{\"changed\": {\"fields\": [\"Image\", \"Descripci\\u00f3n\"]}}]"
+    }
+}
+]

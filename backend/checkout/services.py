@@ -3,6 +3,7 @@ from typing import List, Optional, Tuple
 
 from catalog.models import Product
 from promotions.models import Coupon
+from shipping.services import buscar_zona
 
 
 @dataclass
@@ -78,9 +79,10 @@ def calculate_cart_totals(
     user,
     items: List[dict],
     coupon_code: Optional[str] = None,
+    city: Optional[str] = None,
 ) -> dict:
     """
-    Calcula totales del carrito con cupón margin-safe.
+    Calcula totales del carrito con cupón margin-safe y costo de envío según municipio.
     items: [{product_id, qty}]
     """
     # Construir líneas
@@ -131,11 +133,20 @@ def calculate_cart_totals(
 
         discount_total += discount_value
 
-    total = subtotal - discount_total
+    shipping_cost = 0
+    if city:
+        resultado = buscar_zona(city)
+        if resultado:
+            _, p, _ = resultado
+            if p is not None:
+                shipping_cost = p
+
+    total = subtotal - discount_total + shipping_cost
 
     return {
         "subtotal": int(subtotal),
         "discount_total": int(discount_total),
+        "shipping_cost": int(shipping_cost),
         "total": int(total),
         "coupon": {
             "code": coupon.code,

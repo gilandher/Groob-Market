@@ -27,50 +27,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import TarifaEnvio, MUNICIPIOS_ZONA, ZonaEnvio
+from .services import buscar_zona, normalizar
 
-
-def normalizar(text: str) -> str:
-    """Minúsculas, sin tildes, sin espacios extra."""
-    text = text.strip().lower()
-    return "".join(
-        c for c in unicodedata.normalize("NFD", text)
-        if unicodedata.category(c) != "Mn"
-    )
-
-
-def buscar_zona(municipio_raw: str):
-    """
-    Devuelve (zona, precio, tiempo) o None si no se encuentra.
-    Orden de búsqueda:
-      1. Tabla TarifaEnvio en BD (configurable desde admin)
-      2. Tabla estática MUNICIPIOS_ZONA en models.py
-      3. Fallback Nacional si el municipio contiene "colombia" o similar
-    """
-    norm = normalizar(municipio_raw)
-
-    # 1. Buscar en BD (coincidencia exacta normalizada)
-    try:
-        qs = TarifaEnvio.objects.filter(esta_activo=True)
-        for tarifa in qs:
-            if normalizar(tarifa.municipio) == norm:
-                return tarifa.zona, tarifa.precio, tarifa.tiempo
-            # Coincidencia parcial
-            if norm in normalizar(tarifa.municipio) or normalizar(tarifa.municipio) in norm:
-                return tarifa.zona, tarifa.precio, tarifa.tiempo
-    except Exception:
-        pass
-
-    # 2. Tabla estática del modelo
-    if norm in MUNICIPIOS_ZONA:
-        zona, precio, tiempo = MUNICIPIOS_ZONA[norm]
-        return zona, precio, tiempo
-
-    # Búsqueda parcial en tabla estática
-    for key, (zona, precio, tiempo) in MUNICIPIOS_ZONA.items():
-        if key in norm or norm in key:
-            return zona, precio, tiempo
-
-    return None
 
 
 class CotizarEnvioAPIView(APIView):

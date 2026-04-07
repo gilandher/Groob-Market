@@ -14,8 +14,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from orders.models import Order
-from orders.serializers import OrderCreateSerializer, OrderDetailSerializer
+from orders.serializers import OrderDetailSerializer
 from promotions.models import Coupon
+from orders.services import create_customer_order
 from .serializers import CheckoutPreviewSerializer, CheckoutConfirmSerializer
 from .services import calculate_cart_totals
 
@@ -62,33 +63,7 @@ class CheckoutConfirmAPIView(APIView):
         datos = serializer.validated_data
         coupon_code = datos.get("coupon_code") or None
 
-        # Paso 1: calcular totales margin-safe
-        preview = calculate_cart_totals(
-            user=request.user,
-            items=datos["items"],
-            coupon_code=coupon_code,
-        )
-
-        # Paso 2: validar first_purchase_only
-        # Bug 4 CORREGIDO: antes nunca se verificaba si el usuario ya habia comprado
-        if preview["coupon"] and preview["coupon"].get("first_purchase_only"):
-            ya_compro = Order.objects.filter(
-                user=request.user,
-                status=Order.Status.DELIVERED,
-            ).exists()
-            if ya_compro:
-                return Response(
-                    {
-                        "error": (
-                            "Este cupon es solo para la primera compra. "
-                            "Ya tienes un pedido entregado anteriormente."
-                        )
-                    },
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-
-        # Paso 3: crear la orden
-        # Bug 2 CORREGIDO: payment_method viene del request, no hardcodeado a WOMPI
+        # 1. Preparar payload de orden
         order_payload = {
             "full_name":      datos["full_name"],
             "phone":          datos["phone"],
@@ -96,30 +71,24 @@ class CheckoutConfirmAPIView(APIView):
             "address":        datos["address"],
             "notes":          datos.get("notes", ""),
             "payment_method": datos.get("payment_method", "COD"),
-            "items":          datos["items"],
         }
 
-        order_serializer = OrderCreateSerializer(data=order_payload)
-        order_serializer.is_valid(raise_exception=True)
-        orden = order_serializer.save()
-
-        # Bug 3 CORREGIDO: guardamos subtotal + discount + shipping + total
-        # Antes solo se guardaban discount_total y total (subtotal quedaba en 0)
-        orden.subtotal       = preview["subtotal"]
-        orden.discount_total = preview["discount_total"]
-        orden.shipping_cost  = preview.get("shipping_cost", 0)
-        orden.total          = preview["total"]
-        orden.save(update_fields=["subtotal", "discount_total", "shipping_cost", "total"])
-
-        # Paso 4: marcar cupon como usado
-        if preview["coupon"] and preview["discount_total"] > 0:
-            Coupon.objects.filter(
-                code=preview["coupon"]["code"],
-                user=request.user,
-                is_used=False,
-            ).update(is_used=True)
+        # 2. Llamada al servicio ÚNICO centralizado
+        orden = create_customer_order(
+            user=request.user,
+            order_data=order_payload,
+            items_data=datos["items"],
+            coupon_code=coupon_code
+        )
 
         respuesta = OrderDetailSerializer(orden).data
-        respuesta["checkout"] = preview
+        # Adjuntamos el preview financiero de checkout que se calculó en el backend
+        from .services import calculate_cart_totals
+        respuesta["checkout"] = calculate_cart_totals(
+            user=request.user,
+            items=datos["items"],
+            coupon_code=coupon_code,
+            city=order_payload["city"]
+        )
 
         return Response(respuesta, status=status.HTTP_201_CREATED)

@@ -97,7 +97,11 @@ is_placeholder = "://user:password@host" in DATABASE_URL or "@host:" in DATABASE
 
 if DATABASE_URL and not is_placeholder:
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
+        "default": dj_database_url.parse(
+            DATABASE_URL, 
+            conn_max_age=600, 
+            ssl_require="localhost" not in DATABASE_URL
+        )
     }
 else:
     DATABASES = {

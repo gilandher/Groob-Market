@@ -33,11 +33,11 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="""
                 INSERT INTO shipping_tarifaenvio (municipio, tipo, costo, dias_habil, esta_activo) VALUES
-                ('Bello',    'LOCAL', 4000, 0, 1),
-                ('Medellin', 'LOCAL', 5000, 0, 1),
-                ('Itagui',   'LOCAL', 6000, 0, 1),
-                ('Envigado', 'LOCAL', 7000, 0, 1),
-                ('Sabaneta', 'LOCAL', 7000, 0, 1);
+                ('Bello',    'LOCAL', 4000, 0, TRUE),
+                ('Medellin', 'LOCAL', 5000, 0, TRUE),
+                ('Itagui',   'LOCAL', 6000, 0, TRUE),
+                ('Envigado', 'LOCAL', 7000, 0, TRUE),
+                ('Sabaneta', 'LOCAL', 7000, 0, TRUE);
             """,
             reverse_sql="DELETE FROM shipping_tarifaenvio;",
         ),
