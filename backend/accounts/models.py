@@ -51,6 +51,7 @@ class UserProfile(models.Model):
     address2   = models.CharField("Segunda dirección", max_length=255, blank=True)
     city       = models.CharField("Ciudad", max_length=64, blank=True)
     department = models.CharField("Departamento", max_length=64, blank=True)
+    avatar_icon = models.CharField("Icono de avatar", max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

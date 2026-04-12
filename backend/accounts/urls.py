@@ -3,13 +3,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
     RegisterAPIView, MeAPIView, SendOTPView, VerifyOTPView,
-    UpdateProfileAPIView, ChangePasswordAPIView,
+    UpdateProfileAPIView, ChangePasswordAPIView, GoogleLogin,
+    UpdateAvatarAPIView,
 )
 
 urlpatterns = [
     # Auth
     path("auth/register/",        RegisterAPIView.as_view(),     name="auth-register"),
     path("auth/login/",           TokenObtainPairView.as_view(), name="auth-login"),
+    path("auth/google/",          GoogleLogin.as_view(),         name="auth-google"),
+    path("auth/avatar/",          UpdateAvatarAPIView.as_view(), name="auth-avatar"),
     path("auth/refresh/",         TokenRefreshView.as_view(),    name="auth-refresh"),
     path("auth/me/",              MeAPIView.as_view(),           name="auth-me"),
     # OTP

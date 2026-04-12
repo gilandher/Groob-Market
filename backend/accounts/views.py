@@ -16,6 +16,8 @@ from .serializers import (
     UpdateProfileSerializer, ChangePasswordSerializer,
 )
 
+# Social Auth (imports de allauth no necesarios — usamos implementación propia)
+
 logger = logging.getLogger(__name__)
 
 
@@ -262,3 +264,153 @@ class ChangePasswordAPIView(APIView):
         user.save()
 
         return Response({"detail": "Contraseña actualizada correctamente."})
+
+
+class GoogleLogin(APIView):
+    """
+    POST /api/v1/auth/google/
+    Body: { "code": "..." }
+    Intercambia el código de Google por tokens JWT de Groob Market.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
+    GOOGLE_USERINFO_URL = "https://www.googleapis.com/oauth2/v3/userinfo"
+
+    def post(self, request):
+        import requests as http_requests
+        from django.conf import settings as django_settings
+
+        code = request.data.get("code")
+        if not code:
+            return Response(
+                {"detail": "El código de autorización es requerido."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Obtener credenciales de Google desde settings
+        google_cfg = django_settings.SOCIALACCOUNT_PROVIDERS.get("google", {}).get("APP", {})
+        client_id     = google_cfg.get("client_id", "")
+        client_secret = google_cfg.get("secret", "")
+        redirect_uri  = "http://localhost:3000/auth/callback"
+
+        # 1. Intercambiar código por access_token con Google
+        try:
+            token_resp = http_requests.post(self.GOOGLE_TOKEN_URL, data={
+                "code":          code,
+                "client_id":     client_id,
+                "client_secret": client_secret,
+                "redirect_uri":  redirect_uri,
+                "grant_type":    "authorization_code",
+            }, timeout=10)
+            token_data = token_resp.json()
+        except Exception as e:
+            logger.error(f"Error al contactar a Google OAuth: {e}")
+            return Response(
+                {"detail": "Error al conectar con Google. Intenta de nuevo."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+        access_token = token_data.get("access_token")
+        if not access_token:
+            logger.error(f"Google no devolvió access_token: {token_data}")
+            return Response(
+                {"detail": "Error al autenticar con Google. Código inválido o expirado."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 2. Obtener información del usuario de Google
+        try:
+            userinfo_resp = http_requests.get(
+                self.GOOGLE_USERINFO_URL,
+                headers={"Authorization": f"Bearer {access_token}"},
+                timeout=10,
+            )
+            userinfo = userinfo_resp.json()
+        except Exception as e:
+            logger.error(f"Error al obtener userinfo de Google: {e}")
+            return Response(
+                {"detail": "No se pudo obtener la información del usuario de Google."},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+        email = (userinfo.get("email") or "").strip().lower()
+        name    = userinfo.get("name", "")
+        picture = userinfo.get("picture", "")
+
+        if not email:
+            return Response(
+                {"detail": "Google no devolvió un correo electrónico válido."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # 3. Crear o recuperar el usuario
+        user, created = User.objects.get_or_create(
+            email=email,
+            defaults={"username": email},
+        )
+        if created:
+            parts = name.split(" ", 1) if name else []
+            user.first_name = parts[0] if parts else ""
+            user.last_name  = parts[1] if len(parts) > 1 else ""
+            user.is_active  = True
+            user.save()
+            UserProfile.objects.get_or_create(user=user)
+        elif name and not user.first_name:
+            parts = name.split(" ", 1)
+            user.first_name = parts[0]
+            user.last_name  = parts[1] if len(parts) > 1 else ""
+            user.save(update_fields=["first_name", "last_name"])
+
+        profile = getattr(user, "profile", None)
+
+        logger.info(f"✅ Google Login: {email} ({'nuevo' if created else 'existente'})")
+
+        # 4. Retornar tokens JWT propios
+        return Response({
+            "detail": "¡Inicio de sesión con Google exitoso!",
+            "user": {
+                "id":         user.id,
+                "email":      user.email,
+                "name":       f"{user.first_name} {user.last_name}".strip() or user.username,
+                "picture":    picture,
+                "avatar_icon": profile.avatar_icon if profile else "",
+                "phone":      profile.phone if profile else "",
+                "address":    profile.address if profile else "",
+                "address2":   profile.address2 if profile else "",
+                "city":       profile.city if profile else "",
+                "department": profile.department if profile else "",
+            },
+            **get_tokens_for_user(user),
+        }, status=status.HTTP_200_OK)
+
+
+class UpdateAvatarAPIView(APIView):
+    """
+    POST /api/v1/auth/avatar/
+    Body: { "avatar_icon": "panda" | "fox" | ... }
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        avatar = (request.data.get("avatar_icon") or "").strip()
+        # Si llega vacío o "default", reseteamos al original
+        if avatar.lower() == "default":
+            avatar = ""
+
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        profile.avatar_icon = avatar
+        profile.save()
+
+        picture = ""
+        try:
+            from allauth.socialaccount.models import SocialAccount
+            social = SocialAccount.objects.get(user=request.user, provider='google')
+            picture = social.extra_data.get('picture', '')
+        except: pass
+
+        return Response({
+            "detail": "Perfil actualizado.",
+            "avatar_icon": avatar,
+            "picture": picture
+        })

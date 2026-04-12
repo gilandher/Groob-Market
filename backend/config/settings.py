@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-change-me")
-DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() == "true"
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 # -----------------------------
@@ -36,8 +36,16 @@ INSTALLED_APPS = [
 
     # Terceros
     "rest_framework",
+    "rest_framework.authtoken", # Requerido por dj-rest-auth
     "corsheaders",
     "rest_framework_simplejwt",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
 
     # Apps del proyecto
     "accounts",
@@ -57,6 +65,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -88,28 +97,18 @@ WSGI_APPLICATION = "config.wsgi.application"
 # -----------------------------
 # DATABASE
 # -----------------------------
-# Desarrollo rápido: SQLite
-# Producción/fase posterior: Supabase Postgres (DATABASE_URL real)
-DATABASE_URL = (os.getenv("DATABASE_URL") or "").strip()
+DB_ENGINE = os.getenv("DB_ENGINE", "django.db.backends.postgresql")
 
-# Si el DATABASE_URL es un placeholder (ej: host literal "host"), evitamos intentar Postgres.
-is_placeholder = "://user:password@host" in DATABASE_URL or "@host:" in DATABASE_URL or DATABASE_URL.endswith("@host")
-
-if DATABASE_URL and not is_placeholder:
-    DATABASES = {
-        "default": dj_database_url.parse(
-            DATABASE_URL, 
-            conn_max_age=600, 
-            ssl_require="localhost" not in DATABASE_URL
-        )
+DATABASES = {
+    "default": {
+        "ENGINE": DB_ENGINE,
+        "NAME": os.getenv("DB_NAME", "groob_market"),
+        "USER": os.getenv("DB_USER", "groob_user"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "groob_password"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432" if "postgresql" in DB_ENGINE else "3306"),
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 # -----------------------------
 # AUTH / I18N
@@ -131,6 +130,42 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# -----------------------------
+# ALLAUTH / SOCIAL AUTH
+# -----------------------------
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+# Configuración de Allauth
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none" # Ya tenemos nuestro propio sistema de OTP
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+# Configuración directa de Google (Evita errores de base de datos)
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": os.getenv("GOOGLE_CLIENT_ID", ""),
+            "secret": os.getenv("GOOGLE_CLIENT_SECRET", ""),
+            "key": ""
+        },
+        "SCOPE": [
+            "profile",
+            "email",
+        ],
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        }
+    }
+}
 
 
 

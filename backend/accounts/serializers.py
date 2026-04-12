@@ -29,11 +29,21 @@ class MeSerializer(serializers.ModelSerializer):
     address2 = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     department = serializers.SerializerMethodField()
+    avatar_icon = serializers.SerializerMethodField()
+    picture = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "name",
-                  "phone", "address", "address2", "city", "department"]
+                  "phone", "address", "address2", "city", "department", "avatar_icon", "picture"]
+
+    def get_picture(self, obj):
+        try:
+            from allauth.socialaccount.models import SocialAccount
+            social = SocialAccount.objects.get(user=obj, provider='google')
+            return social.extra_data.get('picture', '')
+        except:
+            return ""
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}".strip() or obj.username
@@ -43,6 +53,10 @@ class MeSerializer(serializers.ModelSerializer):
             return obj.profile
         except Exception:
             return None
+
+    def get_avatar_icon(self, obj):
+        p = self._profile(obj)
+        return p.avatar_icon if p else ""
 
     def get_phone(self, obj):
         p = self._profile(obj)

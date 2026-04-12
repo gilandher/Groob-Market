@@ -233,7 +233,7 @@ export default function HomeClient({ featured, newProducts, allProducts, categor
               gap: 12,
             }}>
               {categories.map((cat) => (
-                <Link key={cat.slug} href={`/?cat=${cat.slug}`}
+                <Link key={cat.slug} href={`/?cat=${cat.slug}#productos`}
                   id={`cat-${cat.slug}`}
                   style={{
                     display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
@@ -305,7 +305,7 @@ export default function HomeClient({ featured, newProducts, allProducts, categor
         )}
 
         {/* ── ALL PRODUCTS / FILTERED ── */}
-        <section style={{ marginBottom: 40 }}>
+        <section id="productos" style={{ marginBottom: 40, scrollMarginTop: "120px" }}>
           {/* Header */}
           <div style={{
             display: "flex", alignItems: "center", justifyContent: "space-between",

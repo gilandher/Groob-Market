@@ -8,7 +8,39 @@ import { getWishlist } from "../../lib/wishlist";
 import GroobLogo from "./GroobLogo";
 import AuthModal from "./AuthModal";
 
-type User = { name: string; email: string } | null;
+type User = { name: string; email: string; picture?: string; avatar_icon?: string } | null;
+
+// Categorized avatars
+const AVATAR_CATEGORIES = [
+  {
+    id: "animals",
+    name: "Animales",
+    list: [
+      { id: "panda", name: "Panda", src: "/avatars/panda.png" },
+      { id: "fox", name: "Zorro", src: "/avatars/fox.png" },
+      { id: "cat", name: "Gato", src: "/avatars/cat.png" },
+      { id: "lion", name: "León", src: "/avatars/lion.png" },
+      { id: "owl", name: "Búho", src: "/avatars/owl.png" },
+      { id: "golden", name: "Golden", src: "/avatars/golden.png" },
+      { id: "husky", name: "Husky", src: "/avatars/husky.png" },
+    ]
+  },
+  {
+    id: "characters",
+    name: "Personajes",
+    list: [
+      { id: "man", name: "Hombre", src: "/avatars/man.png" },
+      { id: "woman", name: "Mujer", src: "/avatars/woman.png" },
+      { id: "cowboy", name: "Vaquero", src: "/avatars/cowboy.png" },
+      { id: "robot", name: "Robot", src: "/avatars/robot.png" },
+      { id: "astronaut", name: "Astronauta", src: "/avatars/astronaut.png" },
+      { id: "pirate", name: "Pirata", src: "/avatars/pirate.png" },
+      { id: "skull", name: "Calavera", src: "/avatars/skull.png" },
+    ]
+  }
+];
+
+const AVATARS = AVATAR_CATEGORIES.flatMap(c => c.list);
 
 export default function Navbar() {
   const router = useRouter();
@@ -18,6 +50,8 @@ export default function Navbar() {
   const [user, setUser] = useState<User>(null);
   const [showAuth, setShowAuth] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showAvatarSelector, setShowAvatarSelector] = useState(false);
+  const [activeAvatarCat, setActiveAvatarCat] = useState("animals");
   const [scrolled, setScrolled] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -103,6 +137,39 @@ export default function Navbar() {
     window.dispatchEvent(new Event("groob_auth_update"));
   }
 
+  async function updateAvatar(avatarId: string) {
+    try {
+      const token = localStorage.getItem("groob_token");
+      if (!token) return;
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1"}/auth/avatar/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ avatar_icon: avatarId })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const updatedUser = { 
+          ...user, 
+          avatar_icon: data.avatar_icon || "",
+          picture: data.picture || (user as any)?.picture || "" 
+        } as User;
+        
+        localStorage.setItem("groob_user", JSON.stringify(updatedUser));
+        setUser(updatedUser);
+        setShowAvatarSelector(false);
+        setShowUserMenu(false);
+        window.dispatchEvent(new Event("groob_auth_update"));
+      }
+    } catch (err) {
+      console.error("Error updating avatar:", err);
+    }
+  }
+
   const initials = user?.name?.slice(0, 2).toUpperCase() || "";
 
   return (
@@ -142,11 +209,11 @@ export default function Navbar() {
         }}>
           <div style={{
             display: "flex", alignItems: "center", gap: 16,
-            height: 64, maxWidth: 1280, margin: "0 auto", padding: "0 20px",
+            height: 80, maxWidth: 1280, margin: "0 auto", padding: "0 20px",
           }}>
-            {/* Logo */}
+            {/* Logo area */}
             <Link href="/" style={{ textDecoration: "none", flexShrink: 0 }}>
-              <GroobLogo size={38} />
+              <GroobLogo size={42} />
             </Link>
 
             {/* Search bar - desktop */}
@@ -225,95 +292,6 @@ export default function Navbar() {
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </button>
-
-              {/* User button */}
-              <div ref={userMenuRef} style={{ position: "relative" }}>
-                {user ? (
-                  <button
-                    onClick={() => setShowUserMenu(v => !v)}
-                    id="btn-user-menu"
-                    style={{
-                      width: 40, height: 40, borderRadius: 10, border: "none",
-                      background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
-                      color: "#fff", cursor: "pointer", fontWeight: 800, fontSize: 13,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      boxShadow: "0 2px 8px rgba(108,77,255,0.3)",
-                    }}
-                  >
-                    {initials}
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => setShowAuth(true)}
-                    id="btn-login"
-                    style={{
-                      display: "flex", alignItems: "center", gap: 6,
-                      padding: "8px 16px", borderRadius: 10, border: "1.5px solid #6c4dff",
-                      background: "#f5f3ff", color: "#6c4dff", cursor: "pointer",
-                      fontWeight: 700, fontSize: 13, fontFamily: "'Inter', sans-serif",
-                      whiteSpace: "nowrap",
-                    }}
-                  >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-                      <circle cx="12" cy="7" r="4" />
-                    </svg>
-                    <span className="login-btn-text">Ingresar</span>
-                  </button>
-                )}
-
-                {/* User dropdown menu */}
-                {showUserMenu && user && (
-                  <div style={{
-                    position: "absolute", top: "calc(100% + 8px)", right: 0,
-                    background: "#fff", borderRadius: 16, border: "1px solid #f1f5f9",
-                    boxShadow: "0 16px 48px rgba(0,0,0,0.15)", minWidth: 220,
-                    padding: "8px 0", zIndex: 100,
-                    animation: "fadeInUp 0.2s ease",
-                  }}>
-                    <div style={{ padding: "12px 16px 8px", borderBottom: "1px solid #f1f5f9" }}>
-                      <div style={{
-                        width: 40, height: 40, borderRadius: "50%",
-                        background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
-                        color: "#fff", display: "flex", alignItems: "center",
-                        justifyContent: "center", fontWeight: 800, fontSize: 14,
-                        marginBottom: 8,
-                      }}>
-                        {initials}
-                      </div>
-                      <p style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{user.name}</p>
-                      <p style={{ fontSize: 12, color: "#94a3b8" }}>{user.email}</p>
-                    </div>
-                    {[
-                      { icon: "🛍️", label: "Mis pedidos", href: "/orders" },
-                      { icon: "❤️", label: "Lista de deseos", href: "/wishlist" },
-                      { icon: "👤", label: "Mi perfil", href: "/profile" },
-                    ].map(item => (
-                      <Link key={item.href} href={item.href}
-                        onClick={() => setShowUserMenu(false)}
-                        style={{
-                          display: "flex", alignItems: "center", gap: 10,
-                          padding: "10px 16px", fontSize: 14, color: "#374151",
-                          textDecoration: "none", transition: "background 0.15s",
-                        }}
-                        onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
-                        onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
-                      >
-                        <span>{item.icon}</span> {item.label}
-                      </Link>
-                    ))}
-                    <div style={{ margin: "4px 0", borderTop: "1px solid #f1f5f9" }} />
-                    <button onClick={logout} style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "10px 16px", fontSize: 14, color: "#ef4444",
-                      background: "none", border: "none", cursor: "pointer", width: "100%",
-                      fontFamily: "'Inter', sans-serif", fontWeight: 600,
-                    }}>
-                      🚪 Cerrar sesión
-                    </button>
-                  </div>
-                )}
-              </div>
 
               {/* Wishlist button */}
               <Link
@@ -394,6 +372,207 @@ export default function Navbar() {
                   </span>
                 )}
               </Link>
+
+              {/* User button (NOW ON THE RIGHT) */}
+              <div ref={userMenuRef} style={{ position: "relative" }}>
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => setShowUserMenu(v => !v)}
+                      id="btn-user-menu"
+                      style={{
+                        width: 60, height: 60, borderRadius: "50%", border: "3px solid #fff",
+                        background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
+                        color: "#fff", cursor: "pointer", fontWeight: 800, fontSize: 18,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        boxShadow: "0 8px 25px rgba(108,77,255,0.3)",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        overflow: "hidden", padding: 0, marginLeft: 12,
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+                      onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                    >
+                      {user?.avatar_icon ? (
+                        <img
+                          src={`/avatars/${user.avatar_icon}.png`}
+                          alt={user.name}
+                          style={{ 
+                            width: "100%", height: "100%", objectFit: "cover",
+                            transform: "scale(1.3)", // Zoom balanceado
+                          }}
+                        />
+                      ) : user?.picture ? (
+                        <img
+                          src={user.picture}
+                          alt={user.name}
+                          referrerPolicy="no-referrer"
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: 20 }}>{initials}</span>
+                      )}
+                    </button>
+
+                    {/* User dropdown menu */}
+                    {showUserMenu && user && (
+                      <div style={{
+                        position: "absolute", top: "calc(100% + 8px)", right: 0,
+                        background: "#fff", borderRadius: 16, border: "1px solid #f1f5f9",
+                        boxShadow: "0 16px 48px rgba(0,0,0,0.15)", minWidth: 260,
+                        padding: "8px 0", zIndex: 100,
+                        animation: "fadeInUp 0.2s ease",
+                      }}>
+                        <div style={{ padding: "12px 16px 8px", borderBottom: "1px solid #f1f5f9" }}>
+                          <div style={{
+                            width: 48, height: 48, borderRadius: "50%",
+                            background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
+                            color: "#fff", display: "flex", alignItems: "center",
+                            justifyContent: "center", fontWeight: 800, fontSize: 16,
+                            marginBottom: 8, overflow: "hidden", border: "2px solid #fff",
+                            boxShadow: "0 2px 8px rgba(108,77,255,0.2)",
+                          }}>
+                            {user?.avatar_icon ? (
+                              <img src={`/avatars/${user.avatar_icon}.png`} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            ) : user?.picture ? (
+                              <img src={user.picture} alt={user.name} referrerPolicy="no-referrer" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                            ) : initials}
+                          </div>
+                          <p style={{ fontWeight: 700, fontSize: 14, color: "#0f172a" }}>{user.name}</p>
+                          <p style={{ fontSize: 12, color: "#94a3b8" }}>{user.email}</p>
+                        </div>
+
+                        {/* Avatar Selection Toggle */}
+                        <button
+                          onClick={() => setShowAvatarSelector(!showAvatarSelector)}
+                          style={{
+                            width: "calc(100% - 32px)", margin: "8px 16px", padding: "8px",
+                            borderRadius: "10px", background: "#f5f3ff", border: "1.5px solid #6c4dff",
+                            color: "#6c4dff", cursor: "pointer", fontWeight: 700, fontSize: 12,
+                            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                          }}
+                        >
+                          🎨 {showAvatarSelector ? "Cerrar selector" : "Cambiar avatar"}
+                        </button>
+
+                        {showAvatarSelector && (
+                          <div style={{ padding: "0 16px 16px", borderBottom: "1px solid #f1f5f9" }}>
+                            {/* Category Selector Tabs */}
+                            <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+                              {AVATAR_CATEGORIES.map(cat => (
+                                <button
+                                  key={cat.id}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setActiveAvatarCat(cat.id);
+                                  }}
+                                  style={{
+                                    flex: 1, padding: "6px 0", borderRadius: 8, fontSize: 11,
+                                    fontWeight: 700, cursor: "pointer", border: "none",
+                                    background: activeAvatarCat === cat.id ? "#6c4dff" : "#f1f5f9",
+                                    color: activeAvatarCat === cat.id ? "#fff" : "#64748b",
+                                    transition: "all 0.2s"
+                                  }}
+                                >
+                                  {cat.name}
+                                </button>
+                              ))}
+                            </div>
+
+                            <div style={{
+                              display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10,
+                              marginBottom: 16
+                            }}>
+                              {(AVATAR_CATEGORIES.find(c => c.id === activeAvatarCat)?.list || []).map(av => (
+                                <button
+                                  key={av.id}
+                                  onClick={() => updateAvatar(av.id)}
+                                  style={{
+                                    border: user.avatar_icon === av.id ? "2px solid #6c4dff" : "2px solid transparent",
+                                    padding: 2, borderRadius: 10, background: "#f8fafc", cursor: "pointer",
+                                    transition: "all 0.2s", overflow: "hidden", minHeight: 50,
+                                    display: "flex", alignItems: "center", justifyContent: "center"
+                                  }}
+                                  onMouseEnter={e => e.currentTarget.style.transform = "scale(1.1)"}
+                                  onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+                                >
+                                  <img 
+                                    src={av.src} 
+                                    alt={av.name} 
+                                    onError={(e) => {
+                                      // Fallback for not-yet-generated images
+                                      (e.currentTarget as any).src = "https://ui-avatars.com/api/?name=" + av.name + "&background=random";
+                                    }}
+                                    style={{ width: "100%", borderRadius: 6, transform: "scale(1.2)" }} 
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                            <button
+                              onClick={() => updateAvatar("default")}
+                              style={{
+                                width: "100%", padding: "10px", borderRadius: "12px",
+                                background: "#f8fafc", border: "1.5px solid #e2e8f0",
+                                color: "#64748b", cursor: "pointer", fontWeight: 700, fontSize: 12,
+                                display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                              }}
+                              onMouseEnter={e => e.currentTarget.style.borderColor = "#6c4dff"}
+                              onMouseLeave={e => e.currentTarget.style.borderColor = "#e2e8f0"}
+                            >
+                              📸 Usar mi foto de Google
+                            </button>
+                          </div>
+                        )}
+
+                        {[
+                          { icon: "🛍️", label: "Mis pedidos", href: "/orders" },
+                          { icon: "❤️", label: "Lista de deseos", href: "/wishlist" },
+                          { icon: "👤", label: "Mi perfil", href: "/profile" },
+                        ].map(item => (
+                          <Link key={item.href} href={item.href}
+                            onClick={() => setShowUserMenu(false)}
+                            style={{
+                              display: "flex", alignItems: "center", gap: 10,
+                              padding: "10px 16px", fontSize: 14, color: "#374151",
+                              textDecoration: "none", transition: "background 0.15s",
+                            }}
+                            onMouseEnter={e => (e.currentTarget.style.background = "#f8fafc")}
+                            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                          >
+                            <span>{item.icon}</span> {item.label}
+                          </Link>
+                        ))}
+                        <div style={{ margin: "4px 0", borderTop: "1px solid #f1f5f9" }} />
+                        <button onClick={logout} style={{
+                          display: "flex", alignItems: "center", gap: 10,
+                          padding: "10px 16px", fontSize: 14, color: "#ef4444",
+                          background: "none", border: "none", cursor: "pointer", width: "100%",
+                          fontFamily: "'Inter', sans-serif", fontWeight: 600, textAlign: "left"
+                        }}>
+                          🚪 Cerrar sesión
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setShowAuth(true)}
+                    id="btn-login"
+                    style={{
+                      display: "flex", alignItems: "center", gap: 6,
+                      padding: "8px 16px", borderRadius: 10, border: "1.5px solid #6c4dff",
+                      background: "#f5f3ff", color: "#6c4dff", cursor: "pointer",
+                      fontWeight: 700, fontSize: 13, fontFamily: "'Inter', sans-serif",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <span className="login-btn-text">Ingresar</span>
+                  </button>
+                )}
+
             </div>
           </div>
 
@@ -430,6 +609,7 @@ export default function Navbar() {
               </form>
             </div>
           )}
+          </div>
         </nav>
 
         {/* ── CATEGORY TABS ── */}
@@ -452,7 +632,7 @@ export default function Navbar() {
             ].map((cat) => (
               <Link
                 key={cat.slug}
-                href={cat.slug === "all" ? "/" : `/?cat=${cat.slug}`}
+                href={cat.slug === "all" ? "/#productos" : `/?cat=${cat.slug}#productos`}
                 id={cat.id}
                 style={{
                   display: "flex", alignItems: "center", gap: 6,
