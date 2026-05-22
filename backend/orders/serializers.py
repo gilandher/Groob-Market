@@ -19,7 +19,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         model = Order
         fields = [
             # Contacto
-            "full_name", "email", "phone",
+            "full_name", "email", "phone", "cedula",
             # Dirección
             "department", "city", "address", "address2", "notes",
             # GPS opcional
@@ -40,6 +40,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             "location_lng":   {"required": False},
             "coupon_code":    {"required": False},
             "coupon_discount":{"required": False, "default": 0},
+            "cedula":         {"required": False, "allow_blank": True},
         }
 
     def validate(self, data):
@@ -96,13 +97,14 @@ class OrderDetailSerializer(serializers.ModelSerializer):
     status_display = serializers.SerializerMethodField()
     status_emoji   = serializers.SerializerMethodField()
     same_day       = serializers.SerializerMethodField()
+    wompi_payment_data = serializers.SerializerMethodField()
 
     class Meta:
         model  = Order
         fields = [
             "id", "order_number", "status", "status_display", "status_emoji",
-            "payment_method", "payment_status",
-            "full_name", "email", "phone",
+            "payment_method", "payment_status", "wompi_transaction_id", "wompi_payment_data",
+            "full_name", "email", "phone", "cedula",
             "department", "city", "address", "address2", "notes",
             "location_lat", "location_lng",
             "logistics_company", "tracking_number",
@@ -120,3 +122,27 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
     def get_same_day(self, obj):
         return obj.is_same_day_delivery()
+
+    def get_wompi_payment_data(self, obj):
+        if obj.payment_method == "WOMPI" and obj.payment_status != "PAID":
+            import time
+            import hashlib
+            from django.conf import settings
+            
+            amount_in_cents = int(obj.total) * 100
+            currency = "COP"
+            # Generar una referencia única para Wompi usando timestamp
+            reference = f"GM-{obj.id}-{int(time.time())}"
+            
+            # Concatenar para la firma: reference + amount_in_cents + currency + integrity_secret
+            raw_str = f"{reference}{amount_in_cents}{currency}{settings.WOMPI_INTEGRITY_SECRET}"
+            signature = hashlib.sha256(raw_str.encode('utf-8')).hexdigest()
+            
+            return {
+                "public_key": settings.WOMPI_PUBLIC_KEY,
+                "reference": reference,
+                "amount_in_cents": amount_in_cents,
+                "currency": currency,
+                "signature": signature
+            }
+        return None

@@ -1,441 +1,905 @@
 /**
  * GROOB MARKET — Admin CSS Premium
- * Glassmorphism + Gradientes + Tipografía moderna
- * Compatible con Django Jazzmin (tema Darkly)
+ * Mockup-aligned Glassmorphism + Accent Neon Purple
+ * Compatible with Django Jazzmin (darkly theme base)
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ── Variables ─────────────────────────────────────────────────────────────── */
+/* ── variables ── */
 :root {
-  --groob-purple:    #6c4dff;
-  --groob-purple2:   #9b8cff;
-  --groob-dark:      #0f172a;
-  --groob-dark2:     #1e293b;
-  --groob-dark3:     #252a3a;
-  --groob-border:    rgba(255, 255, 255, 0.07);
-  --groob-text:      #e2e8f0;
-  --groob-text-muted:#94a3b8;
-  --groob-green:     #22c55e;
-  --groob-red:       #ef4444;
-  --groob-gold:      #f59e0b;
-  --sidebar-width:   260px;
+  --groob-purple:     #6c4dff;
+  --groob-purple-glow: rgba(108, 77, 255, 0.4);
+  --groob-purple2:    #9b8cff;
+  --groob-dark-bg:    #12131a; /* Mockup deep background */
+  --groob-card-bg:    #1e2026; /* Mockup card background */
+  --groob-darker:     #16171c; /* Mockup input / sidebar background */
+  --groob-border:     rgba(255, 255, 255, 0.05); /* Fine border */
+  --groob-border-hover:#2a2b36;
+  --groob-text:       #f1f5f9;
+  --groob-text-muted: #94a3b8;
+  --groob-green:      #10b981;
+  --groob-red:        #ef4444;
+  --groob-orange:     #f59e0b;
+  --sidebar-width:    260px;
 }
 
-/* ── Base body & font ──────────────────────────────────────────────────────── */
+/* ── base font & body ── */
 body, .main-sidebar, .main-header, .content-wrapper,
 .wrapper, #django-admin-main, html {
   font-family: 'Inter', -apple-system, sans-serif !important;
+  background-color: var(--groob-dark-bg) !important;
+  color: var(--groob-text) !important;
 }
 
-/* ── SIDEBAR ───────────────────────────────────────────────────────────────── */
+/* ── SIDEBAR ── */
 .main-sidebar {
-  background: linear-gradient(160deg, #10172a 0%, #1a1540 60%, #0f172a 100%) !important;
+  background: var(--groob-dark-bg) !important;
   border-right: 1px solid var(--groob-border) !important;
-  box-shadow: 4px 0 24px rgba(0,0,0,0.4) !important;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5) !important;
   width: var(--sidebar-width) !important;
 }
 
-/* Brand logo area */
+/* Brand area with custom logo styling like the mockup */
 .brand-link {
-  background: linear-gradient(135deg, rgba(108,77,255,0.25), rgba(155,140,255,0.1)) !important;
+  background: var(--groob-dark-bg) !important;
   border-bottom: 1px solid var(--groob-border) !important;
-  padding: 14px 16px !important;
+  padding: 16px 20px !important;
   display: flex !important;
   align-items: center !important;
   gap: 12px !important;
 }
 
+/* Stylize the brand image or logo container as a purple square with rounded corners containing a white G */
+.brand-link::before {
+  content: "G" !important;
+  background: var(--groob-purple) !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 12px var(--groob-purple-glow) !important;
+}
+
+/* Hide original brand-image to force our custom logo */
 .brand-link .brand-image {
-  border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(108,77,255,0.4) !important;
-  max-height: 42px !important;
+  display: none !important;
 }
 
 .brand-link .brand-text {
   font-size: 18px !important;
-  font-weight: 900 !important;
-  background: linear-gradient(135deg, #fff 0%, var(--groob-purple2) 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  background-clip: text !important;
-  letter-spacing: -0.3px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-text-fill-color: initial !important;
+  letter-spacing: -0.5px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.1 !important;
 }
 
-/* Sidebar Nav */
+.brand-link .brand-text::after {
+  content: "ERP Admin Panel" !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  color: var(--groob-text-muted) !important;
+  text-transform: none !important;
+  letter-spacing: 0.1px !important;
+  margin-top: 2px !important;
+}
+
+/* Subtitle under brand (Groob ERP Admin Panel) */
+.brand-link {
+  flex-direction: row !important;
+  justify-content: flex-start !important;
+}
+
+/* Sidebar Nav styling */
 .nav-sidebar > .nav-item {
-  margin: 2px 8px !important;
+  margin: 4px 12px !important;
 }
 
 .nav-sidebar > .nav-item > .nav-link {
   border-radius: 10px !important;
   padding: 10px 14px !important;
   color: var(--groob-text-muted) !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   font-size: 13px !important;
   transition: all 0.2s ease !important;
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 12px !important;
+  border: 1px solid transparent !important;
 }
 
 .nav-sidebar > .nav-item > .nav-link:hover {
-  background: rgba(108, 77, 255, 0.15) !important;
-  color: var(--groob-purple2) !important;
-  transform: translateX(3px) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  color: #ffffff !important;
+  transform: none !important;
 }
 
 .nav-sidebar > .nav-item > .nav-link.active,
 .nav-sidebar > .nav-item.menu-open > .nav-link {
-  background: linear-gradient(135deg, rgba(108,77,255,0.3), rgba(155,140,255,0.15)) !important;
-  color: #fff !important;
-  box-shadow: 0 2px 12px rgba(108,77,255,0.25) !important;
+  background: rgba(108, 77, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(108, 77, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+/* Custom Diamond Active Indicator in sidebar */
+.nav-sidebar > .nav-item > .nav-link.active::after {
+  content: "♦" !important;
+  color: var(--groob-purple2) !important;
+  margin-left: auto !important;
+  font-size: 12px !important;
+  filter: drop-shadow(0 0 4px var(--groob-purple)) !important;
+  display: inline-block !important;
 }
 
 .nav-sidebar .nav-icon {
-  color: var(--groob-purple2) !important;
-  font-size: 15px !important;
-  width: 22px !important;
-  text-align: center !important;
+  color: var(--groob-text-muted) !important;
+  font-size: 14px !important;
+  width: 20px !important;
+  transition: color 0.2s !important;
 }
 
-/* Submenus */
+.nav-sidebar > .nav-item > .nav-link.active .nav-icon,
+.nav-sidebar > .nav-item > .nav-link:hover .nav-icon {
+  color: var(--groob-purple2) !important;
+}
+
+/* Submenu container */
 .nav-sidebar .nav-treeview {
-  background: rgba(0,0,0,0.2) !important;
+  background: rgba(0, 0, 0, 0.15) !important;
   border-radius: 8px !important;
-  margin: 2px 8px !important;
+  margin: 2px 12px !important;
   padding: 4px 0 !important;
+  border-left: 1px solid var(--groob-border) !important;
 }
 
 .nav-sidebar .nav-treeview .nav-item .nav-link {
   font-size: 12px !important;
-  padding: 7px 12px 7px 32px !important;
+  padding: 6px 12px 6px 28px !important;
   color: var(--groob-text-muted) !important;
-  border-radius: 8px !important;
 }
 
 .nav-sidebar .nav-treeview .nav-item .nav-link:hover {
-  color: var(--groob-purple2) !important;
-  background: rgba(108,77,255,0.12) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.03) !important;
 }
 
-/* Nav section headers */
+.nav-sidebar .nav-treeview .nav-item .nav-link.active {
+  color: var(--groob-purple2) !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+
+/* Headers of sidebar sections */
 .nav-sidebar .nav-header {
-  font-size: 9px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.12em !important;
-  color: rgba(148, 163, 184, 0.5) !important;
-  padding: 12px 22px 4px !important;
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(148, 163, 184, 0.35) !important;
+  padding: 16px 24px 6px !important;
   text-transform: uppercase !important;
 }
 
-/* ── TOP HEADER ────────────────────────────────────────────────────────────── */
+/* ── HEADER (TOP BAR) ── */
 .main-header {
-  background: linear-gradient(90deg, #10172a 0%, #1a1540 100%) !important;
+  background: var(--groob-dark-bg) !important;
   border-bottom: 1px solid var(--groob-border) !important;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  padding: 8px 16px !important;
 }
 
-.navbar-dark .navbar-nav .nav-link {
-  color: var(--groob-text-muted) !important;
-}
-
-.navbar-dark .navbar-nav .nav-link:hover {
-  color: var(--groob-purple2) !important;
-}
-
-/* Search bar in header */
-.navbar-search-block .form-control {
-  background: rgba(255,255,255,0.08) !important;
+/* Search bar styling */
+.navbar-search-block .form-control, 
+.form-inline .form-control,
+.navbar-search-block .input-group,
+.form-inline .input-group {
+  background: var(--groob-darker) !important;
   border: 1px solid var(--groob-border) !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   color: #fff !important;
+  padding: 4px 12px !important;
 }
 
-/* ── CONTENT AREA ────────────────────────────────────────────────────────── */
+.navbar-search-block .form-control:focus, 
+.form-inline .form-control:focus {
+  border-color: var(--groob-purple) !important;
+}
+
+/* User profile drop-down in navbar */
+.navbar-nav .nav-item.dropdown .user-image {
+  border: 1px solid var(--groob-purple) !important;
+  width: 28px !important;
+  height: 28px !important;
+  box-shadow: 0 0 8px var(--groob-purple-glow) !important;
+}
+
+/* ── CONTENT AREA ── */
 .content-wrapper {
-  background: #0f172a !important;
+  background-color: var(--groob-dark-bg) !important;
+  padding: 24px !important;
+}
+
+.content-header {
+  padding: 0 0 16px 0 !important;
 }
 
 .content-header h1 {
-  font-size: 22px !important;
-  font-weight: 900 !important;
-  color: #e2e8f0 !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.5px !important;
 }
 
-/* ── CARDS & MODULES ────────────────────────────────────────────────────── */
+/* Breadcrumb customization */
+.breadcrumb {
+  background: transparent !important;
+  padding: 0 !important;
+  margin-bottom: 8px !important;
+}
+
+.breadcrumb-item a {
+  color: var(--groob-text-muted) !important;
+  text-decoration: none !important;
+}
+
+.breadcrumb-item a:hover {
+  color: #ffffff !important;
+}
+
+.breadcrumb-item.active {
+  color: var(--groob-purple2) !important;
+  font-weight: 500 !important;
+}
+
+/* ── CARDS (WIDGETS) ── */
 .card {
-  background: var(--groob-dark3) !important;
+  background: var(--groob-card-bg) !important;
   border: 1px solid var(--groob-border) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.25) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+  margin-bottom: 24px !important;
+  overflow: hidden !important;
 }
 
 .card-header {
-  background: rgba(255,255,255,0.04) !important;
+  background: rgba(255, 255, 255, 0.01) !important;
   border-bottom: 1px solid var(--groob-border) !important;
-  color: var(--groob-text) !important;
-  font-weight: 800 !important;
-  border-radius: 16px 16px 0 0 !important;
-  font-size: 13px !important;
-  padding: 12px 16px !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 14px 18px !important;
 }
 
 .card-body {
-  color: var(--groob-text) !important;
+  padding: 18px !important;
+  color: #cfd8dc !important;
 }
 
-/* ── TABLES ─────────────────────────────────────────────────────────────── */
+/* ── TABLES ── */
+.table-responsive {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  border: 1px solid var(--groob-border) !important;
+}
+
 .table {
-  color: var(--groob-text) !important;
+  background: var(--groob-card-bg) !important;
+  margin-bottom: 0 !important;
 }
 
 .table > thead > tr > th {
-  background: rgba(108,77,255,0.12) !important;
-  color: var(--groob-purple2) !important;
+  background: var(--groob-darker) !important;
+  color: var(--groob-text-muted) !important;
   font-size: 11px !important;
-  font-weight: 800 !important;
-  letter-spacing: 0.07em !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
-  border-bottom: 2px solid rgba(108,77,255,0.25) !important;
-  padding: 10px 12px !important;
+  border-bottom: 1px solid var(--groob-border) !important;
+  border-top: none !important;
+  padding: 12px 16px !important;
 }
 
 .table tbody tr {
   border-bottom: 1px solid var(--groob-border) !important;
-  transition: background 0.15s !important;
+  background: transparent !important;
+  transition: background 0.15s ease !important;
 }
 
 .table tbody tr:hover {
-  background: rgba(108,77,255,0.08) !important;
+  background: rgba(108, 77, 255, 0.03) !important;
 }
 
 .table td {
-  border-color: var(--groob-border) !important;
+  border-top: none !important;
+  border-bottom: 1px solid var(--groob-border) !important;
+  padding: 12px 16px !important;
   font-size: 13px !important;
-  padding: 9px 12px !important;
   vertical-align: middle !important;
+  color: #e2e8f0 !important;
 }
 
-/* ── BUTTONS ─────────────────────────────────────────────────────────────── */
-.btn-primary, .btn-info {
-  background: linear-gradient(135deg, #6c4dff, #9b8cff) !important;
-  border: none !important;
+/* Custom styles for model listing page thumbnails */
+.table td img {
+  border-radius: 6px !important;
+  border: 1px solid var(--groob-border) !important;
+  object-fit: cover !important;
+}
+
+/* ── FORMS & INPUTS ── */
+.form-control, select.form-control, select, textarea {
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
   border-radius: 8px !important;
-  font-weight: 700 !important;
-  box-shadow: 0 3px 12px rgba(108,77,255,0.3) !important;
-  transition: all 0.2s !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  transition: all 0.2s ease !important;
 }
 
-.btn-primary:hover, .btn-info:hover {
+.form-control:focus, select:focus, textarea:focus {
+  background: var(--groob-darker) !important;
+  border-color: var(--groob-purple) !important;
+  box-shadow: 0 0 0 3px rgba(108, 77, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* django form row labels */
+.form-group label {
+  color: var(--groob-text-muted) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+/* ── BUTTONS ── */
+.btn {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  transition: all 0.2s ease !important;
+}
+
+.btn-primary, .btn-info, .btn-save, input[type="submit"].btn-primary {
+  background: linear-gradient(135deg, var(--groob-purple) 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(108, 77, 255, 0.3) !important;
+}
+
+.btn-primary:hover, .btn-info:hover, .btn-save:hover, input[type="submit"].btn-primary:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(108,77,255,0.4) !important;
+  box-shadow: 0 6px 16px rgba(108, 77, 255, 0.45) !important;
+  filter: brightness(1.1) !important;
+}
+
+.btn-secondary, .btn-cancel, .btn-default {
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
+  color: #e2e8f0 !important;
+}
+
+.btn-secondary:hover, .btn-cancel:hover, .btn-default:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
 }
 
 .btn-success {
-  background: linear-gradient(135deg, #059669, #22c55e) !important;
+  background: linear-gradient(135deg, #059669 0%, var(--groob-green) 100%) !important;
   border: none !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
+  color: #fff !important;
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #dc2626, #ef4444) !important;
+  background: linear-gradient(135deg, #b91c1c 0%, var(--groob-red) 100%) !important;
   border: none !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
+  color: #fff !important;
 }
 
-.btn-warning {
-  background: linear-gradient(135deg, #d97706, #f59e0b) !important;
-  border: none !important;
-  border-radius: 8px !important;
-  font-weight: 700 !important;
-}
-
-/* ── FORMS (changelist / add / change) ─────────────────────────────────── */
-.form-control, select.form-control, textarea.form-control {
-  background: rgba(255,255,255,0.06) !important;
-  border: 1.5px solid rgba(255,255,255,0.1) !important;
-  border-radius: 10px !important;
-  color: #e2e8f0 !important;
-  font-family: 'Inter', sans-serif !important;
-  font-size: 13px !important;
-}
-
-.form-control:focus {
-  border-color: var(--groob-purple) !important;
-  box-shadow: 0 0 0 3px rgba(108,77,255,0.15) !important;
-  background: rgba(255,255,255,0.09) !important;
-}
-
-/* ── BREADCRUMB ──────────────────────────────────────────────────────────── */
-.breadcrumb {
-  background: transparent !important;
-  padding: 0 !important;
-  font-size: 12px !important;
-}
-
-.breadcrumb-item a {
-  color: var(--groob-purple2) !important;
-}
-
-.breadcrumb-item.active {
-  color: var(--groob-text-muted) !important;
-}
-
-/* ── PAGINATION ──────────────────────────────────────────────────────────── */
+/* ── PAGINATION ── */
 .pagination .page-link {
-  background: var(--groob-dark3) !important;
+  background: var(--groob-darker) !important;
   border: 1px solid var(--groob-border) !important;
   color: var(--groob-text-muted) !important;
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   margin: 0 2px !important;
+}
+
+.pagination .page-link:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
 }
 
 .pagination .page-item.active .page-link {
   background: var(--groob-purple) !important;
   border-color: var(--groob-purple) !important;
-  color: #fff !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(108, 77, 255, 0.3) !important;
 }
 
-/* ── GROOB BADGES (status chips) ────────────────────────────────────────── */
-.badge-groob-new       { background: linear-gradient(135deg, #3b82f6, #60a5fa); color: #fff; }
-.badge-groob-confirmed { background: linear-gradient(135deg, #059669, #34d399); color: #fff; }
-.badge-groob-packing   { background: linear-gradient(135deg, #d97706, #fbbf24); color: #fff; }
-.badge-groob-onway     { background: linear-gradient(135deg, #2563eb, #818cf8); color: #fff; }
-.badge-groob-delivered { background: linear-gradient(135deg, #16a34a, #4ade80); color: #fff; }
-.badge-groob-canceled  { background: linear-gradient(135deg, #dc2626, #f87171); color: #fff; }
-
+/* ── STATUS BADGES ── */
 .badge-groob-new, .badge-groob-confirmed, .badge-groob-packing,
 .badge-groob-onway, .badge-groob-delivered, .badge-groob-canceled {
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.03em;
-  display: inline-block;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  display: inline-block !important;
 }
 
-/* ── GROOB METRIC CARDS (dashboard) ─────────────────────────────────────── */
+.badge-groob-new { background: rgba(59, 130, 246, 0.12) !important; color: #60a5fa !important; border: 1px solid rgba(59, 130, 246, 0.2) !important; }
+.badge-groob-confirmed { background: rgba(16, 185, 129, 0.12) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.2) !important; }
+.badge-groob-packing { background: rgba(245, 158, 11, 0.12) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.2) !important; }
+.badge-groob-onway { background: rgba(99, 102, 241, 0.12) !important; color: #818cf8 !important; border: 1px solid rgba(99, 102, 241, 0.2) !important; }
+.badge-groob-delivered { background: rgba(16, 185, 129, 0.15) !important; color: #4ade80 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
+.badge-groob-canceled { background: rgba(239, 68, 68, 0.12) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.2) !important; }
+
+/* ── STATUS BADGES IN PRODUCT IMPORT GRID ── */
+.badge-valid {
+  background: rgba(16, 185, 129, 0.12) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-warning-custom {
+  background: rgba(245, 158, 11, 0.12) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-danger-custom {
+  background: rgba(239, 68, 68, 0.12) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--groob-dark-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(108, 77, 255, 0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 77, 255, 0.5);
+}
+
+/* ── CHANGELIST ACTIONS & FILTERS ── */
+.actions select {
+  background: var(--groob-darker) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--groob-border) !important;
+  border-radius: 6px !important;
+}
+
+#changelist-filter {
+  background: var(--groob-card-bg) !important;
+  border-left: 1px solid var(--groob-border) !important;
+}
+
+#changelist-filter h2 {
+  background: rgba(255, 255, 255, 0.02) !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border-bottom: 1px solid var(--groob-border) !important;
+}
+
+#changelist-filter li.selected a {
+  color: var(--groob-purple2) !important;
+  font-weight: 600 !important;
+}
+
+#changelist-filter a {
+  color: var(--groob-text-muted) !important;
+}
+
+#changelist-filter a:hover {
+  color: #ffffff !important;
+}
+
+/* ── OBJECT TOOLS (Add buttons etc) ── */
+.object-tools a {
+  background: linear-gradient(135deg, var(--groob-purple) 0%, #8b5cf6 100%) !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 8px 16px !important;
+  box-shadow: 0 4px 12px rgba(108, 77, 255, 0.3) !important;
+}
+
+.object-tools a:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(108, 77, 255, 0.45) !important;
+}
+
+/* ── ALERTS & MESSAGES ── */
+.alert, .messagelist li, .errornote {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  margin-bottom: 16px !important;
+  padding: 12px 16px !important;
+}
+
+.alert-success, .messagelist li.success {
+  background: rgba(16, 185, 129, 0.1) !important;
+  border: 1px solid rgba(16, 185, 129, 0.2) !important;
+  color: #34d399 !important;
+}
+
+.alert-warning, .messagelist li.warning {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border: 1px solid rgba(245, 158, 11, 0.2) !important;
+  color: #fbbf24 !important;
+}
+
+.alert-danger, .messagelist li.error, .errornote {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.2) !important;
+  color: #f87171 !important;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card, .groob-metric-card, .groob-panel, .table-responsive {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── FOOTER ── */
+.main-footer {
+  background: var(--groob-dark-bg) !important;
+  border-top: 1px solid var(--groob-border) !important;
+  color: var(--groob-text-muted) !important;
+  padding: 12px 24px !important;
+}
+
+/* ── METRIC CARDS ── */
+.groob-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
 .groob-metric-card {
-  border-radius: 16px !important;
-  padding: 24px !important;
+  background: var(--groob-card-bg) !important;
+  border: 1px solid var(--groob-border) !important;
+  border-radius: 12px !important;
+  padding: 22px !important;
+  color: #fff !important;
   position: relative !important;
   overflow: hidden !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
-  transition: transform 0.2s, box-shadow 0.2s !important;
-  backdrop-filter: blur(8px) !important;
-  border: 1px solid rgba(255,255,255,0.08) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 .groob-metric-card:hover {
-  transform: translateY(-5px) !important;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.3) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 24px rgba(108, 77, 255, 0.15) !important;
+  border-color: rgba(108, 77, 255, 0.3) !important;
+}
+
+.groob-metric-card i.watermark {
+  position: absolute !important;
+  right: -10px !important;
+  bottom: -15px !important;
+  font-size: 80px !important;
+  opacity: 0.08 !important;
+  z-index: 0 !important;
+  transform: rotate(-10deg) !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.groob-metric-card:hover i.watermark {
+  opacity: 0.15 !important;
 }
 
 .groob-metric-card h3 {
-  font-size: 11px !important;
+  margin: 0 !important;
+  font-size: 12px !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  opacity: 0.85 !important;
-  font-weight: 800 !important;
+  letter-spacing: 1px !important;
+  color: var(--groob-text-muted) !important;
+  font-weight: 700 !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 .groob-metric-card h2 {
-  font-size: 30px !important;
-  font-weight: 900 !important;
-  margin-top: 8px !important;
-  letter-spacing: -0.5px !important;
+  margin: 8px 0 0 0 !important;
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  position: relative !important;
+  z-index: 1 !important;
+  color: #ffffff !important;
 }
 
-/* ── GROOB PANEL (chart/table containers) ───────────────────────────────── */
+/* Accent borders for metric cards instead of heavy gradients */
+.groob-metric-card::before {
+  content: "" !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: 4px !important;
+  background: var(--groob-purple) !important;
+}
+
+.groob-metric-card.card-purple::before { background: var(--groob-purple) !important; }
+.groob-metric-card.card-green::before { background: var(--groob-green) !important; }
+.groob-metric-card.card-orange::before { background: var(--groob-orange) !important; }
+.groob-metric-card.card-red::before { background: var(--groob-red) !important; }
+
+/* ── PANELS (DASHBOARD CONTAINERS) ── */
 .groob-panel {
-  background: rgba(37,40,56,0.85) !important;
-  backdrop-filter: blur(10px) !important;
+  background: var(--groob-card-bg) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  margin-bottom: 25px !important;
+  height: 100% !important;
   border: 1px solid var(--groob-border) !important;
-  border-radius: 16px !important;
-  padding: 22px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.25) !important;
-  color: var(--groob-text) !important;
+  color: #fff !important;
 }
 
 .groob-panel h4 {
-  color: #e0e7ff !important;
+  color: #ffffff !important;
   font-size: 15px !important;
+  font-weight: 700 !important;
+  margin-bottom: 15px !important;
+}
+
+/* ── LOGIN PAGE OVERRIDES ── */
+body.login-page {
+  background-color: var(--groob-dark-bg) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+body.login-page .login-box {
+  width: 420px !important;
+}
+
+body.login-page .card {
+  background: var(--groob-card-bg) !important;
+  border: 1px solid var(--groob-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+  overflow: hidden !important;
+}
+
+body.login-page .card-header {
+  border-bottom: 1px solid var(--groob-border) !important;
+  background: rgba(255, 255, 255, 0.01) !important;
+  padding: 24px !important;
+  text-align: center !important;
+}
+
+body.login-page .login-logo a {
+  color: #ffffff !important;
   font-weight: 800 !important;
+  font-size: 24px !important;
+  letter-spacing: -0.5px !important;
 }
 
-/* ── FOOTER ADMIN ────────────────────────────────────────────────────────── */
-.main-footer {
-  background: var(--groob-dark2) !important;
-  border-top: 1px solid var(--groob-border) !important;
+body.login-page .card-body {
+  padding: 28px !important;
+  background-color: transparent !important;
+}
+
+body.login-page .login-box-msg {
   color: var(--groob-text-muted) !important;
-  font-size: 11px !important;
+  font-size: 13px !important;
+  margin-bottom: 20px !important;
+  padding: 0 !important;
 }
 
-/* ── SCROLLBAR ────────────────────────────────────────────────────────────── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(108,77,255,0.4);
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(108,77,255,0.7);
+body.login-page .input-group .form-control {
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
+  border-radius: 8px 0 0 8px !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  height: auto !important;
+  padding: 10px 14px !important;
 }
 
-/* ── CHANGELIST ACTIONS ─────────────────────────────────────────────────── */
-.actions select {
-  background: var(--groob-dark3) !important;
-  color: var(--groob-text) !important;
+body.login-page .input-group .input-group-text {
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
+  border-left: none !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: var(--groob-text-muted) !important;
+}
+
+body.login-page .input-group .form-control:focus {
+  border-color: var(--groob-purple) !important;
+  box-shadow: none !important;
+}
+
+body.login-page .input-group .form-control:focus + .input-group-append .input-group-text,
+body.login-page .input-group .form-control:focus ~ .input-group-text,
+body.login-page .input-group .form-control:focus ~ .input-group-append .input-group-text {
+  border-color: var(--groob-purple) !important;
+}
+
+body.login-page .btn-primary {
+  background: linear-gradient(135deg, var(--groob-purple) 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+  box-shadow: 0 4px 12px rgba(108, 77, 255, 0.3) !important;
+}
+
+body.login-page .btn-primary:hover {
+  box-shadow: 0 6px 16px rgba(108, 77, 255, 0.45) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ── DETAILED FORM / EDIT PAGES OVERRIDES ── */
+.aligned .form-row {
+  border-bottom: 1px solid var(--groob-border) !important;
+  padding: 18px 0 !important;
+}
+
+.aligned .form-row label {
+  color: var(--groob-text-muted) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.aligned .form-row .vTextField, 
+.aligned .form-row .vIntegerField,
+.aligned .form-row .vBigIntegerField,
+.aligned .form-row select,
+.aligned .form-row textarea {
+  background: var(--groob-darker) !important;
   border: 1px solid var(--groob-border) !important;
   border-radius: 8px !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  transition: all 0.2s ease !important;
 }
 
-/* ── OBJECT TOOLS ─────────────────────────────────────────────────────────── */
-.object-tools a {
-  background: linear-gradient(135deg, #6c4dff, #9b8cff) !important;
-  border-radius: 8px !important;
+.aligned .form-row .vTextField:focus, 
+.aligned .form-row .vIntegerField:focus,
+.aligned .form-row select:focus,
+.aligned .form-row textarea:focus {
+  border-color: var(--groob-purple) !important;
+  box-shadow: 0 0 0 3px rgba(108, 77, 255, 0.2) !important;
+  outline: none !important;
+}
+
+.aligned .form-row .help {
+  color: var(--groob-text-muted) !important;
   font-size: 11px !important;
-  font-weight: 700 !important;
+  margin-top: 6px !important;
 }
 
-/* ── ALERTS ──────────────────────────────────────────────────────────────── */
-.alert-success {
-  background: rgba(34,197,94,0.12) !important;
-  border: 1px solid rgba(34,197,94,0.3) !important;
-  color: #4ade80 !important;
+/* Checkboxes style */
+input[type="checkbox"] {
+  accent-color: var(--groob-purple) !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+}
+
+/* Submit row style (usually at the bottom of edit forms) */
+.submit-row {
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  margin-top: 24px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+}
+
+.submit-row input[type="submit"], .submit-row a.deletelink {
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+}
+
+.submit-row input[type="submit"] {
+  background: linear-gradient(135deg, var(--groob-purple) 0%, #8b5cf6 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(108, 77, 255, 0.3) !important;
+}
+
+.submit-row input[type="submit"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 16px rgba(108, 77, 255, 0.45) !important;
+  filter: brightness(1.1) !important;
+}
+
+.submit-row a.deletelink {
+  background: linear-gradient(135deg, #b91c1c 0%, var(--groob-red) 100%) !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+}
+
+.submit-row a.deletelink:hover {
+  filter: brightness(1.1) !important;
+  transform: translateY(-1px) !important;
+  color: #ffffff !important;
+}
+
+/* ── SEARCH INPUT IN NAVBAR OVERRIDES ── */
+.navbar-search-block .form-control, 
+.form-inline .form-control {
+  border-radius: 12px !important;
+  background: var(--groob-darker) !important;
+  border: 1px solid var(--groob-border) !important;
+  color: #ffffff !important;
+  padding: 6px 16px !important;
+  font-size: 13px !important;
+}
+
+/* User profile drop-down menu styles */
+.navbar-nav .dropdown-menu {
+  background: var(--groob-card-bg) !important;
+  border: 1px solid var(--groob-border) !important;
   border-radius: 10px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
 
-.alert-warning {
-  background: rgba(245,158,11,0.12) !important;
-  border: 1px solid rgba(245,158,11,0.3) !important;
-  color: #fbbf24 !important;
-  border-radius: 10px !important;
+.navbar-nav .dropdown-item {
+  color: var(--groob-text) !important;
+  font-size: 13px !important;
+  padding: 10px 18px !important;
+  transition: background 0.15s ease !important;
 }
 
-.alert-danger, .errornote {
-  background: rgba(239,68,68,0.12) !important;
-  border: 1px solid rgba(239,68,68,0.3) !important;
-  color: #f87171 !important;
-  border-radius: 10px !important;
+.navbar-nav .dropdown-item:hover {
+  background: rgba(108, 77, 255, 0.1) !important;
+  color: #ffffff !important;
 }
 
-.messagelist .success {
-  background: rgba(34,197,94,0.12) !important;
-  border: 1px solid rgba(34,197,94,0.25) !important;
-  border-radius: 10px !important;
-  color: #4ade80 !important;
-}
-
-/* ── ANIMATIONS ──────────────────────────────────────────────────────────── */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.groob-metric-card, .groob-panel, .card {
-  animation: fadeInUp 0.4s ease both;
+.navbar-nav .dropdown-divider {
+  border-top: 1px solid var(--groob-border) !important;
 }

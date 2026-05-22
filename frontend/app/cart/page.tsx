@@ -160,7 +160,7 @@ export default function CartPage() {
 
     // 2. WhatsApp
     const msg = buildWhatsApp(items, subtotal, discountAmt, total, coupon, { ...form, dept: form.dept }, shipping);
-    window.open(`https://wa.me/573011963515?text=${msg}`, "_blank");
+    window.open(`https://wa.me/573001805448?text=${msg}`, "_blank");
 
     // 3. Factura en ventana nueva
     const invoiceHTML = buildInvoiceHTML(items, subtotal, discountAmt, total, coupon, form, shipping);
@@ -273,68 +273,6 @@ export default function CartPage() {
               {couponError && <p style={{ color: "#ef4444", fontSize: 12, marginTop: 6, fontWeight: 600 }}>{couponError}</p>}
             </div>
 
-            {/* Checkout form */}
-            {showCheckout && (
-              <div className="cart-section-card" style={{ border: "1.5px solid #6c4dff", boxShadow: "0 4px 20px rgba(108,77,255,0.1)" }}>
-                <h3 style={{ fontSize: 16, fontWeight: 800, marginBottom: 16 }}>📋 Datos de entrega</h3>
-
-                {[
-                  { key: "name",  label: "Nombre completo *",          placeholder: "Andrés García", type: "text" },
-                  { key: "email", label: "Correo electrónico *",        placeholder: "tu@correo.com", type: "email" },
-                  { key: "phone", label: "WhatsApp / Teléfono *",       placeholder: "301 234 5678", type: "tel" },
-                ].map(f => (
-                  <div key={f.key} style={{ marginBottom: 12 }}>
-                    <label className="form-label">{f.label}</label>
-                    <input type={f.type} value={form[f.key as keyof typeof form]}
-                      onChange={e => setField(f.key, e.target.value)}
-                      placeholder={f.placeholder} className="form-input" />
-                  </div>
-                ))}
-
-                {/* Colombia Shipping selector */}
-                <ColombiaShipping
-                  department={form.dept} city={form.city}
-                  onDepartmentChange={d => setField("dept", d)}
-                  onCityChange={c => setField("city", c)}
-                />
-
-                {/* Dirección */}
-                <div style={{ marginBottom: 12, marginTop: 12 }}>
-                  <label className="form-label">Dirección principal *</label>
-                  <input type="text" value={form.address} onChange={e => setField("address", e.target.value)}
-                    placeholder="Cra 50 #30-10" className="form-input" />
-                </div>
-                <div style={{ marginBottom: 12 }}>
-                  <label className="form-label">Apto / Piso / Torre <span style={{ color: "#94a3b8", fontWeight: 400 }}>(opcional)</span></label>
-                  <input type="text" value={form.address2} onChange={e => setField("address2", e.target.value)}
-                    placeholder="Apto 204, Torre B" className="form-input" />
-                </div>
-                <div style={{ marginBottom: 16 }}>
-                  <label className="form-label">Instrucciones adicionales <span style={{ color: "#94a3b8", fontWeight: 400 }}>(opcional)</span></label>
-                  <input type="text" value={form.notes} onChange={e => setField("notes", e.target.value)}
-                    placeholder="Llamar antes de llegar, portería azul..." className="form-input" />
-                </div>
-
-                {formError && (
-                  <div style={{ padding: "10px 14px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, color: "#dc2626", fontSize: 13, fontWeight: 600, marginBottom: 14 }}>
-                    ⚠️ {formError}
-                  </div>
-                )}
-
-                <button onClick={sendOrder} disabled={sending}
-                  style={{ width: "100%", padding: "14px", borderRadius: 12, border: "none", background: sending ? "#94a3b8" : "#25d366", color: "#fff", fontWeight: 800, fontSize: 16, cursor: sending ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}
-                  id="btn-send-whatsapp">
-                  {sending ? (
-                    <><span style={{ width: 18, height: 18, border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid white", borderRadius: "50%", animation: "spin 0.8s linear infinite", display: "inline-block" }} /> Enviando...</>
-                  ) : (
-                    <><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.49"/></svg>Confirmar pedido por WhatsApp</>
-                  )}
-                </button>
-                <p style={{ textAlign: "center", fontSize: 11, color: "#94a3b8", marginTop: 10 }}>
-                  Recibirás email de confirmación + factura en pantalla
-                </p>
-              </div>
-            )}
           </div>
 
           {/* RIGHT — Summary */}
@@ -374,11 +312,10 @@ export default function CartPage() {
               {!shipping.sameDay && form.city && <p style={{ fontSize: 11, color: "#f59e0b", fontWeight: 700, marginTop: 2 }}>📦 Envío nacional coordinar</p>}
             </div>
 
-            <button className="btn-primary" id="btn-checkout"
-              onClick={() => setShowCheckout(!showCheckout)}
-              style={{ width: "100%", fontSize: 15, padding: "14px" }}>
-              {showCheckout ? "▲ Ocultar formulario" : "📦 Completar pedido →"}
-            </button>
+            <Link href="/checkout" className="btn-primary" id="btn-checkout"
+              style={{ width: "100%", fontSize: 15, padding: "14px", display: "block", textAlign: "center", textDecoration: "none" }}>
+              📦 Completar pedido →
+            </Link>
 
             <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 5 }}>
               {["🛵 Entrega mismo día en Valle de Aburrá",
@@ -456,7 +393,7 @@ function buildInvoiceHTML(
     </div>
   </div>
   <div style="padding:16px 32px;text-align:center;background:#f8fafc;border-top:1px solid #f1f5f9;">
-    <p style="color:#64748b;font-size:12px;margin:0;">Soporte: wa.me/573011963515 · groobmarket.com</p>
+    <p style="color:#64748b;font-size:12px;margin:0;">Soporte: wa.me/573001805448 · groobmarket.com</p>
   </div>
 </div></body></html>`;
 }

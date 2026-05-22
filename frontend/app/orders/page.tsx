@@ -10,6 +10,14 @@ interface OrderItem {
 interface Order {
   id: number; order_number: string;
   status: string; status_display: string; status_emoji: string;
+  payment_method: string; payment_status: string; wompi_transaction_id?: string;
+  wompi_payment_data?: {
+    public_key: string;
+    reference: string;
+    amount_in_cents: number;
+    currency: string;
+    signature: string;
+  } | null;
   full_name: string; email: string; phone?: string;
   city: string; department: string; address: string;
   subtotal: number; discount_total: number; shipping_cost: number; total: number;
@@ -142,7 +150,55 @@ function PDFButton({ order, type }: { order: Order; type: "prefactura" | "factur
   );
 }
 
-function OrderCard({ order }: { order: Order }) {
+function getPaymentStatusBadge(method: string, status: string) {
+  if (method === "WOMPI") {
+    const colors = {
+      PAID: { bg: "#d1fae5", text: "#065f46", border: "#34d399", label: "Pagado" },
+      PENDING: { bg: "#fef3c7", text: "#d97706", border: "#fbbf24", label: "Pendiente" },
+      FAILED: { bg: "#fee2e2", text: "#b91c1c", border: "#f87171", label: "Fallido" },
+    };
+    const val = colors[status as keyof typeof colors] || { bg: "#f1f5f9", text: "#64748b", border: "#cbd5e1", label: status };
+    return (
+      <span style={{
+        display: "inline-block", padding: "3px 8px", borderRadius: 12,
+        fontSize: 10, fontWeight: 700,
+        background: val.bg, color: val.text, border: `1px solid ${val.border}`,
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        💳 Wompi: {val.label}
+      </span>
+    );
+  }
+  
+  if (method === "COD") {
+    return (
+      <span style={{
+        display: "inline-block", padding: "3px 8px", borderRadius: 12,
+        fontSize: 10, fontWeight: 700,
+        background: "#f1f5f9", color: "#64748b", border: "1px solid #cbd5e1",
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        💵 Contraentrega
+      </span>
+    );
+  }
+  
+  if (method === "WHATSAPP") {
+    return (
+      <span style={{
+        display: "inline-block", padding: "3px 8px", borderRadius: 12,
+        fontSize: 10, fontWeight: 700,
+        background: "#e0f2fe", color: "#0369a1", border: "1px solid #7dd3fc",
+        fontFamily: "'Inter', sans-serif",
+      }}>
+        💬 WhatsApp
+      </span>
+    );
+  }
+  return null;
+}
+
+function OrderCard({ order, onPay }: { order: Order; onPay: (paymentData: any, orderId: number) => void }) {
   const [expanded, setExpanded] = useState(false);
   const date = new Date(order.created_at).toLocaleDateString("es-CO", {
     year: "numeric", month: "short", day: "numeric",
@@ -170,15 +226,18 @@ function OrderCard({ order }: { order: Order }) {
           <p style={{ fontSize: 18, fontWeight: 900, color: "#0f172a" }}>{order.order_number}</p>
         </div>
         <div style={{ textAlign: "right" }}>
-          <span style={{
-            display: "inline-block", padding: "4px 12px", borderRadius: 20,
-            fontSize: 11, fontWeight: 800,
-            background: isCanceled ? "#fef2f2" : "#fff",
-            color: isCanceled ? "#dc2626" : "#6c4dff",
-            border: `1.5px solid ${isCanceled ? "#fecaca" : "#ddd6fe"}`,
-          }}>
-            {order.status_emoji} {order.status_display}
-          </span>
+          <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", alignItems: "center", flexWrap: "wrap", marginBottom: 4 }}>
+            {getPaymentStatusBadge(order.payment_method, order.payment_status)}
+            <span style={{
+              display: "inline-block", padding: "4px 12px", borderRadius: 20,
+              fontSize: 11, fontWeight: 800,
+              background: isCanceled ? "#fef2f2" : "#fff",
+              color: isCanceled ? "#dc2626" : "#6c4dff",
+              border: `1.5px solid ${isCanceled ? "#fecaca" : "#ddd6fe"}`,
+            }}>
+              {order.status_emoji} {order.status_display}
+            </span>
+          </div>
           <p style={{ fontSize: 18, fontWeight: 900, color: "#0f172a", marginTop: 4 }}>{formatCOP(order.total)}</p>
         </div>
       </div>
@@ -199,6 +258,24 @@ function OrderCard({ order }: { order: Order }) {
             {order.same_day && <span style={{ color: "#22c55e", fontWeight: 700 }}> · 🛵 Mismo día</span>}
           </p>
           <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            {order.payment_method === "WOMPI" && order.payment_status !== "PAID" && !isCanceled && order.wompi_payment_data && (
+              <button
+                onClick={() => onPay(order.wompi_payment_data, order.id)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 6,
+                  padding: "7px 14px", borderRadius: 8,
+                  background: "linear-gradient(135deg, #6c4dff, #8b5cf6)",
+                  color: "#fff",
+                  fontWeight: 700, fontSize: 12, cursor: "pointer",
+                  fontFamily: "'Inter', sans-serif",
+                  border: "none",
+                  boxShadow: "0 2px 8px rgba(108,77,255,0.3)",
+                  transition: "all 0.2s",
+                }}
+              >
+                💳 Pagar ahora
+              </button>
+            )}
             {/* PDF buttons */}
             <PDFButton order={order} type="prefactura" />
             {isDelivered && <PDFButton order={order} type="factura" />}
@@ -245,7 +322,7 @@ function OrderCard({ order }: { order: Order }) {
             </div>
           </div>
 
-          <a href={`https://wa.me/573011963515?text=${encodeURIComponent(`Hola, consulto por mi pedido ${order.order_number}`)}`}
+          <a href={`https://wa.me/573001805448?text=${encodeURIComponent(`Hola, consulto por mi pedido ${order.order_number}`)}`}
             target="_blank" rel="noreferrer"
             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 14, padding: "10px", borderRadius: 10, background: "#25d366", color: "#fff", textDecoration: "none", fontWeight: 700, fontSize: 13 }}>
             💬 Consultar por WhatsApp
@@ -262,6 +339,8 @@ export default function MyOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [email, setEmail]     = useState("");
   const [searchEmail, setSearchEmail] = useState("");
+  const [cedula, setCedula]   = useState("");
+  const [searchCedula, setSearchCedula] = useState("");
   const [error, setError]     = useState("");
 
   const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
@@ -280,20 +359,109 @@ export default function MyOrdersPage() {
       const res = await fetch(endpoint, { headers });
       if (!res.ok) throw new Error("No se encontraron pedidos.");
       const data = await res.json();
-      setOrders(data.results ?? data);
+      const results = data.results ?? data;
+      setOrders(results);
+      
+      // Auto-fallback lookup if 0 orders found for email, and user profile has a cedula
+      if (results.length === 0 && token) {
+        const user = JSON.parse(localStorage.getItem("groob_user") || "{}");
+        if (user.cedula) {
+          await fetchOrdersByCedula(user.cedula, true);
+        }
+      }
     } catch {
       setError("No encontramos pedidos. Verifica el correo o inicia sesión.");
       setOrders([]);
     } finally { setLoading(false); }
   }
 
+  async function fetchOrdersByCedula(cedulaQuery: string, isSilentFallback = false) {
+    if (!cedulaQuery) return;
+    if (!isSilentFallback) {
+      setLoading(true); setError("");
+    }
+    try {
+      const res = await fetch(`${API}/orders/by-cedula/?cedula=${encodeURIComponent(cedulaQuery)}`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const results = data.results ?? data;
+      if (results.length > 0) {
+        setOrders(results);
+        setError("");
+        if (isSilentFallback) {
+          setSearchCedula(cedulaQuery);
+          setSearchEmail("");
+        }
+      } else if (!isSilentFallback) {
+        setOrders([]);
+        setError("No encontramos pedidos para esa Cédula.");
+      }
+    } catch {
+      if (!isSilentFallback) {
+        setError("Error buscando por Cédula. Intenta de nuevo.");
+        setOrders([]);
+      }
+    } finally {
+      if (!isSilentFallback) setLoading(false);
+    }
+  }
+
+  const handleWompiPaymentForOrder = (paymentData: any, orderId: number) => {
+    if (!(window as any).WidgetCheckout) {
+      alert("El sistema de pago Wompi está cargando, por favor intenta de nuevo en un segundo.");
+      return;
+    }
+    
+    const checkout = new (window as any).WidgetCheckout({
+      currency: paymentData.currency || "COP",
+      amountInCents: paymentData.amount_in_cents,
+      reference: paymentData.reference,
+      publicKey: paymentData.public_key,
+      signature: paymentData.signature
+    });
+    
+    checkout.open((result: any) => {
+      const transaction = result.transaction;
+      if (transaction) {
+        console.log("Wompi transaction callback (list):", transaction);
+        setOrders(prevOrders => 
+          prevOrders.map(order => {
+            if (order.id === orderId) {
+              return {
+                ...order,
+                payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+                status: transaction.status === "APPROVED" ? "CONFIRMED" : order.status,
+                status_display: transaction.status === "APPROVED" ? "Confirmado" : order.status_display,
+              };
+            }
+            return order;
+          })
+        );
+      }
+    });
+  };
+
   useEffect(() => {
+    if (!document.getElementById("wompi-widget-script")) {
+      const script = document.createElement("script");
+      script.src = "https://transaction-sandbox.wompi.co/widget.js";
+      script.id = "wompi-widget-script";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+    
     try {
       const user  = JSON.parse(localStorage.getItem("groob_user") || "{}");
       const token = localStorage.getItem("groob_token");
       if (user.email) {
         setEmail(user.email);
         setSearchEmail(user.email);
+        if (user.cedula) {
+          setCedula(user.cedula);
+          setSearchCedula(user.cedula);
+        }
         fetchOrders(user.email, token || undefined);
       } else { setLoading(false); }
     } catch { setLoading(false); }
@@ -303,7 +471,15 @@ export default function MyOrdersPage() {
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     setSearchEmail(email);
+    setSearchCedula("");
     fetchOrders(email);
+  }
+
+  function handleCedulaSearch(e: React.FormEvent) {
+    e.preventDefault();
+    setSearchCedula(cedula);
+    setSearchEmail("");
+    fetchOrdersByCedula(cedula);
   }
 
   return (
@@ -332,19 +508,36 @@ export default function MyOrdersPage() {
           📄 <strong>Pre-factura:</strong> disponible inmediatamente · <strong>Factura:</strong> disponible cuando el pedido sea marcado como entregado
         </div>
 
-        {/* Email search */}
-        <form onSubmit={handleSearch} style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", marginBottom: 24, border: "1px solid #f1f5f9", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-          <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>🔍 Buscar pedidos por correo</p>
-          <div style={{ display: "flex", gap: 10 }}>
-            <input
-              type="email" value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="tu@correo.com"
-              style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "Inter,sans-serif" }}
-            />
-            <button type="submit" className="btn-primary" style={{ padding: "10px 20px", fontSize: 13 }}>Buscar</button>
-          </div>
-        </form>
+        {/* Responsive search grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16, marginBottom: 24 }}>
+          {/* Email search */}
+          <form onSubmit={handleSearch} style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", border: "1px solid #f1f5f9", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>🔍 Buscar por correo</p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <input
+                type="email" value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="tu@correo.com"
+                style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "Inter,sans-serif", width: "100%" }}
+              />
+              <button type="submit" className="btn-primary" style={{ padding: "10px 20px", fontSize: 13 }}>Buscar</button>
+            </div>
+          </form>
+
+          {/* Cédula search */}
+          <form onSubmit={handleCedulaSearch} style={{ background: "#fff", borderRadius: 16, padding: "16px 20px", border: "1px solid #f1f5f9", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 10 }}>🪪 Buscar por Cédula / ID</p>
+            <div style={{ display: "flex", gap: 10 }}>
+              <input
+                type="text" value={cedula}
+                onChange={e => setCedula(e.target.value)}
+                placeholder="Número de cédula"
+                style={{ flex: 1, padding: "10px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, outline: "none", fontFamily: "Inter,sans-serif", width: "100%" }}
+              />
+              <button type="submit" className="btn-primary" style={{ padding: "10px 20px", fontSize: 13 }}>Buscar</button>
+            </div>
+          </form>
+        </div>
 
         {loading && (
           <div style={{ textAlign: "center", padding: 40 }}>
@@ -361,11 +554,13 @@ export default function MyOrdersPage() {
           </div>
         )}
 
-        {!loading && !error && orders.length === 0 && searchEmail && (
+        {!loading && !error && orders.length === 0 && (searchEmail || searchCedula) && (
           <div style={{ textAlign: "center", padding: "40px 20px" }}>
             <div style={{ fontSize: 64 }}>📭</div>
             <h3 style={{ marginTop: 12, fontWeight: 800 }}>Sin pedidos aún</h3>
-            <p style={{ color: "#64748b", marginTop: 4 }}>No encontramos pedidos para <strong>{searchEmail}</strong></p>
+            <p style={{ color: "#64748b", marginTop: 4 }}>
+              No encontramos pedidos para {searchEmail ? <strong>{searchEmail}</strong> : <strong>la Cédula {searchCedula}</strong>}
+            </p>
             <Link href="/" className="btn-primary" style={{ display: "inline-block", marginTop: 20, padding: "12px 28px" }}>¡Hacer mi primer pedido!</Link>
           </div>
         )}
@@ -373,7 +568,7 @@ export default function MyOrdersPage() {
         {!loading && orders.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <p style={{ fontSize: 13, color: "#64748b" }}>{orders.length} pedido{orders.length !== 1 ? "s" : ""} encontrado{orders.length !== 1 ? "s" : ""}</p>
-            {orders.map(order => <OrderCard key={order.id} order={order} />)}
+            {orders.map(order => <OrderCard key={order.id} order={order} onPay={handleWompiPaymentForOrder} />)}
           </div>
         )}
       </div>

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
+import { ColombiaShipping } from "../components/ColombiaShipping";
 
 function formatCOP(value: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -17,6 +18,15 @@ type CreateOrderResponse = {
   status: string;
   total: number;
   whatsapp_url?: string;
+  payment_method?: string;
+  payment_status?: string;
+  wompi_payment_data?: {
+    public_key: string;
+    reference: string;
+    amount_in_cents: number;
+    currency: string;
+    signature: string;
+  } | null;
 };
 
 type ShippingQuote = {
@@ -31,36 +41,128 @@ type ShippingQuote = {
   whatsapp_url?: string;
 };
 
-const DEFAULT_WA_NUMBER = "573011963515";
+const DEFAULT_WA_NUMBER = "573001805448";
 
-const CITIES = [
-  "Bello", "Medellín", "Itagüí", "Envigado", "Sabaneta",
-  "La Estrella", "Caldas", "Copacabana", "Girardota", "Barbosa",
-  "Rionegro", "Guarne", "El Retiro", "La Ceja", "Marinilla",
-  "Santa Fe de Antioquia", "Yarumal", "Caucasia", "Turbo", "Apartadó",
-  "Otra ciudad (consultar)",
-];
+// CITIES list removed in favor of ColombiaShipping component
 
-export default function CheckoutPage() {
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <main style={{ minHeight: "100vh", background: "var(--groob-bg)", padding: "40px 20px" }}>
+          <div style={{ maxWidth: 600, margin: "0 auto", background: "white", padding: 30, borderRadius: 20, border: "1px solid #fecaca", boxShadow: "var(--groob-shadow-sm)" }}>
+            <h2 style={{ fontSize: "20px", color: "#dc2626", fontWeight: 800, marginBottom: 12 }}>⚠️ Error de Renderizado</h2>
+            <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: 16 }}>
+              Ocurrió un error al cargar la página de pago. Por favor intenta recargar la página.
+            </p>
+            <div style={{ background: "#fef2f2", border: "1px solid #fee2e2", borderRadius: 10, padding: 16, overflowX: "auto" }}>
+              <p style={{ fontWeight: 700, fontSize: "14px", color: "#991b1b", marginBottom: 8 }}>
+                {this.state.error?.toString()}
+              </p>
+              <pre style={{ fontSize: "11px", color: "#b91c1c", fontFamily: "monospace", margin: 0 }}>
+                {this.state.error?.stack}
+              </pre>
+            </div>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              style={{
+                marginTop: 20, padding: "10px 20px", background: "var(--groob-purple)", color: "white",
+                border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer",
+              }}
+            >
+              Reintentar
+            </button>
+          </div>
+        </main>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export function CheckoutPageInner() {
+  const [mounted, setMounted] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [orderResult, setOrderResult] = useState<CreateOrderResponse | null>(null);
+  
+  console.log("RENDER CheckoutPageInner:", { 
+    mounted,
+    itemsCount: items.length, 
+    items, 
+    orderResult, 
+    msg 
+  });
   const [placedCart, setPlacedCart] = useState<CartItem[]>([]);
   const [placedTotal, setPlacedTotal] = useState<number>(0);
 
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [department, setDepartment] = useState("Antioquia");
   const [city, setCity] = useState("Bello");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"COD" | "WHATSAPP">("COD");
+  const [paymentMethod, setPaymentMethod] = useState<"COD" | "WHATSAPP" | "WOMPI">("COD");
 
   // Envío
   const [shipping, setShipping] = useState<ShippingQuote | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
 
-  useEffect(() => { setItems(getCart()); }, []);
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const cart = getCart() || [];
+      const cleanCart = cart.filter((it): it is CartItem => {
+        return it !== null && typeof it === "object" && typeof it.product_id === "number" && typeof it.sale_price === "number";
+      });
+      setItems(cleanCart);
+    } catch (e) {
+      console.error("Error retrieving cart items:", e);
+    }
+
+    if (!document.getElementById("wompi-widget-script")) {
+      const script = document.createElement("script");
+      script.src = "https://transaction-sandbox.wompi.co/widget.js";
+      script.id = "wompi-widget-script";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    try {
+      const rawUser = localStorage.getItem("groob_user");
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u.first_name) setFirstName(u.first_name);
+        if (u.last_name) setLastName(u.last_name);
+        if (u.email) setEmail(u.email);
+        if (u.phone) setPhone(u.phone);
+        if (u.department) setDepartment(u.department);
+        if (u.city) setCity(u.city);
+        if (u.address) setAddress(u.address);
+      }
+    } catch (e) {
+      console.error("Error loading user data from localStorage:", e);
+    }
+  }, []);
 
   // Cotizar envío cuando cambia la ciudad
   useEffect(() => {
@@ -85,20 +187,86 @@ export default function CheckoutPage() {
   }, [city]);
 
   const subtotal = useMemo(() => items.reduce((acc, it) => acc + it.sale_price * it.qty, 0), [items]);
+
+  if (!mounted) {
+    return (
+      <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>
+        <style>{`
+          @keyframes spin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
+        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 20px" }}>
+          <div style={{ marginBottom: 28 }}>
+            <span style={{ color: "var(--groob-purple)", fontSize: "13px", cursor: "pointer" }}>
+              ← Volver al carrito
+            </span>
+            <h1 style={{ fontSize: "24px", fontWeight: 800, marginTop: 6 }}>Finalizar pedido</h1>
+          </div>
+          <div style={{ textAlign: "center", padding: "80px 0" }}>
+            <div style={{
+              width: 40,
+              height: 40,
+              border: "3px solid #ddd6fe",
+              borderTop: "3px solid #6c4dff",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite",
+              margin: "0 auto"
+            }} />
+            <p style={{ marginTop: 12, color: "var(--groob-text-muted)", fontSize: "14px" }}>
+              Cargando checkout...
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
   const shippingCost = shipping?.disponible ? (shipping.precio ?? 0) : 0;
   const total = subtotal + shippingCost;
 
   const displayCart = orderResult ? placedCart : items;
   const displayTotal = orderResult ? placedTotal : total;
 
+  const handleWompiPayment = (paymentData: any) => {
+    if (!(window as any).WidgetCheckout) {
+      setMsg("El sistema de pago Wompi está cargando, por favor intenta en un segundo.");
+      return;
+    }
+    
+    const checkout = new (window as any).WidgetCheckout({
+      currency: paymentData.currency || "COP",
+      amountInCents: paymentData.amount_in_cents,
+      reference: paymentData.reference,
+      publicKey: paymentData.public_key,
+      signature: paymentData.signature
+    });
+    
+    checkout.open((result: any) => {
+      const transaction = result.transaction;
+      if (transaction) {
+        console.log("Wompi transaction callback:", transaction);
+        if (orderResult) {
+          setOrderResult(prev => prev ? {
+            ...prev,
+            payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+            status: transaction.status === "APPROVED" ? "✅ Confirmado" : prev.status
+          } : null);
+        }
+      }
+    });
+  };
+
   function buildFallbackWaUrl(orderId: number) {
+    const fullNameCombined = `${firstName.trim()} ${lastName.trim()}`.trim() || "-";
     const lines = [
       "Hola Groob Market 👋",
       `Quiero confirmar mi pedido #${orderId}.`,
       "",
       "Datos de entrega:",
-      `- Nombre: ${fullName || "-"}`,
+      `- Nombre: ${fullNameCombined}`,
+      `- Correo: ${email.trim() || "-"}`,
       `- Teléfono: ${phone || "-"}`,
+      `- Departamento: ${department || "-"}`,
       `- Ciudad: ${city || "-"}`,
       `- Dirección: ${address || "-"}`,
       notes ? `- Notas: ${notes}` : "",
@@ -120,8 +288,16 @@ export default function CheckoutPage() {
     setOrderResult(null);
 
     if (!items.length) { setMsg("Tu carrito está vacío."); return; }
-    if (!fullName.trim() || !phone.trim() || !address.trim()) {
-      setMsg("Completa nombre, teléfono y dirección.");
+    if (
+      !firstName.trim() ||
+      !lastName.trim() ||
+      !email.trim() ||
+      !phone.trim() ||
+      !department.trim() ||
+      !city.trim() ||
+      !address.trim()
+    ) {
+      setMsg("Por favor, completa todos los campos obligatorios (*).");
       return;
     }
 
@@ -139,8 +315,10 @@ export default function CheckoutPage() {
         method: "POST",
         headers,
         body: JSON.stringify({
-          full_name: fullName.trim(),
+          full_name: `${firstName.trim()} ${lastName.trim()}`,
+          email: email.trim(),
           phone: phone.trim(),
+          department: department.trim(),
           city: city.trim(),
           address: address.trim(),
           notes: notes.trim(),
@@ -155,15 +333,27 @@ export default function CheckoutPage() {
 
       setPlacedCart(snapshotCart);
       setPlacedTotal(snapshotTotal);
-      setOrderResult({
+      
+      const resultData = {
         id: data.id,
         status: data.status ?? "NEW",
         total: data.total ?? snapshotTotal,
         whatsapp_url: data.whatsapp_url || data.whatsapp_link || data.whatsapp || undefined,
-      });
+        payment_method: data.payment_method,
+        payment_status: data.payment_status,
+        wompi_payment_data: data.wompi_payment_data,
+      };
+      
+      setOrderResult(resultData);
       clearCart();
       setItems([]);
       setMsg("success");
+      
+      if (paymentMethod === "WOMPI" && data.wompi_payment_data) {
+        setTimeout(() => {
+          handleWompiPayment(data.wompi_payment_data);
+        }, 300);
+      }
     } catch (err: any) {
       setMsg(`Error: ${err?.message || "Ocurrió un error"}`);
     } finally {
@@ -199,23 +389,75 @@ export default function CheckoutPage() {
         {/* ── Success state ── */}
         {msg === "success" && orderResult && (
           <div style={{
-            background: "linear-gradient(135deg, #d1fae5, #ecfdf5)",
-            border: "1.5px solid #6ee7b7",
+            background: orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID"
+              ? "linear-gradient(135deg, #f5f3ff, #ede9fe)"
+              : "linear-gradient(135deg, #d1fae5, #ecfdf5)",
+            border: orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID"
+              ? "1.5px solid #c084fc"
+              : "1.5px solid #6ee7b7",
             borderRadius: 20, padding: "28px 32px",
             marginBottom: 28, textAlign: "center",
+            boxShadow: "var(--groob-shadow-sm)",
           }}>
-            <div style={{ fontSize: 56, marginBottom: 12 }}>🎉</div>
-            <h2 style={{ fontSize: "22px", fontWeight: 800, color: "#065f46", marginBottom: 6 }}>
-              ¡Pedido #{orderResult.id} creado!
+            <div style={{ fontSize: 56, marginBottom: 12 }}>
+              {orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID" ? "💳" : "🎉"}
+            </div>
+            <h2 style={{
+              fontSize: "22px", fontWeight: 800,
+              color: orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID" ? "#5b21b6" : "#065f46",
+              marginBottom: 6
+            }}>
+              {orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID"
+                ? `¡Pedido #${orderResult.id} registrado!`
+                : `¡Pedido #${orderResult.id} creado con éxito!`
+              }
             </h2>
-            <p style={{ color: "#047857", marginBottom: 20 }}>
-              Estado: <strong>{orderResult.status}</strong> · Total: <strong>{formatCOP(orderResult.total)}</strong>
-            </p>
+            
+            {orderResult.payment_method === "WOMPI" ? (
+              <div style={{ marginBottom: 20 }}>
+                <p style={{
+                  color: orderResult.payment_status === "PAID" ? "#047857" : "#6b21a8",
+                  fontSize: "15px", fontWeight: 600
+                }}>
+                  Estado de pago: {" "}
+                  <span style={{
+                    padding: "4px 10px", borderRadius: 20, fontSize: "12px", fontWeight: 700,
+                    background: orderResult.payment_status === "PAID" ? "#d1fae5" : (orderResult.payment_status === "PENDING" ? "#fef3c7" : "#fee2e2"),
+                    color: orderResult.payment_status === "PAID" ? "#065f46" : (orderResult.payment_status === "PENDING" ? "#d97706" : "#b91c1c"),
+                    border: `1px solid ${orderResult.payment_status === "PAID" ? "#34d399" : (orderResult.payment_status === "PENDING" ? "#fbbf24" : "#f87171")}`
+                  }}>
+                    {orderResult.payment_status === "PAID" ? "PAGADO" : (orderResult.payment_status === "PENDING" ? "PENDIENTE" : "FALLIDO / RECHAZADO")}
+                  </span>
+                </p>
+                <p style={{ color: "#6b7280", fontSize: "14px", marginTop: 8 }}>
+                  Total: <strong>{formatCOP(orderResult.total)}</strong>
+                </p>
+              </div>
+            ) : (
+              <p style={{ color: "#047857", marginBottom: 20 }}>
+                Estado: <strong>{orderResult.status}</strong> · Total: <strong>{formatCOP(orderResult.total)}</strong>
+              </p>
+            )}
+
             <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+              {orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID" && orderResult.wompi_payment_data && (
+                <button
+                  onClick={() => handleWompiPayment(orderResult.wompi_payment_data)}
+                  className="btn-primary"
+                  style={{
+                    fontSize: "15px", padding: "13px 28px",
+                    background: "linear-gradient(135deg, #6c4dff, #8b5cf6)",
+                    border: "none", boxShadow: "0 4px 14px rgba(108,77,255,0.4)"
+                  }}
+                >
+                  💳 Pagar Pedido con Wompi
+                </button>
+              )}
+              
               <a
                 href={orderResult.whatsapp_url || buildFallbackWaUrl(orderResult.id)}
                 target="_blank" rel="noreferrer"
-                className="btn-whatsapp"
+                className={orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID" ? "btn-outline" : "btn-whatsapp"}
                 id="btn-confirm-wa"
                 style={{ fontSize: "15px", padding: "13px 28px" }}
               >
@@ -226,13 +468,16 @@ export default function CheckoutPage() {
               </Link>
             </div>
             <p style={{ marginTop: 16, fontSize: "12px", color: "#6b7280" }}>
-              Te contactaremos para coordinar la entrega.
+              {orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID"
+                ? "Una vez completes tu pago, el estado se actualizará automáticamente."
+                : "Te contactaremos para coordinar la entrega de tu pedido."
+              }
             </p>
           </div>
         )}
 
         {!orderResult && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 28, alignItems: "start" }}>
+          <div className="responsive-checkout-layout" style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 28, alignItems: "start" }}>
 
             {/* ── Delivery form ── */}
             <div style={{ background: "white", borderRadius: 20, border: "1px solid var(--groob-border)", padding: "28px", boxShadow: "var(--groob-shadow-sm)" }}>
@@ -240,22 +485,35 @@ export default function CheckoutPage() {
 
               <form onSubmit={submitOrder} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <div className="responsive-grid-2cols" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                   <div>
-                    <label className="field-label">Nombre completo *</label>
-                    <input id="inp-name" className="field-input" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Ej: Andrés Inciarte" required />
+                    <label className="field-label">Nombres *</label>
+                    <input id="inp-firstname" className="field-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Ej: Andrés" required />
+                  </div>
+                  <div>
+                    <label className="field-label">Apellidos *</label>
+                    <input id="inp-lastname" className="field-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Ej: Inciarte" required />
+                  </div>
+                </div>
+
+                <div className="responsive-grid-2cols" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                  <div>
+                    <label className="field-label">Correo electrónico *</label>
+                    <input id="inp-email" type="email" className="field-input" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Ej: andres@gmail.com" required />
                   </div>
                   <div>
                     <label className="field-label">Teléfono / WhatsApp *</label>
-                    <input id="inp-phone" className="field-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Ej: 3011963515" required />
+                    <input id="inp-phone" className="field-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Ej: 3001805448" required />
                   </div>
                 </div>
 
                 <div>
-                  <label className="field-label">Ciudad *</label>
-                  <select id="inp-city" className="field-input" value={city} onChange={(e) => setCity(e.target.value)}>
-                    {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
+                  <ColombiaShipping
+                    department={department}
+                    city={city}
+                    onDepartmentChange={setDepartment}
+                    onCityChange={setCity}
+                  />
                 </div>
 
                 {/* ── Shipping quote box ── */}
@@ -296,7 +554,7 @@ export default function CheckoutPage() {
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                       <div>
                         <p style={{ fontSize: 13, fontWeight: 700, color: "#0f172a" }}>
-                          📍 {shipping.zona_label?.split("—")[1]?.trim() || shipping.zona_label}
+                          📍 {shipping.zona_label?.split("—")?.[1]?.trim() || shipping.zona_label || ""}
                         </p>
                         <p style={{ fontSize: 12, color: "#64748b", marginTop: 2 }}>
                           ⏱ Tiempo estimado: {shipping.tiempo}
@@ -336,15 +594,19 @@ export default function CheckoutPage() {
                 {/* Payment method */}
                 <div>
                   <label className="field-label">Método de pago</label>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    {[{ value: "COD", label: "💵 Contraentrega" }, { value: "WHATSAPP", label: "💬 WhatsApp" }].map((opt) => (
+                  <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                    {[
+                      { value: "COD", label: "💵 Contraentrega" },
+                      { value: "WHATSAPP", label: "💬 WhatsApp" },
+                      { value: "WOMPI", label: "💳 Pago en línea (Wompi)" }
+                    ].map((opt) => (
                       <button
                         key={opt.value}
                         type="button"
                         onClick={() => setPaymentMethod(opt.value as any)}
                         id={`pay-${opt.value.toLowerCase()}`}
                         style={{
-                          flex: 1, padding: "12px", borderRadius: 12,
+                          flex: "1 1 180px", padding: "12px", borderRadius: 12,
                           border: `2px solid ${paymentMethod === opt.value ? "var(--groob-purple)" : "var(--groob-border)"}`,
                           background: paymentMethod === opt.value ? "var(--groob-purple-bg)" : "white",
                           color: paymentMethod === opt.value ? "var(--groob-purple)" : "var(--groob-text-muted)",
@@ -356,9 +618,6 @@ export default function CheckoutPage() {
                       </button>
                     ))}
                   </div>
-                  <p style={{ marginTop: 8, fontSize: "11px", color: "var(--groob-text-muted)" }}>
-                    Próximamente: PayU y Wompi para pago en línea.
-                  </p>
                 </div>
 
                 {msg && msg !== "success" && (
@@ -439,5 +698,13 @@ export default function CheckoutPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <ErrorBoundary>
+      <CheckoutPageInner />
+    </ErrorBoundary>
   );
 }

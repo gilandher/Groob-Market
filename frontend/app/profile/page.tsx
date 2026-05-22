@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { COLOMBIA_DATA } from "../components/ColombiaShipping";
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000/api/v1";
 
@@ -15,6 +16,9 @@ interface UserProfile {
   address2?: string;
   city?: string;
   department?: string;
+  cedula?: string;
+  avatar?: string;
+  data_policy_accepted?: boolean;
 }
 
 interface Order {
@@ -34,7 +38,42 @@ function formatCOP(v: number) {
   return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(v);
 }
 
-function Avatar({ name, size = 72 }: { name: string; size?: number }) {
+function Avatar({ name, avatar, size = 72 }: { name: string; avatar?: string; size?: number }) {
+  if (avatar && avatar.startsWith("avatar_")) {
+    return (
+      <img
+        src={`/avatars/${avatar}.svg`}
+        alt={name}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "50%",
+          objectFit: "cover",
+          boxShadow: "0 4px 16px rgba(108,77,255,0.35)",
+          flexShrink: 0,
+          border: "2px solid #fff",
+        }}
+      />
+    );
+  }
+  if (avatar && (avatar.startsWith("http://") || avatar.startsWith("https://"))) {
+    return (
+      <img
+        src={avatar}
+        alt={name}
+        referrerPolicy="no-referrer"
+        style={{
+          width: size,
+          height: size,
+          borderRadius: "50%",
+          objectFit: "cover",
+          boxShadow: "0 4px 16px rgba(108,77,255,0.35)",
+          flexShrink: 0,
+          border: "2px solid #fff",
+        }}
+      />
+    );
+  }
   const initials = name?.slice(0, 2).toUpperCase() || "??";
   return (
     <div style={{
@@ -59,36 +98,109 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [msgType, setMsgType] = useState<"ok" | "err">("ok");
+  const [originalExternalAvatar, setOriginalExternalAvatar] = useState<string | null>(null);
 
   // Form state
   const [form, setForm] = useState({
-    name: "", phone: "", address: "", address2: "",
-    city: "", department: "",
+    first_name: "", last_name: "", email: "", phone: "", address: "", address2: "",
+    city: "", department: "", cedula: "", avatar: "avatar_1",
+    data_policy_accepted: false,
   });
 
   // Password change
   const [pwForm, setPwForm] = useState({ current: "", newPw: "", confirm: "" });
   const [pwMsg, setPwMsg] = useState("");
 
+  const handleDepartmentChange = (dept: string) => {
+    const firstCity = COLOMBIA_DATA[dept]?.[0] || "";
+    setForm(f => ({
+      ...f,
+      department: dept,
+      city: firstCity,
+    }));
+  };
+
+  async function fetchProfile(token: string) {
+    try {
+      const res = await fetch(`${API}/auth/me/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.status === 401) {
+        logout();
+        return;
+      }
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+        localStorage.setItem("groob_user", JSON.stringify(data));
+        if (data.avatar && (data.avatar.startsWith("http://") || data.avatar.startsWith("https://"))) {
+          setOriginalExternalAvatar(data.avatar);
+        }
+        setForm({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          email: data.email || "",
+          phone: data.phone || "",
+          address: data.address || "",
+          address2: data.address2 || "",
+          city: data.city || "",
+          department: data.department || "",
+          cedula: data.cedula || "",
+          avatar: data.avatar || "avatar_1",
+          data_policy_accepted: data.data_policy_accepted || false,
+        });
+      }
+    } catch (err) {
+      console.error("Error fetching profile:", err);
+    }
+  }
+
   useEffect(() => {
-    const raw = localStorage.getItem("groob_user");
     const token = localStorage.getItem("groob_token");
-    if (!raw || !token) {
+    if (!token) {
       router.push("/");
       return;
     }
-    const u = JSON.parse(raw);
-    setUser(u);
-    setForm({
-      name: u.name || "",
-      phone: u.phone || "",
-      address: u.address || "",
-      address2: u.address2 || "",
-      city: u.city || "",
-      department: u.department || "",
-    });
+
+    const raw = localStorage.getItem("groob_user");
+    if (raw) {
+      try {
+        const u = JSON.parse(raw);
+        setUser(u);
+        if (u.avatar && (u.avatar.startsWith("http://") || u.avatar.startsWith("https://"))) {
+          setOriginalExternalAvatar(u.avatar);
+        }
+        setForm({
+          first_name: u.first_name || "",
+          last_name: u.last_name || "",
+          email: u.email || "",
+          phone: u.phone || "",
+          address: u.address || "",
+          address2: u.address2 || "",
+          city: u.city || "",
+          department: u.department || "",
+          cedula: u.cedula || "",
+          avatar: u.avatar || "avatar_1",
+          data_policy_accepted: u.data_policy_accepted || false,
+        });
+      } catch { /* ignore */ }
+    }
+
+    fetchProfile(token);
     loadOrders(token);
   }, []);
+
+  useEffect(() => {
+    function handleAuthUpdate() {
+      const token = localStorage.getItem("groob_token");
+      if (!token) {
+        setUser(null);
+        router.push("/");
+      }
+    }
+    window.addEventListener("groob_auth_update", handleAuthUpdate);
+    return () => window.removeEventListener("groob_auth_update", handleAuthUpdate);
+  }, [router]);
 
   async function loadOrders(token: string) {
     try {
@@ -106,6 +218,16 @@ export default function ProfilePage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (!form.first_name.trim() || !form.last_name.trim() || !form.email.trim() || !form.phone.trim() || !form.city.trim() || !form.department.trim() || !form.address.trim() || !form.cedula.trim()) {
+      setMsg("❌ Todos los campos son obligatorios (excepto la segunda dirección)");
+      setMsgType("err");
+      return;
+    }
+    if (!form.data_policy_accepted) {
+      setMsg("❌ Debe aceptar los términos y condiciones de tratamiento de datos");
+      setMsgType("err");
+      return;
+    }
     setSaving(true); setMsg("");
     const token = localStorage.getItem("groob_token");
     try {
@@ -114,15 +236,47 @@ export default function ProfilePage() {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(form),
       });
-      if (!res.ok) throw new Error();
-      const updated = { ...user, ...form };
-      setUser(updated as UserProfile);
-      localStorage.setItem("groob_user", JSON.stringify(updated));
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        let errorMsg = "Error actualizando perfil. Intenta de nuevo.";
+        if (errorData) {
+          if (errorData.detail) {
+            errorMsg = errorData.detail;
+          } else {
+            const messages = Object.entries(errorData).map(([key, val]) => {
+              const fieldLabel = {
+                first_name: "Nombres",
+                last_name: "Apellidos",
+                email: "Correo electrónico",
+                phone: "Teléfono",
+                address: "Dirección principal",
+                city: "Ciudad",
+                department: "Departamento",
+                cedula: "Cédula",
+                data_policy_accepted: "Tratamiento de datos"
+              }[key] || key;
+              const errors = Array.isArray(val) ? val.join(" ") : String(val);
+              return `${fieldLabel}: ${errors}`;
+            });
+            if (messages.length > 0) {
+              errorMsg = "Errores de validación:\n" + messages.join("\n");
+            }
+          }
+        }
+        throw new Error(errorMsg);
+      }
+      const data = await res.json();
+      const updatedUser = data.user;
+      setUser(updatedUser);
+      localStorage.setItem("groob_user", JSON.stringify(updatedUser));
+      if (updatedUser.avatar && (updatedUser.avatar.startsWith("http://") || updatedUser.avatar.startsWith("https://"))) {
+        setOriginalExternalAvatar(updatedUser.avatar);
+      }
       window.dispatchEvent(new Event("groob_auth_update"));
       setMsg("✅ Perfil actualizado correctamente");
       setMsgType("ok");
-    } catch {
-      setMsg("❌ Error actualizando perfil. Intenta de nuevo.");
+    } catch (err: any) {
+      setMsg(err.message || "❌ Error actualizando perfil. Intenta de nuevo.");
       setMsgType("err");
     } finally {
       setSaving(false);
@@ -191,6 +345,28 @@ export default function ProfilePage() {
     marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em",
   };
 
+  const selectStyle: React.CSSProperties = {
+    ...inputStyle,
+    appearance: "none",
+    backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236c4dff' stroke-width='2'%3E%3Cpolyline points='6,9 12,15 18,9'/%3E%3C/svg%3E\")",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 14px center",
+    paddingRight: 36,
+    cursor: "pointer",
+  };
+
+  // Dynamically build department options ensuring current form value is included if not in COLOMBIA_DATA
+  const deptOptions = Object.keys(COLOMBIA_DATA).sort();
+  if (form.department && !deptOptions.includes(form.department)) {
+    deptOptions.push(form.department);
+  }
+
+  // Dynamically build city options based on selected department, ensuring current city is included
+  const cityOptions = form.department ? [...(COLOMBIA_DATA[form.department] || [])] : [];
+  if (form.city && !cityOptions.includes(form.city)) {
+    cityOptions.push(form.city);
+  }
+
   return (
     <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "32px 16px" }}>
@@ -207,7 +383,7 @@ export default function ProfilePage() {
           display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap",
           boxShadow: "0 8px 32px rgba(108,77,255,0.25)",
         }}>
-          <Avatar name={user.name} size={80} />
+          <Avatar name={user.name} avatar={user.avatar} size={80} />
           <div style={{ flex: 1 }}>
             <h1 style={{ color: "#fff", fontSize: 24, fontWeight: 900, margin: 0 }}>{user.name}</h1>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 14, marginTop: 4 }}>{user.email}</p>
@@ -267,55 +443,175 @@ export default function ProfilePage() {
             </h2>
 
             <form onSubmit={handleSave}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <div style={{ gridColumn: "1 / -1" }}>
-                  <label style={labelStyle}>Nombre completo</label>
+              {/* ── Avatar Grid Selection ── */}
+              <div style={{ marginBottom: 28 }}>
+                <label style={labelStyle}>Elige tu Avatar</label>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))", gap: 12, marginTop: 8 }}>
+                  {originalExternalAvatar && (
+                    <button
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, avatar: originalExternalAvatar }))}
+                      style={{
+                        background: "none",
+                        border: form.avatar === originalExternalAvatar ? "3px solid #6c4dff" : "3px solid transparent",
+                        borderRadius: "50%",
+                        padding: 3,
+                        cursor: "pointer",
+                        outline: "none",
+                        transition: "transform 0.25s, border-color 0.25s",
+                        transform: form.avatar === originalExternalAvatar ? "scale(1.08)" : "scale(1)",
+                        boxShadow: form.avatar === originalExternalAvatar ? "0 4px 12px rgba(108,77,255,0.3)" : "none",
+                      }}
+                    >
+                      <img
+                        src={originalExternalAvatar}
+                        alt="Avatar Google"
+                        referrerPolicy="no-referrer"
+                        style={{ width: 60, height: 60, borderRadius: "50%", display: "block", objectFit: "cover" }}
+                      />
+                    </button>
+                  )}
+                  {[
+                    { id: "avatar_1", label: "Monstera 🌿" },
+                    { id: "avatar_2", label: "Cactus 🌵" },
+                    { id: "avatar_3", label: "Gato 🐱" },
+                    { id: "avatar_4", label: "Perro 🐶" },
+                    { id: "avatar_5", label: "Zorro 🦊" },
+                    { id: "avatar_6", label: "Galaxia 🌌" },
+                    { id: "avatar_7", label: "Montaña 🏔️" },
+                    { id: "avatar_8", label: "Chico 👦" },
+                    { id: "avatar_9", label: "Chica 👧" },
+                  ].map(av => {
+                    const isSelected = form.avatar === av.id;
+                    return (
+                      <button
+                        key={av.id}
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, avatar: av.id }))}
+                        style={{
+                          background: "none",
+                          border: isSelected ? "3px solid #6c4dff" : "3px solid transparent",
+                          borderRadius: "50%",
+                          padding: 3,
+                          cursor: "pointer",
+                          outline: "none",
+                          transition: "transform 0.25s, border-color 0.25s",
+                          transform: isSelected ? "scale(1.08)" : "scale(1)",
+                          boxShadow: isSelected ? "0 4px 12px rgba(108,77,255,0.3)" : "none",
+                        }}
+                      >
+                        <img
+                          src={`/avatars/${av.id}.svg`}
+                          alt={av.label}
+                          style={{ width: 60, height: 60, borderRadius: "50%", display: "block" }}
+                        />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="responsive-grid-2cols" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>Nombres <span style={{ color: "#f43f5e" }}>*</span></label>
                   <input
-                    style={inputStyle} value={form.name}
-                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                    placeholder="Tu nombre completo"
+                    style={inputStyle} value={form.first_name}
+                    onChange={e => setForm(f => ({ ...f, first_name: e.target.value }))}
+                    placeholder="Tus nombres"
+                    required
+                    onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
+                    onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Apellidos <span style={{ color: "#f43f5e" }}>*</span></label>
+                  <input
+                    style={inputStyle} value={form.last_name}
+                    onChange={e => setForm(f => ({ ...f, last_name: e.target.value }))}
+                    placeholder="Tus apellidos"
+                    required
                     onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
                     onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
                   />
                 </div>
 
                 <div style={{ gridColumn: "1 / -1" }}>
-                  <label style={labelStyle}>Correo electrónico</label>
-                  <input style={{ ...inputStyle, background: "#f8fafc", color: "#94a3b8" }} value={user.email} disabled />
-                  <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>El correo no se puede modificar</p>
+                  <label style={labelStyle}>Correo electrónico <span style={{ color: "#f43f5e" }}>*</span></label>
+                  <input
+                    style={inputStyle}
+                    type="email"
+                    value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="tu@email.com"
+                    required
+                    onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
+                    onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                  />
+                  <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>💡 El correo electrónico se puede modificar una vez por semana (cada 7 días).</p>
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Teléfono / WhatsApp</label>
+                  <label style={labelStyle}>Cédula / ID de Cliente <span style={{ color: "#f43f5e" }}>*</span></label>
+                  <input
+                    style={{ ...inputStyle, ...(!!user.cedula ? { background: "#f8fafc", color: "#94a3b8", cursor: "not-allowed" } : {}) }}
+                    value={form.cedula}
+                    onChange={e => setForm(f => ({ ...f, cedula: e.target.value }))}
+                    placeholder="12345678"
+                    required
+                    disabled={!!user.cedula}
+                    onFocus={e => { if (!user.cedula) { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; } }}
+                    onBlur={e => { if (!user.cedula) { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; } }}
+                  />
+                  {!!user.cedula && (
+                    <p style={{ fontSize: 11, color: "#94a3b8", marginTop: 4 }}>🔒 La cédula no se puede modificar por motivos de seguridad y garantía.</p>
+                  )}
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Teléfono / WhatsApp <span style={{ color: "#f43f5e" }}>*</span></label>
                   <input
                     style={inputStyle} value={form.phone}
                     onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                     placeholder="300 123 4567"
+                    required
                     onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
                     onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
                   />
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Ciudad</label>
-                  <input
-                    style={inputStyle} value={form.city}
+                  <label style={labelStyle}>Departamento <span style={{ color: "#f43f5e" }}>*</span></label>
+                  <select
+                    style={selectStyle}
+                    value={form.department}
+                    onChange={e => handleDepartmentChange(e.target.value)}
+                    required
+                    onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
+                    onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+                  >
+                    <option value="" disabled>— Selecciona departamento —</option>
+                    {deptOptions.map(d => (
+                      <option key={d} value={d}>{d}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Ciudad <span style={{ color: "#f43f5e" }}>*</span></label>
+                  <select
+                    style={selectStyle}
+                    value={form.city}
                     onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
-                    placeholder="Medellín"
+                    required
+                    disabled={!form.department}
                     onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
                     onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
-                  />
-                </div>
-
-                <div>
-                  <label style={labelStyle}>Departamento</label>
-                  <input
-                    style={inputStyle} value={form.department}
-                    onChange={e => setForm(f => ({ ...f, department: e.target.value }))}
-                    placeholder="Antioquia"
-                    onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
-                    onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
-                  />
+                  >
+                    <option value="" disabled>— Selecciona ciudad —</option>
+                    {cityOptions.map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -326,11 +622,12 @@ export default function ProfilePage() {
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   <div>
-                    <label style={labelStyle}>Dirección principal</label>
+                    <label style={labelStyle}>Dirección principal <span style={{ color: "#f43f5e" }}>*</span></label>
                     <input
                       style={inputStyle} value={form.address}
                       onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                       placeholder="Calle 123 # 45-67, Apto 8"
+                      required
                       onFocus={e => { e.target.style.borderColor = "#6c4dff"; e.target.style.boxShadow = "0 0 0 3px rgba(108,77,255,0.1)"; }}
                       onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
                     />
@@ -348,6 +645,22 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {/* Habeas Data Consent */}
+              {!user?.data_policy_accepted && (
+                <div style={{ marginTop: 24, display: "flex", gap: 10, alignItems: "flex-start", background: "#f8fafc", padding: 16, borderRadius: 12, border: "1px solid #e2e8f0" }}>
+                  <input
+                    type="checkbox"
+                    id="data_policy_accepted"
+                    style={{ marginTop: 3, cursor: "pointer", width: 18, height: 18, accentColor: "#6c4dff" }}
+                    checked={form.data_policy_accepted}
+                    onChange={e => setForm(f => ({ ...f, data_policy_accepted: e.target.checked }))}
+                  />
+                  <label htmlFor="data_policy_accepted" style={{ fontSize: 13, color: "#475569", cursor: "pointer", lineHeight: 1.4, userSelect: "none" }}>
+                    Acepto la <Link href="/privacy" target="_blank" style={{ color: "#6c4dff", textDecoration: "underline", fontWeight: "600" }}>política de tratamiento de datos personales</Link> de <strong>Groob Market</strong> y autorizo el almacenamiento de mi número de cédula para identificación única de cliente conforme a la ley de Habeas Data. <span style={{ color: "#f43f5e" }}>*</span>
+                  </label>
+                </div>
+              )}
+
               {msg && (
                 <div style={{
                   marginTop: 16, padding: "12px 16px", borderRadius: 10,
@@ -355,22 +668,47 @@ export default function ProfilePage() {
                   border: `1px solid ${msgType === "ok" ? "#86efac" : "#fecaca"}`,
                   color: msgType === "ok" ? "#166534" : "#dc2626",
                   fontSize: 13, fontWeight: 600,
+                  whiteSpace: "pre-line",
                 }}>
                   {msg}
                 </div>
               )}
 
-              <button type="submit" disabled={saving} style={{
-                marginTop: 20, padding: "13px 28px",
-                background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
-                border: "none", borderRadius: 12, color: "#fff",
-                fontWeight: 700, fontSize: 15, cursor: "pointer",
-                fontFamily: "'Inter', sans-serif",
-                boxShadow: "0 4px 16px rgba(108,77,255,0.3)",
-                opacity: saving ? 0.7 : 1,
-              }}>
-                {saving ? "Guardando..." : "💾 Guardar cambios"}
-              </button>
+              {/* Validate fields to enable button */}
+              {(() => {
+                const isFormValid =
+                  form.first_name.trim() !== "" &&
+                  form.last_name.trim() !== "" &&
+                  form.email.trim() !== "" &&
+                  form.phone.trim() !== "" &&
+                  form.city.trim() !== "" &&
+                  form.department.trim() !== "" &&
+                  form.address.trim() !== "" &&
+                  form.cedula.trim() !== "" &&
+                  form.data_policy_accepted;
+
+                return (
+                  <button
+                    type="submit"
+                    disabled={saving || !isFormValid}
+                    style={{
+                      marginTop: 20, padding: "13px 28px",
+                      background: isFormValid 
+                        ? "linear-gradient(135deg, #6c4dff, #9b8cff)" 
+                        : "#cbd5e1",
+                      border: "none", borderRadius: 12, color: isFormValid ? "#fff" : "#94a3b8",
+                      fontWeight: 700, fontSize: 15, 
+                      cursor: isFormValid ? "pointer" : "not-allowed",
+                      fontFamily: "'Inter', sans-serif",
+                      boxShadow: isFormValid ? "0 4px 16px rgba(108,77,255,0.3)" : "none",
+                      opacity: saving ? 0.7 : 1,
+                      transition: "all 0.25s",
+                    }}
+                  >
+                    {saving ? "Guardando..." : "💾 Guardar cambios"}
+                  </button>
+                );
+              })()}
             </form>
           </div>
         )}

@@ -122,7 +122,7 @@ def build_email_html(order, event_key: str) -> str:
     meta = STATUS_META.get(event_key, STATUS_META["order_created"])
     invoice_rows = _build_invoice_rows(order)
     timeline = _build_status_timeline(order.status)
-    whatsapp_url = f"https://wa.me/{getattr(settings, 'WHATSAPP_NUMBER', '573011963515')}"
+    whatsapp_url = f"https://wa.me/{getattr(settings, 'WHATSAPP_NUMBER', '573001805448')}"
     site_url = getattr(settings, "SITE_URL", "http://localhost:3000")
     order_url = f"{site_url}/orders"
     year = 2025
@@ -232,7 +232,7 @@ def build_email_html(order, event_key: str) -> str:
         📋 Ver mi pedido en línea
       </a>
       <p style="font-size:12px;color:#94a3b8;margin:0;">
-        ¿Preguntas? <a href="{whatsapp_url}" style="color:#6c4dff;font-weight:600;">WhatsApp: 301 196 3515</a>
+        ¿Preguntas? <a href="{whatsapp_url}" style="color:#6c4dff;font-weight:600;">WhatsApp: 300 180 5448</a>
       </p>
     </div>
 
@@ -269,7 +269,7 @@ def send_order_email(order, event_key: str) -> bool:
 📍 Ciudad: {order.city}, {order.department}
 
 Ver tu pedido: {getattr(settings, 'SITE_URL', 'http://localhost:3000')}/orders
-Soporte WhatsApp: +57 301 196 3515
+Soporte WhatsApp: +57 300 180 5448
 """
 
     try:

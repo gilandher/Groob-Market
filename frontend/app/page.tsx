@@ -28,8 +28,8 @@ export default async function HomePage() {
     products = [];
   }
 
-  const featured = products.slice(0, 4);
-  const newProducts = products.slice(4, 10);
+  const featured = products.slice(0, 12);
+  const newProducts: Product[] = [];
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>

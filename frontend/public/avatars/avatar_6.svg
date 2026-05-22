@@ -1,0 +1,37 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="60%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#311042"/>
+    </linearGradient>
+    <linearGradient id="planetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#0891b2"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#a5b4fc" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#e0e7ff" stop-opacity="0.1"/>
+    </linearGradient>
+    <filter id="glow6" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bg6)" stroke="#4338ca" stroke-width="2"/>
+  <g fill="#fff">
+    <circle cx="34" cy="30" r="1" opacity="0.8"/>
+    <circle cx="88" cy="28" r="1.5" opacity="0.6"/>
+    <circle cx="28" cy="74" r="1" opacity="0.5"/>
+    <circle cx="92" cy="80" r="1.2" opacity="0.7"/>
+    <polygon points="64,20 65,22 67,22 65,23 66,25 64,24 62,25 63,23 61,22 63,22" opacity="0.9" fill="#22d3ee"/>
+    <polygon points="25,48 26,50 28,50 26,51 27,53 25,52 23,53 24,51 22,50 24,50" opacity="0.7" fill="#a5b4fc"/>
+  </g>
+  <path d="M28 66 C28 56 92 56 92 66" stroke="url(#ringGrad)" stroke-width="6" fill="none" opacity="0.8"/>
+  <circle cx="60" cy="60" r="22" fill="url(#planetGrad)" filter="url(#glow6)"/>
+  <path d="M41 52 C46 56 74 56 79 52" stroke="rgba(255,255,255,0.15)" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M38 64 C44 68 76 68 82 64" stroke="rgba(0,0,0,0.15)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M92 60 C92 70 28 70 28 60" stroke="url(#ringGrad)" stroke-width="6" fill="none"/>
+</svg>

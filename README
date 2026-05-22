@@ -42,6 +42,15 @@ $env:DEBUG="next:*"; npx next dev -p 3000
 npx next dev -p 3000
 
 
+# correr el Docker
+
+docker ps
+
+# Levantar el Docker desde la raiz del proyecto 
+
+docker-compose up -d
+
+
 
 
 

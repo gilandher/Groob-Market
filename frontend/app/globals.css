@@ -88,6 +88,10 @@ h1, h2, h3, h4, h5, h6 {
   0%, 100% { box-shadow: 0 0 0 0 rgba(108,77,255,0.4); }
   50%       { box-shadow: 0 0 0 10px rgba(108,77,255,0); }
 }
+@keyframes onlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
+  50%       { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+}
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-10px); }
@@ -1570,6 +1574,36 @@ h1, h2, h3, h4, h5, h6 {
    RESPONSIVE — 768px (tablet)
    ===================== */
 @media (max-width: 768px) {
+  /* ── Hero Carousel Tablet ── */
+  .hero-carousel-inner {
+    grid-template-columns: 1fr !important;
+    padding: 32px 20px 48px !important;
+    gap: 24px !important;
+  }
+  .hero-carousel-img {
+    order: 2 !important;
+  }
+  .hero-slide-content {
+    order: 1 !important;
+    text-align: center !important;
+  }
+  .hero-title {
+    font-size: 28px !important;
+  }
+  .hero-desc {
+    max-width: 100% !important;
+    font-size: 14px !important;
+  }
+  .hero-btns {
+    justify-content: center !important;
+  }
+  .hero-badges {
+    justify-content: center !important;
+  }
+  .hero-carousel-img img {
+    max-height: 220px !important;
+  }
+
   .hero-inner {
     grid-template-columns: 1fr;
     padding: 32px 20px;
@@ -1593,8 +1627,8 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 480px) {
   /* ── Navbar ── */
   .navbar-inner {
-    padding: 0 12px;
-    gap: 8px;
+    padding: 0 12px !important;
+    gap: 8px !important;
   }
   .navbar-search { display: none; }
   .navbar-logo-text { font-size: 15px; }
@@ -1603,6 +1637,15 @@ h1, h2, h3, h4, h5, h6 {
   .navbar-phone { display: none; }
   .category-bar { gap: 6px; padding: 0 10px; }
   .cat-item { font-size: 12px; padding: 5px 10px; }
+
+  /* ── Hero Carousel Mobile ── */
+  .hero-title { font-size: 22px !important; line-height: 1.25 !important; }
+  .hero-desc { font-size: 13px !important; }
+  .hero-carousel-inner { padding: 24px 16px 28px !important; gap: 16px !important; }
+  .hero-badges { flex-wrap: wrap !important; gap: 8px !important; }
+  .hero-btns { flex-direction: column !important; gap: 8px !important; }
+  .hero-btns a, .hero-btns button { width: 100% !important; justify-content: center !important; }
+  .hero-carousel-img img { max-height: 180px !important; }
 
   /* ── Hero ── */
   .hero-content h1 { font-size: 22px; line-height: 1.25; }
@@ -1667,3 +1710,76 @@ h1, h2, h3, h4, h5, h6 {
   scrollbar-width: none;
 }
 .category-bar-wrap::-webkit-scrollbar { display: none; }
+
+/* =====================
+   ADDITIONAL RESPONSIVE UTILITIES (MÓVIL Y TABLET)
+   ===================== */
+
+/* Navbar top shipping bar wraps/adjusts on small screens */
+@media (max-width: 600px) {
+  .navbar-topbar {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 10px 14px !important;
+    text-align: center !important;
+  }
+  .navbar-topbar a {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
+/* Hide slogan "Vitrina Virtual" on small mobile to prevent text overflow */
+@media (max-width: 480px) {
+  .logo-subtitle {
+    display: none !important;
+  }
+}
+
+/* Responsive grid side-by-side forms layout (e.g. name/phone on checkout, profile) */
+@media (max-width: 480px) {
+  .responsive-grid-2cols {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+/* Product Detail layout stacking */
+@media (max-width: 768px) {
+  .responsive-product-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+}
+
+/* Checkout main split layout stacking */
+@media (max-width: 768px) {
+  .responsive-checkout-layout {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+/* Product Detail buttons wrapping */
+@media (max-width: 480px) {
+  .product-btn-group {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  .product-btn-group > * {
+    width: 100% !important;
+  }
+}
+
+/* OTP modal box input wrapping */
+@media (max-width: 480px) {
+  .otp-inputs-container {
+    gap: 4px !important;
+  }
+  .otp-input {
+    width: 38px !important;
+    height: 48px !important;
+    font-size: 18px !important;
+    border-radius: 8px !important;
+  }
+}

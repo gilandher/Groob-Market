@@ -149,7 +149,7 @@ REST_FRAMEWORK = {
 # -----------------------------
 # APP CONFIG
 # -----------------------------
-WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "573011963515")
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "573001805448")
 
 # Tiempo d3e vida de los tokens JWT
 SIMPLE_JWT = {
@@ -178,17 +178,23 @@ if not EMAIL_HOST_PASSWORD:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # ─── GROOB MARKET CONFIG ──────────────────────────────────────────────────────
-WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "573011963515")
+WHATSAPP_NUMBER = os.getenv("WHATSAPP_NUMBER", "573001805448")
 SITE_URL = os.getenv("SITE_URL", "http://localhost:3000")
 GROOB_FLASH_SALE_ACTIVE = os.getenv("GROOB_FLASH_SALE_ACTIVE", "False") == "True"
 GROOB_FLASH_SALE_PCT = int(os.getenv("GROOB_FLASH_SALE_PCT", "15"))
+
+# ─── WOMPI CONFIG ─────────────────────────────────────────────────────────────
+WOMPI_PUBLIC_KEY = os.getenv("WOMPI_PUBLIC_KEY", "pub_test_8kYDikgBjMmk7VtFabu6vXZgVGSGeGxx")
+WOMPI_PRIVATE_KEY = os.getenv("WOMPI_PRIVATE_KEY", "prv_test_Is9C1QRkrgw0Uu7tgwze2BX0b3zFUF05")
+WOMPI_INTEGRITY_SECRET = os.getenv("WOMPI_INTEGRITY_SECRET", "test_integrity_nGFxfYAU3aA8CQKPIF4kGD55X46cHxgU")
+WOMPI_EVENTS_SECRET = os.getenv("WOMPI_EVENTS_SECRET", "test_events_d0ghnzDyOF0FDEalEdyD4qSXUZzdE9ic")
 
 # ─── CONFIGURACION DE UI JAZZMIN (DASHBOARD) ──────────────────────────────────
 JAZZMIN_SETTINGS = {
     # Títulos
     "site_title": "Admin Groob Market",
     "site_header": "Groob Market",
-    "site_brand": "Groob Market ADM",
+    "site_brand": "Groob",
     "welcome_sign": "Bienvenido al Panel de Groob Market",
     
     # Textos bajo perfil (Opcional, busca marca de copyright)

@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.db.models import Q
 from .models import Order
 from .serializers import OrderCreateSerializer, OrderDetailSerializer
 
@@ -26,13 +27,16 @@ class OrderCreateView(generics.CreateAPIView):
 class MyOrdersView(generics.ListAPIView):
     """
     GET /api/v1/orders/my/
-    Lista todos los pedidos del usuario autenticado.
+    Lista todos los pedidos del usuario autenticado o asociados a su correo.
     """
     serializer_class   = OrderDetailSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return Order.objects.filter(user=self.request.user).prefetch_related("items__product")
+        user = self.request.user
+        return Order.objects.filter(
+            Q(user=user) | Q(email__iexact=user.email)
+        ).prefetch_related("items__product")
 
 
 class OrderDetailView(generics.RetrieveAPIView):
@@ -46,7 +50,10 @@ class OrderDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         if self.request.user.is_staff:
             return Order.objects.all().prefetch_related("items__product")
-        return Order.objects.filter(user=self.request.user).prefetch_related("items__product")
+        user = self.request.user
+        return Order.objects.filter(
+            Q(user=user) | Q(email__iexact=user.email)
+        ).prefetch_related("items__product")
 
 
 class OrderStatusUpdateView(APIView):
@@ -92,3 +99,18 @@ class OrderByEmailView(generics.ListAPIView):
         if not email:
             return Order.objects.none()
         return Order.objects.filter(email__iexact=email).prefetch_related("items__product")
+
+
+class OrderByCedulaView(generics.ListAPIView):
+    """
+    GET /api/v1/orders/by-cedula/?cedula=xxx
+    Permite buscar pedidos asociados a una cédula/ID de cliente.
+    """
+    serializer_class   = OrderDetailSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        cedula = self.request.query_params.get("cedula", "").strip()
+        if not cedula:
+            return Order.objects.none()
+        return Order.objects.filter(cedula__iexact=cedula).prefetch_related("items__product")

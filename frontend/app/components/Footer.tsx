@@ -78,8 +78,8 @@ export default function Footer() {
               title: "Empresa",
               links: [
                 { label: "Sobre nosotros", href: "#" },
-                { label: "Blog", href: "#" },
-                { label: "Trabaja con nosotros", href: "#" },
+                { label: "Ser Aliado (ERP & POS)", href: "/aliados" },
+                { label: "Vender en Groob", href: "/aliados" },
                 { label: "Contacto", href: "#" },
               ],
             },
@@ -89,7 +89,7 @@ export default function Footer() {
                 { label: "FAQ", href: "#" },
                 { label: "Envíos y entregas", href: "#" },
                 { label: "Devoluciones", href: "#" },
-                { label: "WhatsApp", href: "https://wa.me/573011963515" },
+                { label: "WhatsApp", href: "https://wa.me/573001805448" },
               ],
             },
           ].map(col => (
@@ -126,7 +126,7 @@ export default function Footer() {
               onMouseEnter={e => (e.currentTarget.style.color = "#9b8cff")}
               onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
             >Términos</a>
-            <a href="/terms#datos" target="_blank" rel="noreferrer" style={{ color: "#64748b", textDecoration: "none" }}
+            <a href="/privacy" target="_blank" rel="noreferrer" style={{ color: "#64748b", textDecoration: "none" }}
               onMouseEnter={e => (e.currentTarget.style.color = "#9b8cff")}
               onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}
             >Privacidad</a>

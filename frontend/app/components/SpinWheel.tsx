@@ -136,7 +136,6 @@ export default function SpinWheel({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="modal-overlay"
-      onClick={e => e.target === e.currentTarget && onClose()}
       style={{ zIndex: 9500 }}
     >
       <div style={{

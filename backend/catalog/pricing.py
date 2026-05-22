@@ -36,6 +36,7 @@ class PriceContext:
     wholesale_cost: int      # Costo mayorista en COP
     min_margin_percent: int  # Margen mínimo garantizado (ej. 25)
     is_discountable: bool    # Si el producto acepta descuentos
+    discount_percent_override: int = 0  # Descuento manual configurado
 
     # Contexto del cliente (opcional)
     customer_id: Optional[int] = None
@@ -103,6 +104,11 @@ class GroobPricingEngine:
 
     # Configuración de estrategias (ajusta según negocio)
     STRATEGIES = {
+        "MANUAL_DISCOUNT": {
+            "max_discount_pct": 90,
+            "label": "🔥 Oferta especial",
+            "color": "#6c4dff",
+        },
         "FLASH_SALE": {
             "max_discount_pct": 40,     # Máx. 40% off
             "label": "🔥 Oferta Flash",
@@ -192,6 +198,10 @@ class GroobPricingEngine:
 
     def _pick_strategy(self, ctx: PriceContext) -> tuple[str, float]:
         """Devuelve (strategy_name, raw_discount_pct)."""
+
+        # 0. Manual discount override
+        if getattr(ctx, "discount_percent_override", 0) > 0:
+            return "MANUAL_DISCOUNT", float(ctx.discount_percent_override)
 
         # 1. Flash sale override
         if self.flash_sale_active:

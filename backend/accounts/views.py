@@ -166,6 +166,15 @@ class VerifyOTPView(APIView):
         otp.is_verified = True
         otp.save()
 
+        user_exists = User.objects.filter(email=email).exists()
+        if not user_exists:
+            data_policy_accepted = request.data.get("data_policy_accepted")
+            if not data_policy_accepted:
+                return Response(
+                    {"detail": "Debe aceptar los términos y la política de tratamiento de datos personales."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
         user, created = User.objects.get_or_create(
             email=email,
             defaults={"username": email},
@@ -178,8 +187,10 @@ class VerifyOTPView(APIView):
                 user.set_password(password)
             user.is_active = True
             user.save()
-            # Ensure profile exists
-            UserProfile.objects.get_or_create(user=user)
+            # Ensure profile exists and save policy acceptance
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.data_policy_accepted = True
+            profile.save()
 
         profile = getattr(user, "profile", None)
 
@@ -194,6 +205,11 @@ class VerifyOTPView(APIView):
                 "address2":   profile.address2 if profile else "",
                 "city":       profile.city if profile else "",
                 "department": profile.department if profile else "",
+                "cedula":     profile.cedula if profile else "",
+                "avatar":     profile.avatar if profile else "avatar_1",
+                "data_policy_accepted": profile.data_policy_accepted if profile else False,
+                "is_staff":   user.is_staff,
+                "is_superuser": user.is_superuser,
             },
             **get_tokens_for_user(user),
         }, status=status.HTTP_200_OK)
@@ -219,17 +235,63 @@ class UpdateProfileAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         user = request.user
+        profile, _ = UserProfile.objects.get_or_create(user=user)
 
-        # Update User fields
-        if "name" in data and data["name"]:
-            parts = data["name"].split(" ", 1)
-            user.first_name = parts[0]
-            user.last_name  = parts[1] if len(parts) > 1 else ""
-            user.save(update_fields=["first_name", "last_name"])
+        from rest_framework import serializers as drf_serializers
+        from datetime import timedelta
+        from django.utils import timezone
+
+        # 1. Validar / actualizar Cédula (locked if already has a value)
+        if "cedula" in data:
+            new_cedula = data["cedula"].strip()
+            if profile.cedula and profile.cedula != new_cedula:
+                raise drf_serializers.ValidationError(
+                    {"cedula": ["La cédula no se puede modificar una vez establecida por motivos de seguridad y garantía."]}
+                )
+            if new_cedula:
+                profile.cedula = new_cedula
+
+        # 2. Validar / actualizar Email (7 days limit)
+        if "email" in data:
+            new_email = data["email"].strip().lower()
+            if new_email and new_email != user.email:
+                # Verificar si el email ya existe en otro usuario
+                if User.objects.filter(email=new_email).exclude(id=user.id).exists():
+                    raise drf_serializers.ValidationError(
+                        {"email": ["Este correo electrónico ya está registrado por otro usuario."]}
+                    )
+                # Verificar límite de 7 días
+                if profile.email_last_changed:
+                    time_elapsed = timezone.now() - profile.email_last_changed
+                    if time_elapsed < timedelta(days=7):
+                        time_left = timedelta(days=7) - time_elapsed
+                        days = time_left.days
+                        hours = int(time_left.seconds // 3600)
+                        minutes = int((time_left.seconds // 60) % 60)
+                        time_str = ""
+                        if days > 0:
+                            time_str += f"{days} día(s) "
+                        if hours > 0 or days > 0:
+                            time_str += f"{hours} hora(s) "
+                        time_str += f"{minutes} minuto(s)"
+                        raise drf_serializers.ValidationError(
+                            {"email": [f"El correo solo se puede cambiar una vez por semana. Espera {time_str}."]}
+                        )
+                # Actualizar email y username
+                user.email = new_email
+                user.username = new_email
+                user.save(update_fields=["email", "username"])
+                profile.email_last_changed = timezone.now()
+
+        # Update User fields (first_name, last_name)
+        if "first_name" in data:
+            user.first_name = data["first_name"].strip()
+        if "last_name" in data:
+            user.last_name = data["last_name"].strip()
+        user.save(update_fields=["first_name", "last_name"])
 
         # Update or create UserProfile
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        for field in ["phone", "address", "address2", "city", "department"]:
+        for field in ["phone", "address", "address2", "city", "department", "avatar", "data_policy_accepted"]:
             if field in data:
                 setattr(profile, field, data[field])
         profile.save()
@@ -262,3 +324,131 @@ class ChangePasswordAPIView(APIView):
         user.save()
 
         return Response({"detail": "Contraseña actualizada correctamente."})
+
+
+def verify_google_id_token(id_token: str):
+    """
+    Valida un id_token de Google usando el endpoint de tokeninfo de Google.
+    Retorna (email, name, picture_url) si es válido, de lo contrario None.
+    """
+    import urllib.request
+    import urllib.parse
+    import json
+    import ssl
+
+    url = f"https://oauth2.googleapis.com/tokeninfo?id_token={urllib.parse.quote(id_token)}"
+    try:
+        # Usar contexto SSL por defecto
+        context = ssl.create_default_context()
+        req = urllib.request.Request(url, headers={"User-Agent": "GroobMarket-Backend"})
+        with urllib.request.urlopen(req, context=context, timeout=10) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            
+            if "email" not in data:
+                return None
+            
+            iss = data.get("iss", "")
+            if iss not in ["accounts.google.com", "https://accounts.google.com"]:
+                return None
+            
+            email = data.get("email")
+            name = data.get("name") or f"{data.get('given_name', '')} {data.get('family_name', '')}".strip()
+            picture = data.get("picture")
+            return email, name, picture
+    except Exception as e:
+        logger.error(f"Error al verificar id_token de Google: {e}")
+        return None
+
+
+class SocialLoginAPIView(APIView):
+    """
+    POST /api/v1/auth/social-login/
+    Body (Real): { id_token: string, provider: "Google" }
+    Body (Simulador): { email: string, name: string, provider: string }
+    Autenticación rápida/real para Google/Facebook/Instagram.
+    Si el usuario no existe, lo crea automáticamente.
+    Retorna tokens JWT.
+    """
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        import uuid
+        import random
+        
+        id_token = request.data.get("id_token")
+        provider = (request.data.get("provider") or "").strip()
+        picture_url = None
+
+        if id_token and provider.lower() == "google":
+            # Flujo Real de Google OAuth
+            google_data = verify_google_id_token(id_token)
+            if not google_data:
+                return Response(
+                    {"detail": "El token de Google es inválido, ha expirado o no pudo ser verificado."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            email, name, picture_url = google_data
+        else:
+            # Flujo Simulador (o fallback)
+            email    = (request.data.get("email") or "").strip().lower()
+            name     = (request.data.get("name") or "").strip()
+
+        if not email:
+            return Response(
+                {"detail": "El correo electrónico es requerido para el inicio de sesión social."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Buscar usuario por email
+        user = User.objects.filter(email=email).first()
+        created = False
+
+        if not user:
+            # Crear nuevo usuario
+            user = User(email=email, username=email)
+            parts = name.split(" ", 1) if name else []
+            user.first_name = parts[0] if parts else ""
+            user.last_name  = parts[1] if len(parts) > 1 else ""
+            # Generar una contraseña aleatoria segura
+            user.set_password(str(uuid.uuid4()))
+            user.is_active = True
+            user.save()
+            created = True
+
+        # Asegurar que el perfil existe
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        
+        # Forzar aceptación de la política de datos para cuentas creadas vía social auth
+        if not profile.data_policy_accepted:
+            profile.data_policy_accepted = True
+            profile.save()
+
+        # Determinar avatar predeterminado o guardar foto de Google
+        if picture_url:
+            # Si tiene foto de perfil de Google, la guardamos
+            profile.avatar = picture_url
+            profile.save()
+        elif created:
+            # Asignar un avatar aleatorio local
+            profile.avatar = "avatar_" + str(random.randint(1, 9))
+            profile.save()
+
+        return Response({
+            "detail": "Inicio de sesión social exitoso",
+            "user": {
+                "id":         user.id,
+                "email":      user.email,
+                "name":       f"{user.first_name} {user.last_name}".strip() or user.username,
+                "phone":      profile.phone,
+                "address":    profile.address,
+                "address2":   profile.address2,
+                "city":       profile.city,
+                "department": profile.department,
+                "cedula":     profile.cedula,
+                "avatar":     profile.avatar,
+                "data_policy_accepted": profile.data_policy_accepted,
+                "is_staff":   user.is_staff,
+                "is_superuser": user.is_superuser,
+            },
+            **get_tokens_for_user(user),
+        }, status=status.HTTP_200_OK)

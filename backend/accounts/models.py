@@ -51,6 +51,10 @@ class UserProfile(models.Model):
     address2   = models.CharField("Segunda dirección", max_length=255, blank=True)
     city       = models.CharField("Ciudad", max_length=64, blank=True)
     department = models.CharField("Departamento", max_length=64, blank=True)
+    cedula     = models.CharField("Cédula / ID", max_length=20, blank=True, default="")
+    avatar     = models.CharField("Avatar", max_length=500, default="avatar_1")
+    data_policy_accepted = models.BooleanField("Acepta tratamiento de datos", default=False)
+    email_last_changed = models.DateTimeField("Último cambio de email", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

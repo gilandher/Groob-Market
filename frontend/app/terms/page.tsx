@@ -240,7 +240,7 @@ export default function TermsPage() {
             <h3 style={{ color: "#fff", fontWeight: 900, fontSize: 18, margin: 0 }}>¿Tienes alguna pregunta?</h3>
             <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, marginTop: 4 }}>Nuestro equipo está disponible para ayudarte</p>
           </div>
-          <a href="https://wa.me/573011963515" target="_blank" rel="noreferrer" style={{
+          <a href="https://wa.me/573001805448" target="_blank" rel="noreferrer" style={{
             display: "flex", alignItems: "center", gap: 8,
             background: "#25d366", color: "#fff", padding: "12px 24px",
             borderRadius: 12, fontWeight: 700, fontSize: 14, textDecoration: "none",

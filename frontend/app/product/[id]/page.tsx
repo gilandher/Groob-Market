@@ -217,7 +217,7 @@ export default function ProductPage() {
           <span style={{ color: "#0f172a", fontWeight: 600 }}>{product.name}</span>
         </nav>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "start" }}>
+        <div className="responsive-product-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "start" }}>
 
           {/* Image Column */}
           <div>
@@ -325,7 +325,7 @@ export default function ProductPage() {
 
             {/* CTA Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ display: "flex", gap: 10 }}>
+              <div className="product-btn-group" style={{ display: "flex", gap: 10 }}>
                 <button
                   className="btn-primary animate-pulse-glow"
                   onClick={handleAdd}
@@ -353,9 +353,9 @@ export default function ProductPage() {
                 </button>
               </div>
 
-              <div style={{ display: "flex", gap: 10 }}>
+              <div className="product-btn-group" style={{ display: "flex", gap: 10 }}>
                 <a
-                  href={`https://wa.me/573011963515?text=${waText}`}
+                  href={`https://wa.me/573001805448?text=${waText}`}
                   target="_blank" rel="noreferrer"
                   className="btn-whatsapp"
                   id="btn-whatsapp-product"

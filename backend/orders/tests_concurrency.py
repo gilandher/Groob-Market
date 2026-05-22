@@ -1,6 +1,6 @@
 from django.test import TransactionTestCase
 from django.contrib.auth import get_user_model
-from catalog.models import Product
+from catalog.models import Product, Category
 from orders.services import create_customer_order
 import threading
 
@@ -14,13 +14,15 @@ class ConcurrentOrderTests(TransactionTestCase):
     """
 
     def setUp(self):
-        self.user1 = User.objects.create_user(email="buyer1@test.com", password="pwd")
-        self.user2 = User.objects.create_user(email="buyer2@test.com", password="pwd")
+        self.user1 = User.objects.create_user(username="buyer1@test.com", email="buyer1@test.com", password="pwd")
+        self.user2 = User.objects.create_user(username="buyer2@test.com", email="buyer2@test.com", password="pwd")
         
+        self.category = Category.objects.create(name="Consolas", slug="consolas")
         # Producto con stock = 1
         self.product = Product.objects.create(
             name="PlayStation 5",
             sku="PS5",
+            category=self.category,
             sale_price=2500000,
             wholesale_cost=2000000,
             stock_qty=1,

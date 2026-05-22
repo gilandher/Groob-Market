@@ -27,83 +27,97 @@
             width: 100%;
         }
         .groob-metric-card {
+            background: #1e2026 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
             border-radius: 12px;
             padding: 22px;
             color: #fff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
         }
         .groob-metric-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 20px rgba(0,0,0,0.25);
+            box-shadow: 0 12px 24px rgba(108,77,255,0.15);
+            border-color: rgba(108,77,255,0.3) !important;
         }
+        /* Bordes de Acento en lugar de gradientes de fondo completos */
+        .card-purple { border-left: 4px solid var(--groob-purple) !important; }
+        .card-green { border-left: 4px solid var(--groob-green) !important; }
+        .card-orange { border-left: 4px solid var(--groob-orange) !important; }
+        .card-red { border-left: 4px solid var(--groob-red) !important; }
+        .card-gray { border-left: 4px solid var(--groob-text-muted) !important; }
+        
         /* Icono de fondo en marca de agua */
         .groob-metric-card i.watermark {
             position: absolute;
             right: -10px;
             bottom: -15px;
-            font-size: 90px;
-            opacity: 0.15;
+            font-size: 80px;
+            opacity: 0.08;
             z-index: 0;
             transform: rotate(-10deg);
+            transition: opacity 0.2s;
+        }
+        .groob-metric-card:hover i.watermark {
+            opacity: 0.15;
         }
         .groob-metric-card h3 {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            opacity: 0.9;
-            font-weight: 800;
+            color: var(--groob-text-muted) !important;
+            font-weight: 700;
             position: relative;
             z-index: 1;
         }
         .groob-metric-card h2 {
             margin: 8px 0 0 0;
             font-size: 28px;
-            font-weight: 900;
+            font-weight: 800;
             position: relative;
             z-index: 1;
+            color: #ffffff;
         }
         
-        /* Paleta Premium (Efecto Glass/Gradients) */
-        .card-purple { background: linear-gradient(135deg, rgba(108, 77, 255, 0.9), rgba(155, 140, 255, 0.9)); }
-        .card-green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(52, 211, 153, 0.9)); }
-        .card-orange { background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(251, 191, 36, 0.9)); }
-        .card-red { background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(248, 113, 113, 0.9)); }
-        .card-gray { background: linear-gradient(135deg, rgba(71, 85, 105, 0.9), rgba(100, 116, 139, 0.9)); }
-        
-        /* Paneles Secundarios (Darkly Integración) */
+        /* Paneles */
         .groob-panel {
-            background: #252830;
+            background: #1e2026 !important;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             margin-bottom: 25px;
             height: 100%;
             border: 1px solid rgba(255,255,255,0.05);
             color: #fff;
         }
         .groob-panel h4 {
-            color: #e0e7ff !important;
+            color: #ffffff !important;
+            font-weight: 700;
         }
         .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.03);
+            background-color: rgba(255, 255, 255, 0.01) !important;
         }
         .table td, .table th {
-            color: #cfd8dc;
-            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #e2e8f0;
+            border-top: 1px solid rgba(255,255,255,0.04);
         }
         
-        /* Ajuste para tema oscuro si Jazzmin está en Darkly */
-        body.dark-mode .groob-panel {
-            background: #252830;
-            color: #fff;
-            border: 1px solid #454d55;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        .timeline {
+            background: transparent !important;
+        }
+        .timeline-item {
+            background: #16171c !important;
+            border: 1px solid rgba(255, 255, 255, 0.04) !important;
+            color: #e2e8f0 !important;
+            border-radius: 8px !important;
+        }
+        .timeline-header {
+            color: #ffffff !important;
+            border-bottom: none !important;
         }
     </style>
 
@@ -199,10 +213,9 @@
             var chartLabels = JSON.parse(document.getElementById('chartLabelsData').textContent);
             var chartData = JSON.parse(document.getElementById('chartDataVals').textContent);
             
-            // Detección base si Jazzmin está en modo oscuro para los textos:
-            var isDarkMode = document.body.classList.contains('dark-mode');
-            var textColor = isDarkMode ? '#cfd8dc' : '#475569';
-            var gridColor = isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)';
+            // Estilos del gráfico en modo oscuro
+            var textColor = '#94a3b8';
+            var gridColor = 'rgba(255,255,255,0.05)';
 
             // Gradiente morado brillante para la línea
             var gradient = ctx.createLinearGradient(0, 0, 0, 300);

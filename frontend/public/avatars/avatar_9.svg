@@ -1,0 +1,35 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg9" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#db2777"/>
+      <stop offset="60%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#fbcfe8"/>
+    </linearGradient>
+    <linearGradient id="jacket" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="skin9" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff1f2"/>
+      <stop offset="100%" stop-color="#fecdd3"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bg9)" stroke="#f472b6" stroke-width="2"/>
+  <path d="M36 50 C30 70 30 90 35 110 H85 C90 90 90 70 84 50 Z" fill="#312e81"/>
+  <path d="M30 110 C30 92 40 82 60 82 C80 82 90 92 90 110 Z" fill="url(#jacket)"/>
+  <path d="M48 82 Q60 98 72 82" stroke="#fecdd3" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <rect x="53" y="72" width="14" height="12" fill="#fecdd3"/>
+  <rect x="43" y="40" width="34" height="36" rx="17" fill="url(#skin9)"/>
+  <path d="M43 44 C41 40 45 24 60 24 C75 24 79 40 77 44 C75 36 71 34 60 34 C49 34 45 36 43 44 Z" fill="#312e81"/>
+  <path d="M43 42 C41 50 41 62 43 68 C45 68 47 54 47 46 Z" fill="#312e81"/>
+  <path d="M77 42 C79 50 79 62 77 68 C75 68 73 54 73 46 Z" fill="#312e81"/>
+  <circle cx="52" cy="56" r="2.2" fill="#1e293b"/>
+  <circle cx="68" cy="56" r="2.2" fill="#1e293b"/>
+  <path d="M49 53 L51 54" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M71 53 L69 54" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M48 51 Q52 49 55 52" stroke="#312e81" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <path d="M72 51 Q68 49 65 52" stroke="#312e81" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+  <circle cx="48" cy="62" r="2.5" fill="#f43f5e" opacity="0.35"/>
+  <circle cx="72" cy="62" r="2.5" fill="#f43f5e" opacity="0.35"/>
+  <path d="M55 66 Q60 70 65 66" stroke="#1e293b" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+</svg>

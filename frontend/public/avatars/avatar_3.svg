@@ -1,0 +1,37 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4c1d95"/>
+      <stop offset="60%" stop-color="#6d28d9"/>
+      <stop offset="100%" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="catGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5f3ff"/>
+      <stop offset="100%" stop-color="#ddd6fe"/>
+    </linearGradient>
+    <filter id="shadow3" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#2e1065" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bg3)" stroke="#7c3aed" stroke-width="2"/>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.1)" stroke-width="3" stroke-dasharray="12 8"/>
+  <g filter="url(#shadow3)">
+    <polygon points="32,60 38,30 54,48" fill="url(#catGrad)"/>
+    <polygon points="35,56 40,36 50,48" fill="#fda4af"/>
+    <polygon points="88,60 82,30 66,48" fill="url(#catGrad)"/>
+    <polygon points="85,56 80,36 70,48" fill="#fda4af"/>
+    <ellipse cx="60" cy="68" rx="28" ry="22" fill="url(#catGrad)"/>
+    <ellipse cx="48" cy="64" rx="3.5" ry="5" fill="#1e1b4b"/>
+    <ellipse cx="72" cy="64" rx="3.5" ry="5" fill="#1e1b4b"/>
+    <circle cx="47" cy="62" r="1.2" fill="#ffffff"/>
+    <circle cx="71" cy="62" r="1.2" fill="#ffffff"/>
+    <polygon points="60,71 57,69 63,69" fill="#fda4af"/>
+    <path d="M57 74 Q60 77 60 74 Q60 77 63 74" stroke="#1e1b4b" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <circle cx="42" cy="71" r="3" fill="#f43f5e" opacity="0.4"/>
+    <circle cx="78" cy="71" r="3" fill="#f43f5e" opacity="0.4"/>
+    <line x1="28" y1="69" x2="16" y2="67" stroke="#9333ea" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="28" y1="73" x2="18" y2="75" stroke="#9333ea" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="92" y1="69" x2="104" y2="67" stroke="#9333ea" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="92" y1="73" x2="102" y2="75" stroke="#9333ea" stroke-width="1.5" stroke-linecap="round"/>
+  </g>
+</svg>

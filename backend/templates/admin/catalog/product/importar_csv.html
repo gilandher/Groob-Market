@@ -1,0 +1,1130 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block bodyclass %}{{ block.super }} app-catalog model-product import-csv{% endblock %}
+
+{% block breadcrumbs %}
+<div class="row mb-3">
+    <div class="col-sm-12">
+        <ol class="breadcrumb float-sm-left" style="background: transparent; padding: 0; margin: 0;">
+            <li class="breadcrumb-item"><a href="{% url 'admin:index' %}"><i class="fas fa-home"></i> {% trans 'Home' %}</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'admin:catalog_product_changelist' %}">Productos</a></li>
+            <li class="breadcrumb-item active">Importar CSV</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    .groob-import-container {
+        font-family: 'Inter', sans-serif;
+        color: #cfd8dc;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+
+    /* Estilo de Tarjetas y Secciones */
+    .groob-card {
+        background: var(--groob-card-bg);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+    
+    .page-header-import {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    
+    .brand-badge {
+        background-color: rgba(108, 77, 255, 0.15);
+        color: #9b8cff;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid rgba(108, 77, 255, 0.25);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-block;
+        margin-bottom: 6px;
+    }
+    
+    .page-title-import h2 {
+        font-size: 26px;
+        font-weight: 900;
+        margin: 0;
+        color: #ffffff;
+    }
+
+    /* Stepper */
+    .stepper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .step {
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+    }
+    .step-circle {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 12px;
+        border: 1.5px solid rgba(255,255,255,0.15);
+        background: #1a1c22;
+        color: #94a3b8;
+    }
+    .step.completed .step-circle {
+        background-color: #22c55e;
+        color: #fff;
+        border-color: #22c55e;
+    }
+    .step.active .step-circle {
+        background-color: #6c4dff;
+        color: #fff;
+        border-color: #6c4dff;
+        box-shadow: 0 4px 10px rgba(108,77,255,0.3);
+    }
+    .step-label {
+        margin-left: 8px;
+        font-weight: 600;
+        color: #64748b;
+    }
+    .step.active .step-label {
+        color: #9b8cff;
+    }
+    .step.completed .step-label {
+        color: #22c55e;
+    }
+    .step-line {
+        width: 30px;
+        height: 2px;
+        background-color: rgba(255,255,255,0.1);
+        margin: 0 5px;
+    }
+    .step-line.active {
+        background-color: #22c55e;
+    }
+
+    /* Dropzone drag and drop */
+    .dropzone-container {
+        border: 2.5px dashed rgba(108, 77, 255, 0.4);
+        border-radius: 20px;
+        background-color: #1e2026;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 45px 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+    .dropzone-container:hover, .dropzone-container.dragover {
+        border-color: #6c4dff;
+        background-color: rgba(108, 77, 255, 0.05);
+        box-shadow: 0 10px 25px rgba(108, 77, 255, 0.05);
+    }
+    .dropzone-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: rgba(108, 77, 255, 0.1);
+        color: #9b8cff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        margin-bottom: 15px;
+    }
+
+    /* Botones */
+    .groob-btn {
+        background: linear-gradient(135deg, #6c4dff, #4f15d4);
+        color: #ffffff;
+        border: none;
+        border-radius: 10px;
+        padding: 10px 22px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13.5px;
+    }
+    .groob-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(108,77,255,0.3);
+        color: #fff;
+    }
+    .groob-btn-outline {
+        background: transparent;
+        color: #9b8cff;
+        border: 1.5px solid rgba(108, 77, 255, 0.3);
+        border-radius: 10px;
+        padding: 9px 20px;
+        font-weight: 650;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 13px;
+    }
+    .groob-btn-outline:hover {
+        background-color: rgba(108, 77, 255, 0.05);
+        border-color: #6c4dff;
+        color: #fff;
+    }
+
+    /* Barra de progreso */
+    .progress-bar-container {
+        width: 100%;
+        height: 8px;
+        background-color: rgba(255,255,255,0.05);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 15px;
+    }
+    .progress-bar-fill {
+        width: 0%;
+        height: 100%;
+        background-color: #6c4dff;
+        transition: width 0.1s ease;
+    }
+
+    /* Grid Editor */
+    .table-responsive-groob {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        background-color: #1e2026;
+    }
+    .groob-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+    }
+    .groob-table th {
+        background-color: #17181c;
+        color: #94a3b8;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 14px 18px;
+        border-bottom: 1.5px solid rgba(255, 255, 255, 0.05);
+    }
+    .groob-table td {
+        padding: 12px 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        vertical-align: middle;
+    }
+    .groob-table tr:hover {
+        background-color: rgba(255,255,255,0.01);
+    }
+    .groob-table tr.has-error {
+        background-color: rgba(239, 68, 68, 0.03);
+    }
+
+    /* Inputs en el grid */
+    .grid-input {
+        width: 100%;
+        background-color: #17181c;
+        border: 1.2px solid rgba(255,255,255,0.1);
+        color: #fff;
+        border-radius: 6px;
+        padding: 6px 10px;
+        font-size: 13px;
+        outline: none;
+        box-sizing: border-box;
+        transition: border-color 0.2s;
+    }
+    .grid-input:focus {
+        border-color: #6c4dff;
+    }
+    .grid-input.error {
+        border-color: #ef4444 !important;
+    }
+    .grid-input.warning {
+        border-color: #f59e0b !important;
+    }
+    .error-msg {
+        font-size: 10px;
+        color: #ef4444;
+        font-weight: 600;
+        margin-top: 3px;
+        display: block;
+    }
+    .warning-msg {
+        font-size: 10px;
+        color: #f59e0b;
+        font-weight: 600;
+        margin-top: 3px;
+        display: block;
+    }
+    .success-price {
+        font-size: 11px;
+        color: #94a3b8;
+        margin-top: 3px;
+        display: block;
+    }
+
+    /* Upload imagen celda */
+    .img-upload-cell {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        font-size: 16px;
+        font-weight: bold;
+    }
+    .img-upload-cell.empty {
+        background-color: rgba(108, 77, 255, 0.05);
+        border: 1.5px dashed rgba(108, 77, 255, 0.4);
+        color: #9b8cff;
+    }
+    .img-upload-cell.empty:hover {
+        background-color: rgba(108, 77, 255, 0.1);
+        border-color: #6c4dff;
+        transform: scale(1.03);
+    }
+    .delete-row-btn {
+        background: none;
+        border: none;
+        color: #ef4444;
+        font-size: 15px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 4px;
+        transition: background 0.15s;
+    }
+    .delete-row-btn:hover {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #f87171;
+    }
+
+    /* Modal de Categorías */
+    .groob-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(15,23,42,0.6);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+    .groob-modal-content {
+        background: var(--groob-card-bg);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 24px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    /* Toast */
+    .groob-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 99999;
+        border-radius: 10px;
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        font-weight: 600;
+        font-size: 13.5px;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+    }
+    .groob-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .groob-toast.success {
+        background-color: #1e3a24;
+        border: 1.2px solid #22c55e;
+        color: #4ade80;
+    }
+    .groob-toast.error {
+        background-color: #4a1e1e;
+        border: 1.2px solid #ef4444;
+        color: #f87171;
+    }
+    .groob-toast.warning {
+        background-color: #44321b;
+        border: 1.2px solid #f59e0b;
+        color: #fbbf24;
+    }
+</style>
+
+<div class="groob-import-container">
+    
+    <!-- Header -->
+    <div class="page-header-import">
+        <div class="page-title-import">
+            <span class="brand-badge">Panel de Administración</span>
+            <h2>Importador de Catálogo vía CSV</h2>
+        </div>
+        
+        <!-- Stepper -->
+        <div class="stepper">
+            <div id="step-node-1" class="step active">
+                <div class="step-circle">1</div>
+                <div class="step-label">Subir CSV</div>
+            </div>
+            <div id="step-line-1" class="step-line"></div>
+            <div id="step-node-2" class="step">
+                <div class="step-circle">2</div>
+                <div class="step-label">Revisión y Ajustes</div>
+            </div>
+            <div id="step-line-2" class="step-line"></div>
+            <div id="step-node-3" class="step">
+                <div class="step-circle">3</div>
+                <div class="step-label">Finalizado</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASO 1: CARGA DE ARCHIVO -->
+    <div id="pane-step-1" class="groob-card">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h4 style="font-weight: 800; color: #fff; font-size: 17px; margin-bottom: 12px;">
+                    <i class="fas fa-info-circle mr-2" style="color:#6c4dff;"></i> Instrucciones de Carga
+                </h4>
+                <p style="font-size: 13.5px; color: #94a3b8; line-height: 1.6; margin-bottom: 15px;">
+                    Sigue las especificaciones del archivo para cargar tus productos de forma correcta y automatizada.
+                </p>
+                <ul style="padding-left: 20px; font-size: 13px; color: #cfd8dc; line-height: 1.7; margin-bottom: 20px;">
+                    <li>Descarga la plantilla oficial para guiarte en las columnas.</li>
+                    <li>Campos obligatorios en el CSV: <strong>Nombre, SKU, Categoría, Costo Mayorista</strong> y <strong>Precio Venta</strong>.</li>
+                    <li>Si el SKU ya existe, los datos del producto <strong>se actualizarán</strong>.</li>
+                    <li>Las fotos se asignan de forma individual en el paso siguiente.</li>
+                    <li>Las fotos deben pesar <strong>1 MB o menos</strong> y estar en formato JPG, PNG o WebP.</li>
+                </ul>
+                <button onclick="downloadTemplate()" class="groob-btn-outline">
+                    <i class="fas fa-file-download mr-1"></i> Descargar Plantilla Oficial CSV
+                </button>
+            </div>
+            <div class="col-md-6">
+                <div id="dropzone" class="dropzone-container" onclick="triggerFileInput()">
+                    <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleFileSelected(event)">
+                    <div class="dropzone-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h5 style="color: #fff; font-weight: 750; font-size: 15px; margin-bottom: 8px;">
+                        Arrastra tu archivo CSV aquí
+                    </h5>
+                    <p style="font-size: 12.5px; color: #94a3b8; margin: 0 0 15px 0;">
+                        o haz clic para explorar en tu equipo
+                    </p>
+                    <span style="font-size: 11px; color: #64748b; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 5px;">
+                        Soporta codificación UTF-8 y separadores por coma (,) o punto y coma (;)
+                    </span>
+                    
+                    <div id="progress-container" style="display:none; width: 100%; max-width: 300px; margin-top: 20px;">
+                        <span style="font-size: 12px; color: #9b8cff; font-weight: bold;" id="progress-text">Leyendo CSV... 0%</span>
+                        <div class="progress-bar-container">
+                            <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASO 2: EDICIÓN EN GRID -->
+    <div id="pane-step-2" class="groob-card" style="display:none;">
+        <div class="d-flex justify-content-between align-items: center; mb-4 flex-wrap gap-2">
+            <div>
+                <h4 style="font-weight: 800; color: #fff; font-size: 17px; margin-bottom: 5px;">
+                    <i class="fas fa-edit mr-2" style="color:#6c4dff;"></i> Revisión del Catálogo a Importar
+                </h4>
+                <p style="font-size: 13px; color: #94a3b8; margin: 0;">
+                    Corrige errores de precios o stock, asigna categorías y sube fotos individuales (< 1 MB).
+                </p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="openCategoryModal()" class="groob-btn-outline" style="padding: 6px 14px; font-size: 12px;">
+                    <i class="fas fa-plus mr-1"></i> Nueva Categoría
+                </button>
+                <button onclick="resetToStep1()" class="btn btn-sm btn-link text-muted" style="font-size: 12.5px;">
+                    Atrás
+                </button>
+            </div>
+        </div>
+
+        <div id="validation-summary-alert" class="alert alert-danger" style="display:none; font-size: 13.5px; border-radius: 8px;">
+            ⚠️ Corrige las filas marcadas en rojo que contienen advertencias o inconsistencias de precios antes de continuar.
+        </div>
+
+        <div class="table-responsive-groob">
+            <table class="groob-table">
+                <thead>
+                    <tr>
+                        <th style="width: 70px;">Imagen</th>
+                        <th>Nombre Producto</th>
+                        <th style="width: 130px;">SKU</th>
+                        <th style="width: 170px;">Categoría</th>
+                        <th style="width: 125px;">Costo (COP)</th>
+                        <th style="width: 125px;">Precio Venta (COP)</th>
+                        <th style="width: 100px;">Descuento (%)</th>
+                        <th style="width: 90px;">Stock</th>
+                        <th style="width: 70px; text-align: center;">Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="import-grid-tbody">
+                    <!-- Filas insertadas dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-end mt-4">
+            <button onclick="submitBulkImport()" class="groob-btn" id="btn-submit-import">
+                <i class="fas fa-check-circle"></i> Importar <span id="import-count-lbl">0</span> productos
+            </button>
+        </div>
+    </div>
+
+    <!-- PASO 3: RESUMEN DE ÉXITO -->
+    <div id="pane-step-3" class="groob-card text-center" style="display:none; padding: 50px 30px;">
+        <div style="width: 70px; height: 70px; border-radius: 50%; background-color: rgba(34, 197, 94, 0.1); color: #22c55e; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 20px;">
+            <i class="fas fa-check"></i>
+        </div>
+        <h3 style="color: #fff; font-weight: 800; font-size: 22px; margin-bottom: 10px;">¡Importación Masiva Completada!</h3>
+        <p style="font-size: 14px; color: #94a3b8; max-width: 450px; margin: 0 auto 25px auto; line-height: 1.6;" id="success-summary-lbl">
+            Los productos han sido procesados y almacenados de manera segura en la base de datos de Groob Market.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 15px;">
+            <a href="{% url 'admin:catalog_product_changelist' %}" class="groob-btn">
+                <i class="fas fa-boxes mr-1"></i> Ir a Lista de Productos
+            </a>
+            <button onclick="resetToStep1()" class="groob-btn-outline">
+                <i class="fas fa-upload mr-1"></i> Importar otro archivo
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal nueva categoría -->
+    <div id="new-cat-modal" class="groob-modal">
+        <div class="groob-modal-content">
+            <h5 style="color: #fff; font-weight: 800; font-size: 16px; margin-bottom: 8px;">Crear Categoría</h5>
+            <p style="font-size: 12.5px; color: #94a3b8; margin-bottom: 15px;">
+                La categoría se creará automáticamente en la plataforma para tus productos.
+            </p>
+            <input type="text" id="new-cat-input" class="grid-input" placeholder="Nombre de categoría (ej. Celulares)" style="margin-bottom: 20px; padding: 10px;">
+            <div class="d-flex justify-content-end gap-2" style="gap:10px;">
+                <button onclick="closeCategoryModal()" class="btn btn-sm btn-secondary" style="font-size: 12px;">Cancelar</button>
+                <button onclick="createNewCategory()" class="groob-btn" style="padding: 6px 16px; font-size: 12px;">Crear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="groob-toast" class="groob-toast">
+        <span id="toast-icon"></span>
+        <span id="toast-text"></span>
+    </div>
+
+</div>
+
+<!-- Inyección segura de categorías -->
+<script>
+    const systemCategories = {{ categories_json|safe }};
+    const csrfToken = "{{ csrf_token }}";
+</script>
+
+<script>
+    // Variables de estado
+    let importedProducts = [];
+    let categoriesList = [...systemCategories];
+
+    // Elementos del DOM
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('csv-file-input');
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-bar-fill');
+    const progressText = document.getElementById('progress-text');
+    const importGridTbody = document.getElementById('import-grid-tbody');
+    const importCountLbl = document.getElementById('import-count-lbl');
+    const validationSummaryAlert = document.getElementById('validation-summary-alert');
+
+    // Manejo de Toast
+    function showToast(text, type = 'success') {
+        const toast = document.getElementById('groob-toast');
+        const icon = document.getElementById('toast-icon');
+        const textSpan = document.getElementById('toast-text');
+        
+        toast.className = `groob-toast ${type}`;
+        textSpan.textContent = text;
+        icon.innerHTML = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : '✨';
+        
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 4000);
+    }
+
+    // Navegación de Asistente (Stepper)
+    function changeStep(targetStep) {
+        // Ocultar paneles
+        document.getElementById('pane-step-1').style.display = 'none';
+        document.getElementById('pane-step-2').style.display = 'none';
+        document.getElementById('pane-step-3').style.display = 'none';
+        
+        // Mostrar panel destino
+        document.getElementById(`pane-step-${targetStep}`).style.display = 'block';
+        
+        // Actualizar Stepper Nodes
+        for (let i = 1; i <= 3; i++) {
+            const node = document.getElementById(`step-node-${i}`);
+            node.className = 'step';
+            if (i < targetStep) {
+                node.classList.add('completed');
+                const nodeCircle = node.querySelector('.step-circle');
+                nodeCircle.innerHTML = '✓';
+            } else if (i === targetStep) {
+                node.classList.add('active');
+                const nodeCircle = node.querySelector('.step-circle');
+                nodeCircle.innerHTML = i;
+            } else {
+                const nodeCircle = node.querySelector('.step-circle');
+                nodeCircle.innerHTML = i;
+            }
+            
+            const line = document.getElementById(`step-line-${i}`);
+            if (line) {
+                line.className = 'step-line';
+                if (i < targetStep) {
+                    line.classList.add('active');
+                }
+            }
+        }
+    }
+
+    // Resetear Importador
+    function resetToStep1() {
+        fileInput.value = '';
+        importedProducts = [];
+        progressContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+        changeStep(1);
+    }
+
+    // Descarga de Plantilla
+    function downloadTemplate() {
+        window.location.href = "{% url 'product-import-template' %}";
+    }
+
+    // Drag & Drop
+    function triggerFileInput() {
+        fileInput.click();
+    }
+
+    // Drag over & leave events
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
+    
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+    
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            processFile(e.dataTransfer.files[0]);
+        }
+    });
+
+    function handleFileSelected(e) {
+        if (e.target.files && e.target.files[0]) {
+            processFile(e.target.files[0]);
+        }
+    }
+
+    // Procesamiento del CSV
+    function processFile(file) {
+        if (!file.name.endsWith('.csv')) {
+            showToast('Por favor selecciona un archivo con extensión .csv', 'error');
+            return;
+        }
+
+        progressContainer.style.display = 'block';
+        let progress = 0;
+        
+        const interval = setInterval(() => {
+            progress += 15;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const text = evt.target.result;
+                    parseAndLoadCSV(text);
+                };
+                reader.readAsText(file, 'UTF-8');
+            }
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `Leyendo CSV... ${progress}%`;
+        }, 60);
+    }
+
+    // CSV parser
+    function parseCSV(text) {
+        const lines = [];
+        let row = [""];
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            const next = text[i + 1];
+
+            if (c === '"') {
+                if (inQuotes && next === '"') {
+                    row[row.length - 1] += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c === ',' || c === ';') {
+                if (inQuotes) {
+                    row[row.length - 1] += c;
+                } else {
+                    row.push("");
+                }
+            } else if (c === '\r' || c === '\n') {
+                if (inQuotes) {
+                    row[row.length - 1] += c;
+                } else {
+                    if (c === '\r' && next === '\n') {
+                        i++;
+                    }
+                    lines.push(row);
+                    row = [""];
+                }
+            } else {
+                row[row.length - 1] += c;
+            }
+        }
+        if (row.length > 1 || row[0] !== "") {
+            lines.push(row);
+        }
+        return lines;
+    }
+
+    const headerMap = {
+        "categoría": "category_name",
+        "categoria": "category_name",
+        "nombre": "name",
+        "sku": "sku",
+        "descripción": "description",
+        "descripcion": "description",
+        "costo mayorista": "wholesale_cost",
+        "costo": "wholesale_cost",
+        "precio venta": "sale_price",
+        "precio": "sale_price",
+        "stock": "stock_qty",
+        "cantidad": "stock_qty",
+        "descuento": "discount_percent",
+        "margen mínimo": "min_margin_percent",
+        "margen": "min_margin_percent",
+        "activo": "is_active",
+    };
+
+    function parseAndLoadCSV(text) {
+        try {
+            const rawRows = parseCSV(text);
+            if (rawRows.length < 2) {
+                showToast("El archivo CSV no contiene filas suficientes o cabeceras.", "error");
+                resetToStep1();
+                return;
+            }
+
+            const headers = rawRows[0].map(h => h.trim().toLowerCase().replace(/^\uFEFF/, '')); // Remove UTF-8 BOM
+            const dataRows = rawRows.slice(1);
+
+            const parsed = [];
+            dataRows.forEach((row, idx) => {
+                const item = {
+                    index: idx,
+                    category_name: "Tecnología",
+                    name: "",
+                    sku: "",
+                    description: "",
+                    wholesale_cost: 0,
+                    sale_price: 0,
+                    stock_qty: 0,
+                    discount_percent: 0,
+                    min_margin_percent: 25,
+                    is_active: true,
+                    image_base64: ""
+                };
+
+                headers.forEach((header, colIdx) => {
+                    const val = row[colIdx]?.trim() || "";
+                    const key = headerMap[header];
+                    if (key) {
+                        if (["wholesale_cost", "sale_price", "stock_qty", "discount_percent", "min_margin_percent"].includes(key)) {
+                            item[key] = parseInt(val.replace(/[^0-9]/g, "")) || 0;
+                        } else if (key === "is_active") {
+                            item[key] = !["no", "false", "0"].includes(val.toLowerCase());
+                        } else {
+                            item[key] = val;
+                        }
+                    }
+                });
+
+                if (item.name || item.sku) {
+                    parsed.push(item);
+                }
+            });
+
+            if (parsed.length === 0) {
+                showToast("No se encontraron registros válidos de productos.", "error");
+                resetToStep1();
+                return;
+            }
+
+            importedProducts = parsed;
+            renderGrid();
+            changeStep(2);
+            showToast(`Cargados ${parsed.length} productos del archivo CSV.`, 'success');
+
+        } catch (err) {
+            console.error(err);
+            showToast("Error al parsear el archivo CSV.", "error");
+            resetToStep1();
+        }
+    }
+
+    // Modal Categorías
+    function openCategoryModal() {
+        document.getElementById('new-cat-modal').style.display = 'flex';
+        document.getElementById('new-cat-input').focus();
+    }
+    
+    function closeCategoryModal() {
+        document.getElementById('new-cat-modal').style.display = 'none';
+        document.getElementById('new-cat-input').value = '';
+    }
+
+    function createNewCategory() {
+        const input = document.getElementById('new-cat-input');
+        const val = input.value.trim();
+        if (!val) return;
+
+        const slug = val.toLowerCase().replace(/\s+/g, '-');
+        const exists = categoriesList.some(c => c.name.toLowerCase() === val.toLowerCase());
+        
+        if (exists) {
+            showToast(`La categoría "${val}" ya existe.`, 'warning');
+            closeCategoryModal();
+            return;
+        }
+
+        const newCat = { id: Date.now(), name: val, slug: slug };
+        categoriesList.push(newCat);
+        
+        // Re-render select options on all rows without losing input values
+        updateCategoryDropdowns(newCat);
+
+        showToast(`Categoría "${val}" agregada temporalmente.`, 'success');
+        closeCategoryModal();
+    }
+
+    function updateCategoryDropdowns(newCat) {
+        const selects = document.querySelectorAll('.grid-category-select');
+        selects.forEach(select => {
+            const opt = document.createElement('option');
+            opt.value = newCat.name;
+            opt.textContent = newCat.name;
+            select.appendChild(opt);
+        });
+    }
+
+    // Carga de imágenes individuales en fila
+    function triggerRowImage(index) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 1024 * 1024) {
+                    showToast('La imagen debe pesar 1 MB o menos. Intenta con otra.', 'error');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const base64 = evt.target.result;
+                    importedProducts = importedProducts.map(p => {
+                        if (p.index === index) {
+                            return { ...p, image_base64: base64 };
+                        }
+                        return p;
+                    });
+                    
+                    const cell = document.getElementById(`img-cell-${index}`);
+                    cell.className = 'img-upload-cell';
+                    cell.style.background = `url(${base64}) center/cover no-repeat`;
+                    cell.style.border = 'none';
+                    cell.textContent = '';
+                    
+                    showToast('Imagen cargada correctamente.', 'success');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+        input.click();
+    }
+
+    // Renderizar Grid
+    function renderGrid() {
+        importGridTbody.innerHTML = '';
+        importCountLbl.textContent = importedProducts.length;
+
+        importedProducts.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.id = `row-${p.index}`;
+            
+            // Selector categoría dropdown
+            let categoryOptions = '';
+            categoriesList.forEach(c => {
+                const selected = c.name.toLowerCase() === p.category_name.toLowerCase() ? 'selected' : '';
+                categoryOptions += `<option value="${c.name}" ${selected}>${c.name}</option>`;
+            });
+
+            const finalVal = p.sale_price * (1 - p.discount_percent / 100);
+            const floorVal = p.wholesale_cost * (1 + p.min_margin_percent / 100);
+            const isPriceError = p.sale_price < p.wholesale_cost;
+            const isMarginWarning = finalVal < floorVal;
+
+            if (isPriceError || isMarginWarning) {
+                tr.className = 'has-error';
+            }
+
+            const imgBg = p.image_base64 ? `style="background: url(${p.image_base64}) center/cover no-repeat; border:none;"` : '';
+            const imgText = p.image_base64 ? '' : '+';
+
+            tr.innerHTML = `
+                <td>
+                    <div id="img-cell-${p.index}" class="img-upload-cell ${p.image_base64 ? '' : 'empty'}" ${imgBg} onclick="triggerRowImage(${p.index})">
+                        ${imgText}
+                    </div>
+                </td>
+                <td>
+                    <input type="text" class="grid-input" value="${escapeHtml(p.name)}" oninput="updateField(${p.index}, 'name', this.value)">
+                </td>
+                <td>
+                    <input type="text" class="grid-input" value="${escapeHtml(p.sku)}" oninput="updateField(${p.index}, 'sku', this.value)">
+                </td>
+                <td>
+                    <select class="grid-input grid-category-select" onchange="updateField(${p.index}, 'category_name', this.value)">
+                        ${categoryOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="grid-input" value="${p.wholesale_cost}" oninput="updateField(${p.index}, 'wholesale_cost', parseInt(this.value) || 0)">
+                </td>
+                <td>
+                    <input type="number" class="grid-input ${isPriceError ? 'error' : ''}" value="${p.sale_price}" oninput="updateField(${p.index}, 'sale_price', parseInt(this.value) || 0)">
+                    ${isPriceError ? '<span class="error-msg" id="err-price-' + p.index + '">* Menor que Costo</span>' : ''}
+                </td>
+                <td>
+                    <input type="number" class="grid-input ${isMarginWarning ? 'warning' : ''}" value="${p.discount_percent}" oninput="updateField(${p.index}, 'discount_percent', parseInt(this.value) || 0)">
+                    <span class="success-price" id="calc-price-${p.index}">COP ${Math.round(finalVal).toLocaleString()}</span>
+                    ${isMarginWarning && !isPriceError ? '<span class="warning-msg" id="warn-margin-' + p.index + '">⚠️ Excede Margen</span>' : ''}
+                </td>
+                <td>
+                    <input type="number" class="grid-input" value="${p.stock_qty}" oninput="updateField(${p.index}, 'stock_qty', parseInt(this.value) || 0)">
+                </td>
+                <td style="text-align: center;">
+                    <button onclick="deleteRow(${p.index})" class="delete-row-btn">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            `;
+            importGridTbody.appendChild(tr);
+        });
+
+        validateAllRows();
+    }
+
+    function updateField(index, field, value) {
+        importedProducts = importedProducts.map(p => {
+            if (p.index === index) {
+                const updated = { ...p, [field]: value };
+                
+                // Recalcular dinámicamente precios y validación en vivo para esta fila
+                const finalVal = updated.sale_price * (1 - updated.discount_percent / 100);
+                const floorVal = updated.wholesale_cost * (1 + updated.min_margin_percent / 100);
+                const isPriceError = updated.sale_price < updated.wholesale_cost;
+                const isMarginWarning = finalVal < floorVal;
+
+                // Actualizar alertas del DOM de forma inmediata
+                const row = document.getElementById(`row-${index}`);
+                const calcSpan = document.getElementById(`calc-price-${index}`);
+                if (calcSpan) {
+                    calcSpan.textContent = `COP ${Math.round(finalVal).toLocaleString()}`;
+                }
+
+                // Manejo de clase de error en inputs
+                const priceInput = row.querySelectorAll('.grid-input')[4]; // Costo es 3, venta es 4
+                const discountInput = row.querySelectorAll('.grid-input')[5]; // descuento es 5
+
+                // Limpiar alertas anteriores
+                const oldErr = document.getElementById(`err-price-${index}`);
+                if (oldErr) oldErr.remove();
+                const oldWarn = document.getElementById(`warn-margin-${index}`);
+                if (oldWarn) oldWarn.remove();
+
+                if (isPriceError) {
+                    row.className = 'has-error';
+                    priceInput.classList.add('error');
+                    priceInput.insertAdjacentHTML('afterend', `<span class="error-msg" id="err-price-${index}">* Menor que Costo</span>`);
+                } else {
+                    priceInput.classList.remove('error');
+                    row.className = '';
+                }
+
+                if (isMarginWarning) {
+                    discountInput.classList.add('warning');
+                    if (!isPriceError) {
+                        row.className = 'has-error';
+                        discountInput.insertAdjacentHTML('afterend', `<span class="warning-msg" id="warn-margin-${index}">⚠️ Excede Margen</span>`);
+                    }
+                } else {
+                    discountInput.classList.remove('warning');
+                }
+
+                return updated;
+            }
+            return p;
+        });
+
+        validateAllRows();
+    }
+
+    function deleteRow(index) {
+        importedProducts = importedProducts.filter(p => p.index !== index);
+        const row = document.getElementById(`row-${index}`);
+        if (row) row.remove();
+        importCountLbl.textContent = importedProducts.length;
+        
+        validateAllRows();
+        showToast('Fila eliminada.', 'warning');
+    }
+
+    function validateAllRows() {
+        let hasErrors = false;
+        importedProducts.forEach(p => {
+            const finalVal = p.sale_price * (1 - p.discount_percent / 100);
+            const floorVal = p.wholesale_cost * (1 + p.min_margin_percent / 100);
+            if (p.sale_price < p.wholesale_cost || finalVal < floorVal) {
+                hasErrors = true;
+            }
+        });
+
+        if (hasErrors) {
+            validationSummaryAlert.style.display = 'block';
+        } else {
+            validationSummaryAlert.style.display = 'none';
+        }
+    }
+
+    // Envío masivo mediante AJAX POST
+    function submitBulkImport() {
+        let hasErrors = false;
+        
+        importedProducts.forEach(p => {
+            const finalVal = p.sale_price * (1 - p.discount_percent / 100);
+            const floorVal = p.wholesale_cost * (1 + p.min_margin_percent / 100);
+            if (p.sale_price < p.wholesale_cost || finalVal < floorVal) {
+                hasErrors = true;
+            }
+        });
+
+        if (hasErrors) {
+            showToast('Por favor corrige las alertas en rojo antes de guardar.', 'error');
+            return;
+        }
+
+        const btn = document.getElementById('btn-submit-import');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+
+        fetch(window.location.pathname, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ products: importedProducts })
+        })
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(res => {
+            if (res.status === 200) {
+                document.getElementById('success-summary-lbl').innerHTML = `
+                    Los productos han sido procesados y almacenados con éxito.<br>
+                    <strong>Nuevos productos creados:</strong> ${res.body.created || 0}<br>
+                    <strong>Productos actualizados:</strong> ${res.body.updated || 0}
+                `;
+                changeStep(3);
+                showToast('¡Productos importados exitosamente!', 'success');
+            } else {
+                showToast(res.body.detail || 'Error al guardar los productos.', 'error');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('Error de conexión o fallo interno del servidor.', 'error');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-check-circle"></i> Importar <span id="import-count-lbl">' + importedProducts.length + '</span> productos';
+        });
+    }
+
+    // Auxiliares
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+</script>
+{% endblock %}

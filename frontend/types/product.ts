@@ -30,4 +30,5 @@ export type Product = {
   is_active: boolean;
   image_url?: string | null;
   pricing?: Pricing | null;
+  created_at: string;
 };

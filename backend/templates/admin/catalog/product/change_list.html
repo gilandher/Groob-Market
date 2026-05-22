@@ -1,0 +1,11 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+    <li>
+        <a href="{% url 'admin:catalog_product_importar_csv' %}" class="btn btn-sm btn-success" style="background-color: #6c4dff; border-color: #6c4dff; color: #ffffff; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+            <i class="fas fa-file-upload"></i> Importar CSV
+        </a>
+    </li>
+    {{ block.super }}
+{% endblock %}

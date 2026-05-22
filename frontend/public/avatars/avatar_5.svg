@@ -1,0 +1,31 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="foxGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+    <filter id="shadow5" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#020617" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bg5)" stroke="#2563eb" stroke-width="2"/>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="3" stroke-dasharray="15 10"/>
+  <g filter="url(#shadow5)">
+    <polygon points="36,52 28,24 50,44" fill="url(#foxGrad)"/>
+    <polygon points="38,50 32,32 45,44" fill="#1e293b"/>
+    <polygon points="84,52 92,24 70,44" fill="url(#foxGrad)"/>
+    <polygon points="82,50 88,32 75,44" fill="#1e293b"/>
+    <polygon points="32,56 88,56 60,86" fill="url(#foxGrad)"/>
+    <polygon points="32,56 60,86 48,68" fill="#fff"/>
+    <polygon points="88,56 60,86 72,68" fill="#fff"/>
+    <polygon points="56,82 64,82 60,86" fill="#0f172a"/>
+    <circle cx="60" cy="81" r="1.5" fill="#0f172a"/>
+    <path d="M42 56 Q47 62 52 56" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    <path d="M78 56 Q73 62 68 56" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

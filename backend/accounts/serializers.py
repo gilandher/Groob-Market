@@ -29,11 +29,15 @@ class MeSerializer(serializers.ModelSerializer):
     address2 = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     department = serializers.SerializerMethodField()
+    cedula = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
+    data_policy_accepted = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = ["id", "username", "email", "first_name", "last_name", "name",
-                  "phone", "address", "address2", "city", "department"]
+                  "phone", "address", "address2", "city", "department", 
+                  "cedula", "avatar", "data_policy_accepted", "is_staff", "is_superuser"]
 
     def get_name(self, obj):
         return f"{obj.first_name} {obj.last_name}".strip() or obj.username
@@ -64,15 +68,38 @@ class MeSerializer(serializers.ModelSerializer):
         p = self._profile(obj)
         return p.department if p else ""
 
+    def get_cedula(self, obj):
+        p = self._profile(obj)
+        return p.cedula if p else ""
+
+    def get_avatar(self, obj):
+        p = self._profile(obj)
+        return p.avatar if p else "avatar_1"
+
+    def get_data_policy_accepted(self, obj):
+        p = self._profile(obj)
+        return p.data_policy_accepted if p else False
+
 
 class UpdateProfileSerializer(serializers.Serializer):
     """Para PATCH /auth/profile/"""
-    name       = serializers.CharField(required=False, allow_blank=True)
+    first_name = serializers.CharField(required=True, allow_blank=False)
+    last_name  = serializers.CharField(required=True, allow_blank=False)
+    email      = serializers.EmailField(required=False)
     phone      = serializers.CharField(required=False, allow_blank=True)
     address    = serializers.CharField(required=False, allow_blank=True)
     address2   = serializers.CharField(required=False, allow_blank=True)
     city       = serializers.CharField(required=False, allow_blank=True)
     department = serializers.CharField(required=False, allow_blank=True)
+    cedula     = serializers.CharField(required=False, allow_blank=True)
+    avatar     = serializers.CharField(required=False, allow_blank=True)
+    data_policy_accepted = serializers.BooleanField(required=True)
+
+    def validate_data_policy_accepted(self, value):
+        if not value:
+            raise serializers.ValidationError("Debe aceptar la política de tratamiento de datos personales.")
+        return value
+
 
 
 class ChangePasswordSerializer(serializers.Serializer):

@@ -32,6 +32,8 @@ class ProductSerializer(serializers.ModelSerializer):
             "is_active",
             "image_url",
             "pricing",
+            "created_at",
+            "discount_percent",
         ]
 
     def get_image_url(self, obj):
@@ -67,6 +69,7 @@ class ProductSerializer(serializers.ModelSerializer):
             wholesale_cost=obj.wholesale_cost,
             min_margin_percent=obj.min_margin_percent,
             is_discountable=obj.is_discountable,
+            discount_percent_override=obj.discount_percent,
             customer_id=customer_id,
             customer_order_count=order_count,
             session_key=session_key,

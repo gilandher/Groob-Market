@@ -59,22 +59,7 @@ const PROMO_BANNERS = [
   },
 ];
 
-// ─── Marcas aliadas ───────────────────────────────────────────────────────────
-const PARTNER_BRANDS = [
-  // Moda
-  { name: "Cueros Vélez", cat: "Moda", icon: "👜", color: "#92400e", bg: "#fef3c7", href: "https://www.cuerosvelezcol.com" },
-  { name: "Fly Up", cat: "Moda", icon: "👕", color: "#1e40af", bg: "#eff6ff", href: "#" },
-  { name: "ELA", cat: "Moda", icon: "👗", color: "#9d174d", bg: "#fdf2f8", href: "#" },
-  { name: "Studio F", cat: "Moda", icon: "👒", color: "#065f46", bg: "#ecfdf5", href: "#" },
-  // Hogar
-  { name: "HomeCenter", cat: "Hogar", icon: "🏠", color: "#b45309", bg: "#fffbeb", href: "https://www.homecenter.com.co" },
-  { name: "Éxito", cat: "Hogar", icon: "🛒", color: "#166534", bg: "#f0fdf4", href: "https://www.exito.com" },
-  { name: "Jumbo", cat: "Hogar", icon: "🏪", color: "#1e3a8a", bg: "#eff6ff", href: "https://www.tiendasjumbo.co" },
-  // Tecnología
-  { name: "Apple", cat: "Tecnología", icon: "🍎", color: "#374151", bg: "#f9fafb", href: "#" },
-  { name: "Samsung", cat: "Tecnología", icon: "📱", color: "#1d4ed8", bg: "#eff6ff", href: "#" },
-  { name: "Xiaomi", cat: "Tecnología", icon: "📲", color: "#dc2626", bg: "#fef2f2", href: "#" },
-];
+// ─── Marcas aliadas removidas temporariamente ──────────────────────────────────
 
 // ─── Flash Sale Countdown ─────────────────────────────────────────────────────
 function FlashCountdown() {
@@ -270,89 +255,219 @@ export function PromoBanners({ onOpenSpin }: { onOpenSpin?: () => void }) {
   );
 }
 
-// ─── Partner Brands Section ───────────────────────────────────────────────────
+// ─── Partner Brands Section (ERP & POS Promotion) ────────────────────────────
 export function PartnerBrands() {
-  const grouped: Record<string, typeof PARTNER_BRANDS> = {};
-  PARTNER_BRANDS.forEach(b => {
-    if (!grouped[b.cat]) grouped[b.cat] = [];
-    grouped[b.cat].push(b);
-  });
-
   return (
-    <section style={{ marginBottom: 44 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: "#0f172a", margin: 0 }}>
-            🤝 Marcas Aliadas
-          </h2>
-          <p style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>
-            Llegamos a acuerdos para traerte los mejores productos de marca
-          </p>
+    <section style={{ marginBottom: 56 }} id="partners" data-section="partners">
+      <div style={{ marginBottom: 28, textAlign: "center" }}>
+        <span style={{
+          background: "linear-gradient(135deg, rgba(108,77,255,0.15), rgba(16,185,129,0.15))",
+          color: "#6c4dff", fontSize: 12, fontWeight: 800,
+          padding: "6px 14px", borderRadius: 20, textTransform: "uppercase",
+          letterSpacing: 1, border: "1px solid rgba(108,77,255,0.2)"
+        }}>
+          🤝 Programa de Aliados
+        </span>
+        <h2 style={{ fontSize: 26, fontWeight: 900, color: "#0f172a", marginTop: 12, marginBottom: 6 }}>
+          Conecta tu Negocio con Groob
+        </h2>
+        <p style={{ fontSize: 14, color: "#64748b", maxWidth: 600, margin: "0 auto" }}>
+          Lleva la administración de tu local y tus ventas al siguiente nivel con nuestras soluciones tecnológicas integradas.
+        </p>
+      </div>
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+        gap: 24,
+        marginBottom: 28
+      }}>
+        {/* Card 1: Groob ERP & POS */}
+        <div style={{
+          background: "linear-gradient(135deg, #ffffff 0%, #fcfbff 100%)",
+          border: "1.5px solid rgba(108,77,255,0.1)",
+          borderRadius: 20, padding: 30,
+          display: "flex", flexDirection: "column", justifyContent: "space-between",
+          boxShadow: "0 10px 30px rgba(108,77,255,0.03)",
+          transition: "all 0.3s ease",
+          position: "relative", overflow: "hidden"
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 40px rgba(108,77,255,0.08)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(108,77,255,0.25)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.transform = "";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(108,77,255,0.03)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(108,77,255,0.1)";
+        }}
+        >
+          {/* Decorative aura */}
+          <div style={{
+            position: "absolute", top: -50, right: -50, width: 120, height: 120,
+            background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, rgba(255,255,255,0) 70%)",
+            pointerEvents: "none"
+          }} />
+
+          <div>
+            <div style={{
+              width: 48, height: 48, borderRadius: 12,
+              background: "linear-gradient(135deg, #10b981, #059669)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, marginBottom: 20, color: "#fff",
+              boxShadow: "0 4px 12px rgba(16,185,129,0.2)"
+            }}>
+              🖨️
+            </div>
+            <h3 style={{ fontSize: 19, fontWeight: 800, color: "#0f172a", marginBottom: 10 }}>
+              Groob ERP & Facturación POS
+            </h3>
+            <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 20 }}>
+              Administra tu inventario, automatiza tus ventas en caja y genera recibos o facturas al instante con un sistema rápido e intuitivo diseñado para tiendas, mayoristas y locales.
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { icon: "📈", text: "Control de inventario en tiempo real" },
+                { icon: "⚡", text: "Ventas y cobros ultra rápidos en caja" },
+                { icon: "📊", text: "Reportes inteligentes y estadísticas diarias" }
+              ].map((item, idx) => (
+                <li key={idx} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#475569" }}>
+                  <span>{item.icon}</span>
+                  <strong>{item.text}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Link href="/aliados" style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "12px 24px", borderRadius: 12,
+            background: "linear-gradient(135deg, #10b981, #059669)",
+            color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none",
+            transition: "all 0.2s", boxShadow: "0 4px 14px rgba(16,185,129,0.15)"
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.opacity = "0.95";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.opacity = "1";
+          }}
+          >
+            Conocer Groob ERP →
+          </Link>
+        </div>
+
+        {/* Card 2: Vender en Groob Market */}
+        <div style={{
+          background: "linear-gradient(135deg, #ffffff 0%, #fcfbff 100%)",
+          border: "1.5px solid rgba(108,77,255,0.1)",
+          borderRadius: 20, padding: 30,
+          display: "flex", flexDirection: "column", justifyContent: "space-between",
+          boxShadow: "0 10px 30px rgba(108,77,255,0.03)",
+          transition: "all 0.3s ease",
+          position: "relative", overflow: "hidden"
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 40px rgba(108,77,255,0.08)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(108,77,255,0.25)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.transform = "";
+          (e.currentTarget as HTMLElement).style.boxShadow = "0 10px 30px rgba(108,77,255,0.03)";
+          (e.currentTarget as HTMLElement).style.borderColor = "rgba(108,77,255,0.1)";
+        }}
+        >
+          {/* Decorative aura */}
+          <div style={{
+            position: "absolute", top: -50, right: -50, width: 120, height: 120,
+            background: "radial-gradient(circle, rgba(108,77,255,0.1) 0%, rgba(255,255,255,0) 70%)",
+            pointerEvents: "none"
+          }} />
+
+          <div>
+            <div style={{
+              width: 48, height: 48, borderRadius: 12,
+              background: "linear-gradient(135deg, #6c4dff, #4f46e5)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 24, marginBottom: 20, color: "#fff",
+              boxShadow: "0 4px 12px rgba(108,77,255,0.2)"
+            }}>
+              🚀
+            </div>
+            <h3 style={{ fontSize: 19, fontWeight: 800, color: "#0f172a", marginBottom: 10 }}>
+              Vender en Groob Market
+            </h3>
+            <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 20 }}>
+              Publica tus artículos en nuestra vitrina virtual y llega de inmediato a miles de compradores locales. Nos encargamos del marketing, pedidos y soporte para que solo te preocupes por despachar.
+            </p>
+            <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0", display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { icon: "🛵", text: "Logística y despachos el mismo día" },
+                { icon: "💳", text: "Pagos contraentrega para máxima confianza" },
+                { icon: "📈", text: "Mayor volumen de ventas y visibilidad de marca" }
+              ].map((item, idx) => (
+                <li key={idx} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 13, color: "#475569" }}>
+                  <span>{item.icon}</span>
+                  <strong>{item.text}</strong>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <Link href="/aliados" style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "12px 24px", borderRadius: 12,
+            background: "linear-gradient(135deg, #6c4dff, #4f46e5)",
+            color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none",
+            transition: "all 0.2s", boxShadow: "0 4px 14px rgba(108,77,255,0.15)"
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.opacity = "0.95";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.opacity = "1";
+          }}
+          >
+            Vender en Groob →
+          </Link>
         </div>
       </div>
 
-      {Object.entries(grouped).map(([category, brands]) => (
-        <div key={category} style={{ marginBottom: 20 }}>
-          <h3 style={{ fontSize: 14, fontWeight: 700, color: "#64748b", marginBottom: 10 }}>
-            📌 {category}
-          </h3>
-          <div style={{
-            display: "flex", gap: 10, flexWrap: "wrap",
-          }}>
-            {brands.map(brand => (
-              <a key={brand.name} href={brand.href} target="_blank" rel="noreferrer"
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  padding: "10px 16px", borderRadius: 12,
-                  background: brand.bg, border: `1.5px solid ${brand.color}22`,
-                  textDecoration: "none", transition: "all 0.2s",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                  (e.currentTarget as HTMLElement).style.boxShadow = `0 6px 20px ${brand.color}20`;
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.transform = "";
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 1px 4px rgba(0,0,0,0.04)";
-                }}
-              >
-                <span style={{ fontSize: 18 }}>{brand.icon}</span>
-                <span style={{ fontSize: 13, fontWeight: 700, color: brand.color }}>{brand.name}</span>
-                {brand.href !== "#" && (
-                  <span style={{ fontSize: 10, color: "#94a3b8" }}>↗</span>
-                )}
-              </a>
-            ))}
-          </div>
-        </div>
-      ))}
-
-      {/* Partnership CTA */}
+      {/* Partnership CTA Banner */}
       <div style={{
         background: "linear-gradient(135deg, #f5f3ff, #ede9fe)",
-        border: "1.5px solid rgba(108,77,255,0.2)",
-        borderRadius: 16, padding: "16px 20px",
-        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap",
+        border: "1.5px solid rgba(108,77,255,0.15)",
+        borderRadius: 20, padding: "20px 24px",
+        display: "flex", alignItems: "center", justifyContent: "space-between", gap: 20, flexWrap: "wrap",
+        boxShadow: "0 4px 20px rgba(108,77,255,0.02)"
       }}>
         <div>
-          <p style={{ fontWeight: 800, fontSize: 14, color: "#0f172a" }}>
-            🚀 ¿Tu empresa quiere ser aliada de Groob Market?
+          <p style={{ fontWeight: 850, fontSize: 15, color: "#0f172a", margin: 0 }}>
+            ⚡ ¿Quieres integrar tu tienda y comenzar a crecer hoy?
           </p>
-          <p style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>
-            Llega a miles de clientes en el Área Metropolitana de Medellín
+          <p style={{ fontSize: 13, color: "#64748b", marginTop: 4, margin: 0 }}>
+            Hablemos directamente por WhatsApp y te asesoramos de forma personalizada sobre la mejor solución para tu negocio.
           </p>
         </div>
-        <a href="https://wa.me/573011963515?text=Hola%20Groob%20Market!%20Me%20interesa%20ser%20aliado%20comercial%20🤝"
+        <a href="https://wa.me/573001805448?text=Hola%20Groob%20Market!%20Me%20interesa%20integrar%20mi%20negocio%20como%20aliado%20y%20conocer%20el%20ERP/POS%20🤝"
           target="_blank" rel="noreferrer"
           style={{
-            padding: "10px 20px", borderRadius: 10,
-            background: "linear-gradient(135deg, #6c4dff, #9b8cff)",
+            padding: "11px 22px", borderRadius: 12,
+            background: "linear-gradient(135deg, #6c4dff, #4f46e5)",
             color: "#fff", fontWeight: 700, fontSize: 13, textDecoration: "none",
-            flexShrink: 0,
+            flexShrink: 0, boxShadow: "0 4px 12px rgba(108,77,255,0.15)",
+            transition: "all 0.2s"
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLElement).style.transform = "scale(1.03)";
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLElement).style.transform = "";
           }}
         >
-          Contáctanos →
+          Contactar Soporte Aliados →
         </a>
       </div>
     </section>

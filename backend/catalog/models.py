@@ -46,8 +46,10 @@ class Product(models.Model):
 
     is_discountable = models.BooleanField("Permite descuento", default=True)
     min_margin_percent = models.PositiveSmallIntegerField("Margen mínimo (%)", default=25)
+    discount_percent = models.PositiveSmallIntegerField("Descuento manual (%)", default=0)
 
     is_active = models.BooleanField("Activo", default=True)
+    created_at = models.DateTimeField("Creado el", auto_now_add=True, db_index=True)
 
     class Meta:
         verbose_name = "Producto"
@@ -72,5 +74,8 @@ class Product(models.Model):
         
         if not (1 <= self.min_margin_percent <= 90):
             raise ValidationError("El margen mínimo debe estar entre 1% y 90%.")
+        
+        if not (0 <= self.discount_percent <= 90):
+            raise ValidationError("El descuento manual debe estar entre 0% y 90%.")
         
         

@@ -46,7 +46,7 @@ class CotizarEnvioAPIView(APIView):
             )
 
         resultado = buscar_zona(municipio_raw)
-        wa_number = getattr(settings, "WHATSAPP_NUMBER", "573011963515")
+        wa_number = getattr(settings, "WHATSAPP_NUMBER", "573001805448")
 
         if resultado is None:
             # Municipio fuera de cobertura automática → redirige a WhatsApp

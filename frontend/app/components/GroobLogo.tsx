@@ -68,7 +68,7 @@ export default function GroobLogo({ size = 36, showText = true, variant = "defau
             <span style={{ color: textDark }}>Groob </span>
             <span style={{ color: textPurple }}>Market</span>
           </span>
-          <span style={{
+          <span className="logo-subtitle" style={{
             fontSize: size * 0.22,
             color: variant === "white" ? "rgba(255,255,255,0.6)" : "#94a3b8",
             fontWeight: 500,

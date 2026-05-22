@@ -62,6 +62,7 @@ class Order(models.Model):
     full_name    = models.CharField("Nombre completo",      max_length=120)
     email        = models.EmailField("Correo electrónico",  default="")
     phone        = models.CharField("Teléfono / WhatsApp",  max_length=30)
+    cedula       = models.CharField("Cédula / ID",          max_length=20,  blank=True, default="")
     department   = models.CharField("Departamento",         max_length=80,  default="Antioquia")
     city         = models.CharField("Ciudad o municipio",   max_length=80,  default="Medellín")
     address      = models.CharField("Dirección principal",  max_length=200)
@@ -86,6 +87,7 @@ class Order(models.Model):
     discount_total = models.PositiveIntegerField("Descuento (COP)", default=0)
     shipping_cost  = models.PositiveIntegerField("Costo envío (COP)", default=0)
     total          = models.PositiveIntegerField("Total (COP)", default=0)
+    wompi_transaction_id = models.CharField("ID de Transacción Wompi", max_length=100, blank=True, default="")
 
     # ─ Timestamps ───────────────────────────────────────────────────────────
     created_at  = models.DateTimeField("Fecha del pedido",  auto_now_add=True)

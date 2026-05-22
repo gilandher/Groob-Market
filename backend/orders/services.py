@@ -38,12 +38,23 @@ def create_customer_order(user, order_data: dict, items_data: list, coupon_code:
     order = Order(**order_data)
     if user and user.is_authenticated:
         order.user = user
+        profile = getattr(user, "profile", None)
+        if profile and profile.cedula:
+            order.cedula = profile.cedula
 
     # inyectar los calculos financieros seguros desde el backend
     order.subtotal = preview["subtotal"]
     order.discount_total = preview["discount_total"]
     order.shipping_cost = preview["shipping_cost"]
     order.total = preview["total"]
+    
+    # Asignar el estado de pago inicial correcto segun el metodo
+    if order.payment_method == Order.PaymentMethod.WOMPI:
+        order.payment_status = Order.PaymentStatus.PENDING
+    elif order.payment_method in [Order.PaymentMethod.PAYU]:
+        order.payment_status = Order.PaymentStatus.PENDING
+    else:
+        order.payment_status = Order.PaymentStatus.COD_PENDING
     
     # Asignar código de cupón y el porcentaje base si hay
     if preview.get("coupon"):

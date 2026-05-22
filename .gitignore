@@ -1,0 +1,17 @@
+# Agent brain directory
+brain/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Django
+backend/db.sqlite3
+backend/.venv/
+
+# Environment files
+.env
+*.env
+backend/media/products/*.png

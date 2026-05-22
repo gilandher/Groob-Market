@@ -131,7 +131,7 @@ export function generateOrderPDF(order: OrderForPDF, type: "prefactura" | "factu
   <div class="header">
     <div>
       <div class="brand-name">GROOB MARKET</div>
-      <div class="brand-sub">Vitrina Virtual · Medellín, Colombia · 📞 301 196 3515</div>
+      <div class="brand-sub">Vitrina Virtual · Medellín, Colombia · 📞 300 180 5448</div>
     </div>
     <div class="doc-badge">
       <h2>${docTitle}</h2>

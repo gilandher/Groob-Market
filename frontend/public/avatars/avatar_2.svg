@@ -1,0 +1,36 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="60%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#facc15"/>
+    </linearGradient>
+    <linearGradient id="cactusGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d9488"/>
+      <stop offset="100%" stop-color="#115e59"/>
+    </linearGradient>
+    <linearGradient id="potGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fdba74"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+    <filter id="shadow2" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#7c2d12" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#bg2)" stroke="#ea580c" stroke-width="2"/>
+  <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="3" stroke-dasharray="8 12"/>
+  <g filter="url(#shadow2)">
+    <path d="M42 74 L78 74 L73 90 L47 90 Z" fill="url(#potGrad)"/>
+    <rect x="39" y="70" width="42" height="5" rx="2.5" fill="#ffedd5"/>
+    <rect x="52" y="32" width="16" height="40" rx="8" fill="url(#cactusGrad)"/>
+    <path d="M52 48 H42 V38" stroke="#115e59" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M68 53 H78 V43" stroke="#115e59" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="60" cy="29" r="4" fill="#f43f5e"/>
+    <circle cx="56" cy="29" r="3" fill="#f43f5e"/>
+    <circle cx="64" cy="29" r="3" fill="#f43f5e"/>
+    <circle cx="60" cy="42" r="1.2" fill="#ccfbf1"/>
+    <circle cx="60" cy="56" r="1.2" fill="#ccfbf1"/>
+    <circle cx="42" cy="38" r="1" fill="#ccfbf1"/>
+    <circle cx="78" cy="43" r="1" fill="#ccfbf1"/>
+  </g>
+</svg>

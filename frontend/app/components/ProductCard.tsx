@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { addToCart } from "@/lib/cart";
 import { toggleWishlist, isInWishlist } from "@/lib/wishlist";
@@ -87,6 +88,13 @@ export function ProductCard({ product }: { product: Product }) {
   const displayPrice = pricing?.has_discount ? pricing.final_price : product.sale_price;
   const originalPrice = pricing?.has_discount ? pricing.original_price : null;
 
+  const isNew = (() => {
+    if (!product.created_at) return false;
+    const parsed = Date.parse(product.created_at);
+    if (isNaN(parsed)) return false;
+    return Date.now() - parsed < 15 * 24 * 60 * 60 * 1000;
+  })();
+
   useEffect(() => {
     setWished(isInWishlist(product.id));
     const sync = () => setWished(isInWishlist(product.id));
@@ -146,15 +154,30 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         )}
 
-        {/* Category pill */}
-        <span style={{
+        {/* Category & New badges */}
+        <div style={{
           position: "absolute", top: 10, left: 10, zIndex: 2,
-          background: "rgba(255,255,255,0.92)", backdropFilter: "blur(4px)",
-          color: "#6c4dff", padding: "3px 10px", borderRadius: 20,
-          fontSize: 10, fontWeight: 700,
+          display: "flex", gap: 6, alignItems: "center",
         }}>
-          {product.category?.name || "Tech"}
-        </span>
+          {isNew && (
+            <span style={{
+              background: "linear-gradient(135deg, #10b981, #059669)",
+              color: "white", padding: "3px 10px", borderRadius: 20,
+              fontSize: 10, fontWeight: 800,
+              boxShadow: "0 2px 8px rgba(16,185,129,0.3)",
+              textTransform: "uppercase", letterSpacing: "0.5px",
+            }}>
+              Nuevo
+            </span>
+          )}
+          <span style={{
+            background: "rgba(255,255,255,0.92)", backdropFilter: "blur(4px)",
+            color: "#6c4dff", padding: "3px 10px", borderRadius: 20,
+            fontSize: 10, fontWeight: 700,
+          }}>
+            {product.category?.name || "Tech"}
+          </span>
+        </div>
 
         {/* ❤️ Wishlist button — esquina inferior derecha para no tapar el descuento */}
         <button
@@ -277,16 +300,25 @@ export function ProductCard({ product }: { product: Product }) {
 
 /* ─── ProductListItem ─────────────────────────────────────────── */
 export function ProductListItem({ product }: { product: Product }) {
+  const router = useRouter();
   const [adding, setAdding] = useState(false);
   const pricing = product.pricing;
   const displayPrice = pricing?.has_discount ? pricing.final_price : product.sale_price;
   const originalPrice = pricing?.has_discount ? pricing.original_price : null;
 
+  const isNew = (() => {
+    if (!product.created_at) return false;
+    const parsed = Date.parse(product.created_at);
+    if (isNaN(parsed)) return false;
+    return Date.now() - parsed < 15 * 24 * 60 * 60 * 1000;
+  })();
+
   const waText = encodeURIComponent(
     `Hola Groob Market 👋, quiero: ${product.name} (SKU: ${product.sku}). Precio: ${formatCOP(displayPrice)}`
   );
 
-  function handleAdd() {
+  function handleAdd(e: React.MouseEvent) {
+    e.stopPropagation();
     setAdding(true);
     addToCart({
       product_id: product.id,
@@ -300,44 +332,77 @@ export function ProductListItem({ product }: { product: Product }) {
   }
 
   return (
-    <div className="product-list-item">
-      {product.image_url ? (
-        <img src={product.image_url} alt={product.name} className="product-list-img" />
-      ) : (
-        <div className="product-list-img" style={{
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: 24, background: "linear-gradient(135deg, #f5f3ff, #ede9fe)",
-        }}>
-          📦
-        </div>
-      )}
-
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3 }}>{product.name}</p>
-        <StarsRow rating={4.5} />
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-          <p style={{ fontSize: 16, fontWeight: 900, color: "#0f172a" }}>{formatCOP(displayPrice)}</p>
-          {originalPrice && (
-            <span style={{ fontSize: 12, color: "#94a3b8", textDecoration: "line-through" }}>
-              {formatCOP(originalPrice)}
-            </span>
-          )}
-          {pricing?.has_discount && pricing.label && (
-            <span style={{
-              fontSize: 10, fontWeight: 700, color: pricing.badge_color,
-              background: `${pricing.badge_color}18`,
-              padding: "2px 7px", borderRadius: 10,
-            }}>
-              {pricing.label}
-            </span>
-          )}
-        </div>
-        {product.stock_qty <= 5 && product.stock_qty > 0 && (
-          <p style={{ fontSize: 11, color: "#ef4444", fontWeight: 700, marginTop: 2 }}>
-            ⚡ ¡Solo {product.stock_qty} disponibles!
-          </p>
+    <div
+      className="product-list-item"
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.closest("button") || target.closest("a")) {
+          return;
+        }
+        router.push(`/product/${product.id}`);
+      }}
+    >
+      <Link
+        href={`/product/${product.id}`}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 14,
+          flex: 1,
+          minWidth: 0,
+          textDecoration: "none",
+          color: "inherit",
+        }}
+      >
+        {product.image_url ? (
+          <img src={product.image_url} alt={product.name} className="product-list-img" />
+        ) : (
+          <div className="product-list-img" style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 24, background: "linear-gradient(135deg, #f5f3ff, #ede9fe)",
+          }}>
+            📦
+          </div>
         )}
-      </div>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 2 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, margin: 0 }}>{product.name}</p>
+            {isNew && (
+              <span style={{
+                background: "linear-gradient(135deg, #10b981, #059669)",
+                color: "white", padding: "2px 7px", borderRadius: 10,
+                fontSize: 9, fontWeight: 800, textTransform: "uppercase",
+              }}>
+                Nuevo
+              </span>
+            )}
+          </div>
+          <StarsRow rating={4.5} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+            <p style={{ fontSize: 16, fontWeight: 900, color: "#0f172a" }}>{formatCOP(displayPrice)}</p>
+            {originalPrice && (
+              <span style={{ fontSize: 12, color: "#94a3b8", textDecoration: "line-through" }}>
+                {formatCOP(originalPrice)}
+              </span>
+            )}
+            {pricing?.has_discount && pricing.label && (
+              <span style={{
+                fontSize: 10, fontWeight: 700, color: pricing.badge_color,
+                background: `${pricing.badge_color}18`,
+                padding: "2px 7px", borderRadius: 10,
+              }}>
+                {pricing.label}
+              </span>
+            )}
+          </div>
+          {product.stock_qty <= 5 && product.stock_qty > 0 && (
+            <p style={{ fontSize: 11, color: "#ef4444", fontWeight: 700, marginTop: 2 }}>
+              ⚡ ¡Solo {product.stock_qty} disponibles!
+            </p>
+          )}
+        </div>
+      </Link>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 6, flexShrink: 0 }}>
         <button
@@ -349,11 +414,12 @@ export function ProductListItem({ product }: { product: Product }) {
           {adding ? "✓" : "Añadir"}
         </button>
         <a
-          href={`https://wa.me/573011963515?text=${waText}`}
+          href={`https://wa.me/573001805448?text=${waText}`}
           target="_blank"
           rel="noreferrer"
           className="btn-whatsapp btn-sm"
           style={{ textAlign: "center" }}
+          onClick={(e) => e.stopPropagation()}
         >
           💬
         </a>

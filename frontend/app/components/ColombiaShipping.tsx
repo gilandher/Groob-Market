@@ -55,14 +55,16 @@ export const VALLE_ABURRA = new Set([
 ]);
 
 export const LOGISTICS_BY_CITY = (city: string): string => {
-  return VALLE_ABURRA.has(city.toLowerCase())
+  const normalizedCity = (city || "").toString().toLowerCase();
+  return VALLE_ABURRA.has(normalizedCity)
     ? "🛵 Entrega el mismo día (servicio propio)"
     : "📦 Coordinadora / Envía / Servientrega (1-3 días hábiles)";
 };
 
 // ─── Shipping cost estimator ──────────────────────────────────────────────────
 export function estimateShipping(city: string): { cost: number; label: string; sameDay: boolean } {
-  if (VALLE_ABURRA.has(city.toLowerCase())) {
+  const normalizedCity = (city || "").toString().toLowerCase();
+  if (VALLE_ABURRA.has(normalizedCity)) {
     return { cost: 0, label: "🎁 Gratis — Entrega mismo día", sameDay: true };
   }
   return { cost: 0, label: "📦 Costo por confirmar vía WhatsApp", sameDay: false };

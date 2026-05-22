@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import FloatingWhatsApp from "./components/FloatingWhatsApp";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://groobmarket.com";
 const SITE_NAME = "Groob Market";
@@ -77,7 +78,7 @@ const organizationSchema = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   image: `${SITE_URL}/og-image.jpg`,
-  telephone: "+573011963515",
+  telephone: "+573001805448",
   email: "contacto@groobmarket.com",
   address: {
     "@type": "PostalAddress",
@@ -108,7 +109,7 @@ const organizationSchema = {
   sameAs: [
     "https://www.instagram.com/groobmarket",
     "https://www.facebook.com/groobmarket",
-    "https://wa.me/573011963515",
+    "https://wa.me/573001805448",
   ],
   areaServed: [
     { "@type": "City", name: "Medellín" },
@@ -156,7 +157,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
         <meta name="theme-color" content="#6c4dff" />
         <meta name="msapplication-TileColor" content="#6c4dff" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
         {/* Preload critical resources */}
@@ -206,6 +207,7 @@ export default function RootLayout({
         <Navbar />
         <div style={{ flex: 1 }}>{children}</div>
         <Footer />
+        <FloatingWhatsApp />
       </body>
     </html>
   );
