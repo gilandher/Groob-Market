@@ -311,7 +311,7 @@ export function CheckoutPageInner() {
       const headers: Record<string, string> = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch(`${apiBase}/orders/`, {
+      let res = await fetch(`${apiBase}/orders/`, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -328,7 +328,44 @@ export function CheckoutPageInner() {
         }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
+      // If token expired or invalid (401), clear tokens and auto-retry as guest
+      if (res.status === 401 && token) {
+        console.warn("Token expired/invalid, clearing localStorage and retrying order creation as guest...");
+        localStorage.removeItem("groob_token");
+        localStorage.removeItem("groob_refresh");
+        localStorage.removeItem("groob_user");
+        window.dispatchEvent(new Event("groob_auth_update"));
+
+        const retryHeaders: Record<string, string> = { "Content-Type": "application/json" };
+        res = await fetch(`${apiBase}/orders/`, {
+          method: "POST",
+          headers: retryHeaders,
+          body: JSON.stringify({
+            full_name: `${firstName.trim()} ${lastName.trim()}`,
+            email: email.trim(),
+            phone: phone.trim(),
+            department: department.trim(),
+            city: city.trim(),
+            address: address.trim(),
+            notes: notes.trim(),
+            payment_method: paymentMethod,
+            shipping_cost: shippingCost,
+            items: items.map((it) => ({ product_id: it.product_id, qty: it.qty })),
+          }),
+        });
+      }
+
+      if (!res.ok) {
+        let errorMsg = "Ocurrió un error al procesar el pedido.";
+        try {
+          const errData = await res.json();
+          errorMsg = errData.detail || errData.message || JSON.stringify(errData);
+        } catch {
+          const rawText = await res.text();
+          errorMsg = rawText || errorMsg;
+        }
+        throw new Error(errorMsg);
+      }
       const data = await res.json() as any;
 
       setPlacedCart(snapshotCart);
@@ -355,7 +392,7 @@ export function CheckoutPageInner() {
         }, 300);
       }
     } catch (err: any) {
-      setMsg(`Error: ${err?.message || "Ocurrió un error"}`);
+      setMsg(err?.message || "Ocurrió un error");
     } finally {
       setLoading(false);
     }

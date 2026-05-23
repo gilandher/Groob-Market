@@ -356,7 +356,21 @@ export default function MyOrdersPage() {
         ? `${API}/orders/my/`
         : `${API}/orders/by-email/?email=${encodeURIComponent(emailQuery)}`;
 
-      const res = await fetch(endpoint, { headers });
+      let res = await fetch(endpoint, { headers });
+
+      // If token expired/invalid (401), clear localStorage and retry via public email query
+      if (res.status === 401 && token) {
+        console.warn("Token expired/invalid in orders list, clearing localStorage and retrying via email query...");
+        localStorage.removeItem("groob_token");
+        localStorage.removeItem("groob_refresh");
+        localStorage.removeItem("groob_user");
+        window.dispatchEvent(new Event("groob_auth_update"));
+
+        const retryHeaders: Record<string, string> = { "Content-Type": "application/json" };
+        const retryEndpoint = `${API}/orders/by-email/?email=${encodeURIComponent(emailQuery)}`;
+        res = await fetch(retryEndpoint, { headers: retryHeaders });
+      }
+
       if (!res.ok) throw new Error("No se encontraron pedidos.");
       const data = await res.json();
       const results = data.results ?? data;
