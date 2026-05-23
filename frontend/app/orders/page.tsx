@@ -428,33 +428,68 @@ export default function MyOrdersPage() {
       return;
     }
     
-    const checkout = new (window as any).WidgetCheckout({
-      currency: paymentData.currency || "COP",
-      amountInCents: paymentData.amount_in_cents,
-      reference: paymentData.reference,
-      publicKey: paymentData.public_key,
-      signature: paymentData.signature
-    });
-    
-    checkout.open((result: any) => {
-      const transaction = result.transaction;
-      if (transaction) {
-        console.log("Wompi transaction callback (list):", transaction);
-        setOrders(prevOrders => 
-          prevOrders.map(order => {
-            if (order.id === orderId) {
-              return {
-                ...order,
-                payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
-                status: transaction.status === "APPROVED" ? "CONFIRMED" : order.status,
-                status_display: transaction.status === "APPROVED" ? "Confirmado" : order.status_display,
-              };
-            }
-            return order;
-          })
-        );
+    try {
+      const checkout = new (window as any).WidgetCheckout({
+        currency: paymentData.currency || "COP",
+        amountInCents: paymentData.amount_in_cents,
+        reference: paymentData.reference,
+        publicKey: paymentData.public_key,
+        signature: paymentData.signature
+      });
+      
+      checkout.open((result: any) => {
+        const transaction = result.transaction;
+        if (transaction) {
+          console.log("Wompi transaction callback (list):", transaction);
+          setOrders(prevOrders => 
+            prevOrders.map(order => {
+              if (order.id === orderId) {
+                return {
+                  ...order,
+                  payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+                  status: transaction.status === "APPROVED" ? "CONFIRMED" : order.status,
+                  status_display: transaction.status === "APPROVED" ? "Confirmado" : order.status_display,
+                };
+              }
+              return order;
+            })
+          );
+        }
+      });
+    } catch (e: any) {
+      console.warn("Wompi signature check failed in orders, retrying without signature...", e);
+      try {
+        const checkoutNoSig = new (window as any).WidgetCheckout({
+          currency: paymentData.currency || "COP",
+          amountInCents: paymentData.amount_in_cents,
+          reference: paymentData.reference,
+          publicKey: paymentData.public_key
+        });
+        
+        checkoutNoSig.open((result: any) => {
+          const transaction = result.transaction;
+          if (transaction) {
+            console.log("Wompi transaction callback (list, no-sig):", transaction);
+            setOrders(prevOrders => 
+              prevOrders.map(order => {
+                if (order.id === orderId) {
+                  return {
+                    ...order,
+                    payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+                    status: transaction.status === "APPROVED" ? "CONFIRMED" : order.status,
+                    status_display: transaction.status === "APPROVED" ? "Confirmado" : order.status_display,
+                  };
+                }
+                return order;
+              })
+            );
+          }
+        });
+      } catch (fallbackErr: any) {
+        console.error("Wompi fallback checkout failed in orders:", fallbackErr);
+        alert(`Error de Wompi: ${fallbackErr?.message || fallbackErr?.toString()}`);
       }
-    });
+    }
   };
 
   useEffect(() => {

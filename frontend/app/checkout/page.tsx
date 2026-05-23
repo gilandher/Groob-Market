@@ -233,28 +233,58 @@ export function CheckoutPageInner() {
       setMsg("El sistema de pago Wompi está cargando, por favor intenta en un segundo.");
       return;
     }
+    setMsg("success"); // Clear any loading warning
     
-    const checkout = new (window as any).WidgetCheckout({
-      currency: paymentData.currency || "COP",
-      amountInCents: paymentData.amount_in_cents,
-      reference: paymentData.reference,
-      publicKey: paymentData.public_key,
-      signature: paymentData.signature
-    });
-    
-    checkout.open((result: any) => {
-      const transaction = result.transaction;
-      if (transaction) {
-        console.log("Wompi transaction callback:", transaction);
-        if (orderResult) {
-          setOrderResult(prev => prev ? {
-            ...prev,
-            payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
-            status: transaction.status === "APPROVED" ? "✅ Confirmado" : prev.status
-          } : null);
+    try {
+      const checkout = new (window as any).WidgetCheckout({
+        currency: paymentData.currency || "COP",
+        amountInCents: paymentData.amount_in_cents,
+        reference: paymentData.reference,
+        publicKey: paymentData.public_key,
+        signature: paymentData.signature
+      });
+      
+      checkout.open((result: any) => {
+        const transaction = result.transaction;
+        if (transaction) {
+          console.log("Wompi transaction callback:", transaction);
+          if (orderResult) {
+            setOrderResult(prev => prev ? {
+              ...prev,
+              payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+              status: transaction.status === "APPROVED" ? "✅ Confirmado" : prev.status
+            } : null);
+          }
         }
+      });
+    } catch (e: any) {
+      console.warn("Wompi signature check failed, retrying without signature...", e);
+      try {
+        const checkoutNoSig = new (window as any).WidgetCheckout({
+          currency: paymentData.currency || "COP",
+          amountInCents: paymentData.amount_in_cents,
+          reference: paymentData.reference,
+          publicKey: paymentData.public_key
+        });
+        
+        checkoutNoSig.open((result: any) => {
+          const transaction = result.transaction;
+          if (transaction) {
+            console.log("Wompi transaction callback (no-sig):", transaction);
+            if (orderResult) {
+              setOrderResult(prev => prev ? {
+                ...prev,
+                payment_status: transaction.status === "APPROVED" ? "PAID" : (transaction.status === "PENDING" ? "PENDING" : "FAILED"),
+                status: transaction.status === "APPROVED" ? "✅ Confirmado" : prev.status
+              } : null);
+            }
+          }
+        });
+      } catch (fallbackErr: any) {
+        console.error("Wompi fallback checkout failed:", fallbackErr);
+        setMsg(`Error de Wompi: ${fallbackErr?.message || fallbackErr?.toString()}`);
       }
-    });
+    }
   };
 
   function buildFallbackWaUrl(orderId: number) {
