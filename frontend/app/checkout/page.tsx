@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Script from "next/script";
 import React, { useEffect, useMemo, useState } from "react";
 import { getCart, clearCart, type CartItem } from "@/lib/cart";
 import { ColombiaShipping } from "../components/ColombiaShipping";
@@ -387,9 +388,18 @@ export function CheckoutPageInner() {
       setMsg("success");
       
       if (paymentMethod === "WOMPI" && data.wompi_payment_data) {
-        setTimeout(() => {
-          handleWompiPayment(data.wompi_payment_data);
-        }, 300);
+        let retries = 0;
+        const checkAndOpen = () => {
+          if ((window as any).WidgetCheckout) {
+            handleWompiPayment(data.wompi_payment_data);
+          } else if (retries < 15) {
+            retries++;
+            setTimeout(checkAndOpen, 300);
+          } else {
+            setMsg("El sistema de pago Wompi está tardando en cargar. Por favor, haz clic en 'Pagar Pedido con Wompi' para intentar nuevamente.");
+          }
+        };
+        setTimeout(checkAndOpen, 300);
       }
     } catch (err: any) {
       setMsg(err?.message || "Ocurrió un error");
@@ -413,6 +423,11 @@ export function CheckoutPageInner() {
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>
+      <Script
+        src="https://transaction-sandbox.wompi.co/widget.js"
+        strategy="afterInteractive"
+        id="wompi-widget-script-next"
+      />
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 20px" }}>
 
         {/* Header */}
@@ -425,7 +440,7 @@ export function CheckoutPageInner() {
 
 
         {/* ── Success state ── */}
-        {msg === "success" && orderResult && (
+        {orderResult && (
           <div style={{
             background: orderResult.payment_method === "WOMPI" && orderResult.payment_status !== "PAID"
               ? "linear-gradient(135deg, #f5f3ff, #ede9fe)"
@@ -451,6 +466,25 @@ export function CheckoutPageInner() {
               }
             </h2>
             
+            {/* Error or loading message reporting inside the success card */}
+            {msg && msg !== "success" && (
+              <div style={{
+                padding: "12px 16px",
+                background: "#fffbeb",
+                border: "1px solid #fde68a",
+                borderRadius: 12,
+                color: "#b45309",
+                fontSize: "14px",
+                fontWeight: 650,
+                marginBottom: 20,
+                display: "inline-block",
+                textAlign: "left",
+                maxWidth: "100%"
+              }}>
+                ⚠️ {msg}
+              </div>
+            )}
+
             {orderResult.payment_method === "WOMPI" ? (
               <div style={{ marginBottom: 20 }}>
                 <p style={{
