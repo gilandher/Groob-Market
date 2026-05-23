@@ -423,6 +423,7 @@ export function CheckoutPageInner() {
           <h1 style={{ fontSize: "24px", fontWeight: 800, marginTop: 6 }}>Finalizar pedido</h1>
         </div>
 
+
         {/* ── Success state ── */}
         {msg === "success" && orderResult && (
           <div style={{
@@ -657,6 +658,44 @@ export function CheckoutPageInner() {
                   </div>
                 </div>
 
+                {/* Explicación de canal / banco del medio de pago */}
+                <div style={{
+                  padding: "14px 16px",
+                  borderRadius: 14,
+                  border: "1.5px solid var(--groob-border2)",
+                  background: "#f8fafc",
+                  fontSize: "13px",
+                  color: "var(--groob-text-2)",
+                  lineHeight: "1.45"
+                }}>
+                  {paymentMethod === "COD" && (
+                    <p>
+                      <strong>💵 Pago Contraentrega:</strong> Pagas en efectivo o transferencia (Nequi, Bancolombia) cuando el domiciliario te entregue el producto. Cobertura en el Valle de Aburrá.
+                    </p>
+                  )}
+                  {paymentMethod === "WHATSAPP" && (
+                    <p>
+                      <strong>💬 Pedido por WhatsApp:</strong> Te enviaremos a nuestro canal oficial de WhatsApp con tu resumen de compra para coordinar el pago por transferencia directa o acordar los detalles de entrega.
+                    </p>
+                  )}
+                  {paymentMethod === "WOMPI" && (
+                    <div>
+                      <p style={{ marginBottom: 8, fontWeight: 700, color: "var(--groob-text)" }}>
+                        <strong>💳 Pago en línea seguro (Wompi):</strong> Podrás seleccionar tu medio de pago favorito:
+                      </p>
+                      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 8 }}>
+                        <span style={{ background: "rgba(108,77,255,0.08)", color: "var(--groob-purple)", padding: "4px 8px", borderRadius: 8, fontSize: "11px", fontWeight: 700 }}>⚡ PSE (Cualquier Banco)</span>
+                        <span style={{ background: "rgba(108,77,255,0.08)", color: "var(--groob-purple)", padding: "4px 8px", borderRadius: 8, fontSize: "11px", fontWeight: 700 }}>📱 Nequi</span>
+                        <span style={{ background: "rgba(108,77,255,0.08)", color: "var(--groob-purple)", padding: "4px 8px", borderRadius: 8, fontSize: "11px", fontWeight: 700 }}>💳 Tarjetas Débito / Crédito</span>
+                        <span style={{ background: "rgba(108,77,255,0.08)", color: "var(--groob-purple)", padding: "4px 8px", borderRadius: 8, fontSize: "11px", fontWeight: 700 }}>🏦 Botón Bancolombia</span>
+                      </div>
+                      <p style={{ fontSize: "11px", color: "var(--groob-text-muted)" }}>
+                        * La selección del banco o cuenta de Nequi se realiza en la siguiente pantalla segura de Wompi.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
                 {msg && msg !== "success" && (
                   <div style={{ padding: "12px 16px", background: "#fee2e2", borderRadius: 10, color: "#b91c1c", fontSize: "14px", fontWeight: 600 }}>
                     ⚠️ {msg}
@@ -670,7 +709,11 @@ export function CheckoutPageInner() {
                   className="btn-primary"
                   style={{ fontSize: "16px", padding: "15px", width: "100%", opacity: loading ? 0.7 : 1 }}
                 >
-                  {loading ? "Creando pedido..." : "✅ Confirmar pedido"}
+                  {loading ? "Creando pedido..." : 
+                    paymentMethod === "WOMPI" ? "💳 Pagar seguro con Wompi" :
+                    paymentMethod === "WHATSAPP" ? "💬 Confirmar y pedir por WhatsApp" :
+                    "💵 Confirmar pedido (Contraentrega)"
+                  }
                 </button>
               </form>
             </div>
