@@ -460,7 +460,7 @@ export default function MyOrdersPage() {
   useEffect(() => {
     if (!document.getElementById("wompi-widget-script")) {
       const script = document.createElement("script");
-      script.src = "https://transaction-sandbox.wompi.co/widget.js";
+      script.src = "https://checkout.wompi.co/widget.js";
       script.id = "wompi-widget-script";
       script.async = true;
       document.body.appendChild(script);

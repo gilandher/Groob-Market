@@ -142,7 +142,7 @@ export function CheckoutPageInner() {
 
     if (!document.getElementById("wompi-widget-script")) {
       const script = document.createElement("script");
-      script.src = "https://transaction-sandbox.wompi.co/widget.js";
+      script.src = "https://checkout.wompi.co/widget.js";
       script.id = "wompi-widget-script";
       script.async = true;
       document.body.appendChild(script);
@@ -424,7 +424,7 @@ export function CheckoutPageInner() {
   return (
     <main style={{ minHeight: "100vh", background: "var(--groob-bg)" }}>
       <Script
-        src="https://transaction-sandbox.wompi.co/widget.js"
+        src="https://checkout.wompi.co/widget.js"
         strategy="afterInteractive"
         id="wompi-widget-script-next"
       />
